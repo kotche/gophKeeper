@@ -1,0 +1,5 @@
+tcp:
+  port: '3200'
+
+postgres:
+  dsn: 'postgresql://postgres:postgres@localhost:5432/postgres'
