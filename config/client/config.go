@@ -19,7 +19,7 @@ type (
 func NewConfig() (*Config, error) {
 	cfg := &Config{}
 
-	err := cleanenv.ReadConfig("./internal/client/config/config.yaml", cfg) //work:  go run ./cmd/client/main.go
+	err := cleanenv.ReadConfig("config.yaml", cfg) //work:  go run ./cmd/client/main.go
 	if err != nil {
 		return nil, fmt.Errorf("config error: %s", err.Error())
 	}
