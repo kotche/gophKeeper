@@ -18,86 +18,122 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-// KeeperClient is the client API for Keeper service.
+// AuthServiceClient is the client API for AuthService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type KeeperClient interface {
+type AuthServiceClient interface {
 	Registration(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*UserResponse, error)
+	Authentication(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*UserResponse, error)
 }
 
-type keeperClient struct {
+type authServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewKeeperClient(cc grpc.ClientConnInterface) KeeperClient {
-	return &keeperClient{cc}
+func NewAuthServiceClient(cc grpc.ClientConnInterface) AuthServiceClient {
+	return &authServiceClient{cc}
 }
 
-func (c *keeperClient) Registration(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*UserResponse, error) {
+func (c *authServiceClient) Registration(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*UserResponse, error) {
 	out := new(UserResponse)
-	err := c.cc.Invoke(ctx, "/keeper.Keeper/Registration", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/keeper.AuthService/Registration", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// KeeperServer is the server API for Keeper service.
-// All implementations must embed UnimplementedKeeperServer
+func (c *authServiceClient) Authentication(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*UserResponse, error) {
+	out := new(UserResponse)
+	err := c.cc.Invoke(ctx, "/keeper.AuthService/Authentication", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// AuthServiceServer is the server API for AuthService service.
+// All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility
-type KeeperServer interface {
+type AuthServiceServer interface {
 	Registration(context.Context, *UserRequest) (*UserResponse, error)
-	mustEmbedUnimplementedKeeperServer()
+	Authentication(context.Context, *UserRequest) (*UserResponse, error)
+	mustEmbedUnimplementedAuthServiceServer()
 }
 
-// UnimplementedKeeperServer must be embedded to have forward compatible implementations.
-type UnimplementedKeeperServer struct {
+// UnimplementedAuthServiceServer must be embedded to have forward compatible implementations.
+type UnimplementedAuthServiceServer struct {
 }
 
-func (UnimplementedKeeperServer) Registration(context.Context, *UserRequest) (*UserResponse, error) {
+func (UnimplementedAuthServiceServer) Registration(context.Context, *UserRequest) (*UserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Registration not implemented")
 }
-func (UnimplementedKeeperServer) mustEmbedUnimplementedKeeperServer() {}
+func (UnimplementedAuthServiceServer) Authentication(context.Context, *UserRequest) (*UserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Authentication not implemented")
+}
+func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 
-// UnsafeKeeperServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to KeeperServer will
+// UnsafeAuthServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to AuthServiceServer will
 // result in compilation errors.
-type UnsafeKeeperServer interface {
-	mustEmbedUnimplementedKeeperServer()
+type UnsafeAuthServiceServer interface {
+	mustEmbedUnimplementedAuthServiceServer()
 }
 
-func RegisterKeeperServer(s grpc.ServiceRegistrar, srv KeeperServer) {
-	s.RegisterService(&Keeper_ServiceDesc, srv)
+func RegisterAuthServiceServer(s grpc.ServiceRegistrar, srv AuthServiceServer) {
+	s.RegisterService(&AuthService_ServiceDesc, srv)
 }
 
-func _Keeper_Registration_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _AuthService_Registration_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UserRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(KeeperServer).Registration(ctx, in)
+		return srv.(AuthServiceServer).Registration(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/keeper.Keeper/Registration",
+		FullMethod: "/keeper.AuthService/Registration",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(KeeperServer).Registration(ctx, req.(*UserRequest))
+		return srv.(AuthServiceServer).Registration(ctx, req.(*UserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// Keeper_ServiceDesc is the grpc.ServiceDesc for Keeper service.
+func _AuthService_Authentication_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).Authentication(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/keeper.AuthService/Authentication",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).Authentication(ctx, req.(*UserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var Keeper_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "keeper.Keeper",
-	HandlerType: (*KeeperServer)(nil),
+var AuthService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "keeper.AuthService",
+	HandlerType: (*AuthServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "Registration",
-			Handler:    _Keeper_Registration_Handler,
+			Handler:    _AuthService_Registration_Handler,
+		},
+		{
+			MethodName: "Authentication",
+			Handler:    _AuthService_Authentication_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

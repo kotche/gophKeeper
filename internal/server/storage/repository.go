@@ -6,16 +6,16 @@ import (
 	"github.com/kotche/gophKeeper/internal/server/domain"
 )
 
-type AuthRepoContract interface {
+type IAuthRepo interface {
 	CreateUser(ctx context.Context, user *domain.User) (int32, error)
 	GetUserID(ctx context.Context, user *domain.User) (int32, error)
 }
 
 type Repository struct {
-	Auth AuthRepoContract
+	Auth IAuthRepo
 }
 
-func NewRepository(auth AuthRepoContract) *Repository {
+func NewRepository(auth IAuthRepo) *Repository {
 	return &Repository{
 		Auth: auth,
 	}

@@ -6,16 +6,16 @@ import (
 	"github.com/kotche/gophKeeper/internal/server/domain"
 )
 
-type AuthServiceContract interface {
+type IAuthService interface {
 	CreateUser(ctx context.Context, user *domain.User) error
 	AuthenticationUser(ctx context.Context, user *domain.User) error
 }
 
 type Service struct {
-	Auth AuthServiceContract
+	Auth IAuthService
 }
 
-func NewService(auth AuthServiceContract) *Service {
+func NewService(auth IAuthService) *Service {
 	return &Service{
 		Auth: auth,
 	}

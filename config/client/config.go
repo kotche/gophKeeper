@@ -1,6 +1,8 @@
-package config
+package client
 
 import (
+	"errors"
+	"flag"
 	"fmt"
 
 	"github.com/ilyakaznacheev/cleanenv"
@@ -19,9 +21,19 @@ type (
 func NewConfig() (*Config, error) {
 	cfg := &Config{}
 
-	err := cleanenv.ReadConfig("config.yaml", cfg) //work:  go run ./cmd/client/main.go
+	var configFilePath string
+	if flag.Lookup("c") == nil {
+		flag.StringVar(&configFilePath, "c", configFilePath, "config client file")
+	}
+	flag.Parse()
+
+	if configFilePath == "" {
+		return nil, errors.New("path config file is empty")
+	}
+
+	err := cleanenv.ReadConfig(configFilePath, cfg)
 	if err != nil {
-		return nil, fmt.Errorf("config error: %s", err.Error())
+		return nil, fmt.Errorf("client error: %w", err)
 	}
 
 	err = cleanenv.ReadEnv(cfg)

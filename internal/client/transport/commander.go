@@ -1,7 +1,7 @@
 package transport
 
 import (
-	"github.com/kotche/gophKeeper/internal/client/config"
+	"github.com/kotche/gophKeeper/config/client"
 	"github.com/rs/zerolog"
 )
 
@@ -18,11 +18,11 @@ type ISender interface {
 
 type Commander struct {
 	Sender ISender
-	Conf   *config.Config
+	Conf   *client.Config
 	Log    *zerolog.Logger
 }
 
-func NewCommander(sender ISender, conf *config.Config, log *zerolog.Logger) *Commander {
+func NewCommander(sender ISender, conf *client.Config, log *zerolog.Logger) *Commander {
 	return &Commander{
 		Sender: sender,
 		Conf:   conf,

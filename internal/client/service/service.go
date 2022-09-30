@@ -1,7 +1,7 @@
 package service
 
 import (
-	"github.com/kotche/gophKeeper/internal/client/config"
+	"github.com/kotche/gophKeeper/config/client"
 	"github.com/rs/zerolog"
 )
 
@@ -10,10 +10,10 @@ type CacheContract interface {
 
 type Service struct {
 	storage CacheContract
-	Conf    *config.Config
+	Conf    *client.Config
 	Log     *zerolog.Logger
 }
 
-func NewService(conf *config.Config, log *zerolog.Logger) *Service {
+func NewService(conf *client.Config, log *zerolog.Logger) *Service {
 	return &Service{Conf: conf, Log: log}
 }

@@ -13,17 +13,17 @@ const (
 	secretKey = "be55d1079e6c6167118ac91318fe"
 )
 
-type AuthRepoContract interface {
+type IAuthRepo interface {
 	CreateUser(ctx context.Context, user *domain.User) (int32, error)
 	GetUserID(ctx context.Context, user *domain.User) (int32, error)
 }
 
 type AuthService struct {
-	repo AuthRepoContract
+	repo IAuthRepo
 	log  *zerolog.Logger
 }
 
-func NewAuthService(repo AuthRepoContract, log *zerolog.Logger) *AuthService {
+func NewAuthService(repo IAuthRepo, log *zerolog.Logger) *AuthService {
 	return &AuthService{
 		repo: repo,
 		log:  log,
@@ -34,7 +34,7 @@ func (auth *AuthService) CreateUser(ctx context.Context, user *domain.User) erro
 	user.Password = auth.generatePasswordHash(user.Password)
 	userID, err := auth.repo.CreateUser(ctx, user)
 	if err != nil {
-		return err
+		return fmt.Errorf("user is not create: %w", err)
 	}
 	user.ID = userID
 	return nil

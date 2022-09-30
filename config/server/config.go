@@ -1,6 +1,8 @@
-package config
+package server
 
 import (
+	"errors"
+	"flag"
 	"fmt"
 
 	"github.com/ilyakaznacheev/cleanenv"
@@ -24,9 +26,19 @@ type (
 func NewConfig() (*Config, error) {
 	cfg := &Config{}
 
-	err := cleanenv.ReadConfig("./internal/server/config/config.yaml", cfg)
+	var configFilePath string
+	if flag.Lookup("c") == nil {
+		flag.StringVar(&configFilePath, "c", configFilePath, "config server file")
+	}
+	flag.Parse()
+
+	if configFilePath == "" {
+		return nil, errors.New("path config file is empty")
+	}
+
+	err := cleanenv.ReadConfig(configFilePath, cfg)
 	if err != nil {
-		return nil, fmt.Errorf("config error: %s", err.Error())
+		return nil, fmt.Errorf("server error: %w", err)
 	}
 
 	err = cleanenv.ReadEnv(cfg)

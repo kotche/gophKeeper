@@ -15,6 +15,7 @@ message UserResponse{
   string password = 3;
 }
 
-service Keeper {
+service AuthService {
   rpc Registration(UserRequest) returns (UserResponse);
+  rpc Authentication(UserRequest) returns (UserResponse);
 }

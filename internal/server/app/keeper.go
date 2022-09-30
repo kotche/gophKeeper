@@ -6,7 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/kotche/gophKeeper/internal/server/config"
+	"github.com/kotche/gophKeeper/config/server"
 	grpcServer "github.com/kotche/gophKeeper/internal/server/server/grpc"
 	"github.com/kotche/gophKeeper/internal/server/service"
 	"github.com/kotche/gophKeeper/internal/server/storage"
@@ -17,10 +17,10 @@ import (
 
 type Keeper struct {
 	Log *zerolog.Logger
-	Cfg *config.Config
+	Cfg *server.Config
 }
 
-func NewKeeper(cfg *config.Config, log *zerolog.Logger) *Keeper {
+func NewKeeper(cfg *server.Config, log *zerolog.Logger) *Keeper {
 	return &Keeper{Log: log, Cfg: cfg}
 }
 

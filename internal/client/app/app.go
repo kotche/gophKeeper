@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/c-bata/go-prompt"
-	"github.com/kotche/gophKeeper/internal/client/config"
+	"github.com/kotche/gophKeeper/config/client"
 	"github.com/kotche/gophKeeper/internal/client/service"
 	"github.com/kotche/gophKeeper/internal/client/transport"
 	grpcTransport "github.com/kotche/gophKeeper/internal/client/transport/grpc"
@@ -12,11 +12,11 @@ import (
 )
 
 type App struct {
-	Conf *config.Config
+	Conf *client.Config
 	Log  *zerolog.Logger
 }
 
-func NewApp(conf *config.Config, log *zerolog.Logger) *App {
+func NewApp(conf *client.Config, log *zerolog.Logger) *App {
 	return &App{Conf: conf, Log: log}
 }
 
