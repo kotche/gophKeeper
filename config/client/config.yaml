@@ -1,2 +1,5 @@
 tcp:
   port: '3200'
+
+logger:
+  log_level: 'debug'

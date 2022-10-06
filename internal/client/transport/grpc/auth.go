@@ -7,9 +7,9 @@ import (
 	"github.com/kotche/gophKeeper/internal/pb"
 )
 
-// Registration registers a new user
-func (s *Sender) Registration(login, password string) error {
-	if login == "" || password == "" {
+// Login registers a new user
+func (s *Sender) Login(username, password string) error {
+	if username == "" || password == "" {
 		return fmt.Errorf("login or password is empty")
 	}
 
@@ -20,17 +20,18 @@ func (s *Sender) Registration(login, password string) error {
 	}
 	defer conn.Close()
 	c := pb.NewAuthServiceClient(conn)
-	r := &pb.UserRequest{Login: login, Password: password}
+	r := &pb.UserRequest{Username: username, Password: password}
 
 	ctx := context.Background()
-	resp, err := c.Registration(ctx, r)
+	resp, err := c.Login(ctx, r)
 	if err != nil {
 		return err
 	}
 
-	//TODO: implement writing to the storage on the client
-	_ = resp
-
+	s.Log.Debug().Msgf("reg user id: %d, token: %s", resp.Id, resp.Token)
+	if err = s.Service.SetUserParams(int(resp.Id), resp.Token); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -47,7 +48,7 @@ func (s *Sender) Authentication(login, password string) error {
 	}
 	defer conn.Close()
 	c := pb.NewAuthServiceClient(conn)
-	r := &pb.UserRequest{Login: login, Password: password}
+	r := &pb.UserRequest{Username: login, Password: password}
 
 	ctx := context.Background()
 	resp, err := c.Authentication(ctx, r)
@@ -55,8 +56,9 @@ func (s *Sender) Authentication(login, password string) error {
 		return err
 	}
 
-	//TODO: implement writing to the storage on the client
-	_ = resp
-
+	s.Log.Debug().Msgf("auth user id: %d, token: %s", resp.Id, resp.Token)
+	if err = s.Service.SetUserParams(int(resp.Id), resp.Token); err != nil {
+		return err
+	}
 	return nil
 }

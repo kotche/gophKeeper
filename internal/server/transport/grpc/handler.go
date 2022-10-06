@@ -10,13 +10,15 @@ import (
 type Handler struct {
 	Service *service.Service
 	pb.UnimplementedAuthServiceServer
+	pb.UnimplementedLoginPassServiceServer
 	Conf *server.Config
 	Log  *zerolog.Logger
 }
 
-func NewHandler(service *service.Service, conf *server.Config) *Handler {
+func NewHandler(service *service.Service, log *zerolog.Logger, conf *server.Config) *Handler {
 	handler := &Handler{
 		Service: service,
+		Log:     log,
 		Conf:    conf,
 	}
 	return handler

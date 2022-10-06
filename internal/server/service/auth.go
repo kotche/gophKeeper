@@ -9,34 +9,38 @@ import (
 	"github.com/rs/zerolog"
 )
 
-const (
-	secretKey = "be55d1079e6c6167118ac91318fe"
-)
-
 type IAuthRepo interface {
-	CreateUser(ctx context.Context, user *domain.User) (int32, error)
-	GetUserID(ctx context.Context, user *domain.User) (int32, error)
+	CreateUser(ctx context.Context, user *domain.User) error
+	GetUserID(ctx context.Context, user *domain.User) (int, error)
 }
 
 type AuthService struct {
-	repo IAuthRepo
-	log  *zerolog.Logger
+	repo        IAuthRepo
+	log         *zerolog.Logger
+	jwt         *JWTManager
+	keyPassword string
 }
 
-func NewAuthService(repo IAuthRepo, log *zerolog.Logger) *AuthService {
+func NewAuthService(repo IAuthRepo, log *zerolog.Logger, jwt *JWTManager, keyPassword string) *AuthService {
 	return &AuthService{
-		repo: repo,
-		log:  log,
+		repo:        repo,
+		log:         log,
+		jwt:         jwt,
+		keyPassword: keyPassword,
 	}
 }
 
 func (auth *AuthService) CreateUser(ctx context.Context, user *domain.User) error {
 	user.Password = auth.generatePasswordHash(user.Password)
-	userID, err := auth.repo.CreateUser(ctx, user)
+	err := auth.repo.CreateUser(ctx, user)
 	if err != nil {
 		return fmt.Errorf("user is not create: %w", err)
 	}
-	user.ID = userID
+	token, err := auth.jwt.Generate(user)
+	if err != nil {
+		return fmt.Errorf("user auth error: %w", err)
+	}
+	user.Token = token
 	return nil
 }
 
@@ -47,11 +51,25 @@ func (auth *AuthService) AuthenticationUser(ctx context.Context, user *domain.Us
 		return err
 	}
 	user.ID = userID
+
+	token, err := auth.GenerateToken(user)
+	if err != nil {
+		return fmt.Errorf("user auth error: %w", err)
+	}
+	user.Token = token
 	return nil
+}
+
+func (auth *AuthService) GenerateToken(user *domain.User) (string, error) {
+	return auth.jwt.Generate(user)
+}
+
+func (auth *AuthService) Verify(accessToken string) (*domain.UserClaims, error) {
+	return auth.jwt.Verify(accessToken)
 }
 
 func (auth *AuthService) generatePasswordHash(password string) string {
 	hash := sha1.New()
 	hash.Write([]byte(password))
-	return fmt.Sprintf("%x", hash.Sum([]byte(secretKey)))
+	return fmt.Sprintf("%x", hash.Sum([]byte(auth.keyPassword)))
 }

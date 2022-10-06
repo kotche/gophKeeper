@@ -8,11 +8,12 @@ import (
 
 func main() {
 	cfg, err := client.NewConfig()
-	log := logger.Init()
 	if err != nil {
+		log := logger.Init("")
 		log.Fatal().Err(err).Msg("client configuration error")
 		return
 	}
+	log := logger.Init(cfg.LogLevel)
 
 	client := app.NewApp(cfg, log)
 	client.Run()

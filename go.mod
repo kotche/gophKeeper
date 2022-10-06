@@ -4,6 +4,7 @@ go 1.19
 
 require (
 	github.com/c-bata/go-prompt v0.2.6
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/ilyakaznacheev/cleanenv v1.3.0
 	github.com/jackc/pgx/v4 v4.17.2
 	github.com/rs/zerolog v1.28.0

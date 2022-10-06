@@ -30,11 +30,15 @@ func (k *Keeper) Run() {
 		k.Log.Fatal().Err(err).Msg("db connection error")
 	}
 	authRepo := postgres.NewAuthPostgres(pgx.DB, k.Log)
-	repo := storage.NewRepository(authRepo)
-	authService := service.NewAuthService(repo.Auth, k.Log)
-	srvc := service.NewService(authService)
+	lpRepo := postgres.NewLoginPassPostgres(pgx.DB, k.Log)
+	repo := storage.NewRepository(authRepo, lpRepo)
 
-	handler := grpcHandler.NewHandler(srvc, k.Cfg)
+	jwt := service.NewJWTManager(k.Cfg.SecretKeyToken, k.Cfg.TokenDuration)
+	authService := service.NewAuthService(repo.Auth, k.Log, jwt, k.Cfg.SecretKeyPassword)
+	lpService := service.NewLoginPassService(repo.LoginPass, k.Log)
+	srvc := service.NewService(authService, lpService)
+
+	handler := grpcHandler.NewHandler(srvc, k.Log, k.Cfg)
 	grpcSrv := grpcServer.NewServer(k.Cfg, handler)
 
 	termChan := make(chan os.Signal, 1)

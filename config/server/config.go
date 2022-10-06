@@ -4,6 +4,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"time"
 
 	"github.com/ilyakaznacheev/cleanenv"
 )
@@ -12,6 +13,8 @@ type (
 	Config struct {
 		TCP      `yaml:"tcp"`
 		Postgres `yaml:"postgres"`
+		Security `yaml:"security"`
+		Logger   `yaml:"logger"`
 	}
 
 	TCP struct {
@@ -20,6 +23,16 @@ type (
 
 	Postgres struct {
 		DSN string `env-required:"true" yaml:"dsn" env:"PG_DSN"`
+	}
+
+	Security struct {
+		TokenDuration     time.Duration `env-required:"true" yaml:"token_duration" env:"TOKEN_DURATION"`
+		SecretKeyToken    string        `env-required:"true" yaml:"secret_key_token" env:"SECRET_KEY_TOKEN"`
+		SecretKeyPassword string        `env-required:"true" yaml:"secret_key_password" env:"SECRET_KEY_PASSWORD"`
+	}
+
+	Logger struct {
+		LogLevel string `env-required:"true" yaml:"log_level" env:"LOG_LEVEL"`
 	}
 )
 

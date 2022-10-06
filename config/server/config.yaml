@@ -3,3 +3,11 @@ tcp:
 
 postgres:
   dsn: 'postgresql://postgres:postgres@localhost:5432/postgres'
+
+security:
+  token_duration: 900s
+  secret_key_token: 'kd4ls6fg564ls7dg435345cl6hg4344'
+  secret_key_password: 'be55d1079e6c6167118ac91318fe'
+
+logger:
+  log_level: 'debug'

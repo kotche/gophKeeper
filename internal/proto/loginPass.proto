@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package keeper;
+
+option go_package = ".;pb";
+
+message LoginPassRequest{
+  int64 user_id = 1;
+  string username = 2;
+  string password = 3;
+  string meta_info = 4;
+}
+
+message LoginPassResponse{
+  int64 id = 1;
+}
+
+service LoginPassService {
+  rpc CreateLoginPass(LoginPassRequest) returns (LoginPassResponse);
+}

@@ -6,6 +6,7 @@ import (
 	"github.com/c-bata/go-prompt"
 	"github.com/kotche/gophKeeper/config/client"
 	"github.com/kotche/gophKeeper/internal/client/service"
+	"github.com/kotche/gophKeeper/internal/client/storage"
 	"github.com/kotche/gophKeeper/internal/client/transport"
 	grpcTransport "github.com/kotche/gophKeeper/internal/client/transport/grpc"
 	"github.com/rs/zerolog"
@@ -22,7 +23,8 @@ func NewApp(conf *client.Config, log *zerolog.Logger) *App {
 
 func (a *App) Run() {
 	clientConn := grpcTransport.Connection{}
-	srvc := service.NewService(a.Conf, a.Log)
+	cache := storage.NewCache()
+	srvc := service.NewService(cache, a.Conf, a.Log)
 	sender := grpcTransport.NewSender(srvc, clientConn, a.Conf, a.Log)
 	commander := transport.NewCommander(sender, a.Conf, a.Log)
 

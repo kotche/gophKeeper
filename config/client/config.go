@@ -10,11 +10,16 @@ import (
 
 type (
 	Config struct {
-		TCP `yaml:"tcp"`
+		TCP    `yaml:"tcp"`
+		Logger `yaml:"logger"`
 	}
 
 	TCP struct {
 		Port string `env-required:"true" yaml:"port" env:"TCP_PORT"`
+	}
+
+	Logger struct {
+		LogLevel string `env-required:"true" yaml:"log_level" env:"LOG_LEVEL"`
 	}
 )
 

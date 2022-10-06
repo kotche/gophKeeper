@@ -1,7 +1,8 @@
 package domain
 
 type User struct {
-	ID       int32
-	Login    string
+	ID       int
+	Token    string
+	Username string
 	Password string
 }

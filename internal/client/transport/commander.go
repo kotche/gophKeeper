@@ -5,15 +5,10 @@ import (
 	"github.com/rs/zerolog"
 )
 
-const (
-	registration     = "reg"
-	registrationDesc = "new user registration format: reg login password"
-	authentication   = "auth"
-	exit             = "exit"
-)
-
 type ISender interface {
-	Registration(login, password string) error
+	Login(username, password string) error
+	Authentication(login, password string) error
+	CreateLoginPass(login, password, meta string) error
 }
 
 type Commander struct {

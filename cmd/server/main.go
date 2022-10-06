@@ -7,12 +7,13 @@ import (
 )
 
 func main() {
-	log := logger.Init()
 	cfg, err := server.NewConfig()
 	if err != nil {
+		log := logger.Init("")
 		log.Fatal().Err(err).Msg("server configuration error")
 		return
 	}
+	log := logger.Init(cfg.LogLevel)
 	appKeeper := app.NewKeeper(cfg, log)
 	appKeeper.Run()
 }

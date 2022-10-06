@@ -3,11 +3,11 @@ package errs
 import "fmt"
 
 type ConflictLoginError struct {
-	Login string
+	Username string
 }
 
 func (conflict ConflictLoginError) Error() string {
-	return fmt.Sprintf("login %v already exists", conflict.Login)
+	return fmt.Sprintf("login %v already exists", conflict.Username)
 }
 
 type AuthenticationError struct{}

@@ -26,6 +26,7 @@ func NewServer(cfg *server.Config, handler *grpcHandler.Handler) *Server {
 
 func (s *Server) Run() error {
 	pb.RegisterAuthServiceServer(s.grpcServer, s.handler)
+	pb.RegisterLoginPassServiceServer(s.grpcServer, s.handler)
 	listen, err := net.Listen("tcp", fmt.Sprintf(":%s", s.cfg.TCP.Port))
 	if err != nil {
 		return err
