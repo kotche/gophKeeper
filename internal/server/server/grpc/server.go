@@ -17,10 +17,12 @@ type Server struct {
 }
 
 func NewServer(cfg *server.Config, handler *grpcHandler.Handler) *Server {
+	authInterceptor := grpc.UnaryInterceptor(handler.UnaryAuthorize)
+
 	return &Server{
 		cfg:        cfg,
 		handler:    handler,
-		grpcServer: grpc.NewServer(),
+		grpcServer: grpc.NewServer(authInterceptor),
 	}
 }
 

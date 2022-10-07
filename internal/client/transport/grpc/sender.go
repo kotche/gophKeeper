@@ -8,7 +8,7 @@ import (
 )
 
 type IConnection interface {
-	GetClientConn(address string, log *zerolog.Logger) (*grpc.ClientConn, error)
+	GetClientConn(address string, log *zerolog.Logger, interceptors grpc.DialOption) (*grpc.ClientConn, error)
 }
 
 type Sender struct {

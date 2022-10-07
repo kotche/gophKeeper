@@ -14,7 +14,7 @@ func (s *Sender) Login(username, password string) error {
 	}
 
 	portTCP := fmt.Sprintf(":%s", s.Conf.Port)
-	conn, err := s.ClientConn.GetClientConn(portTCP, s.Log)
+	conn, err := s.ClientConn.GetClientConn(portTCP, s.Log, s.getInterceptors())
 	if err != nil {
 		return fmt.Errorf("server is not available: %s", err.Error())
 	}
@@ -42,7 +42,7 @@ func (s *Sender) Authentication(login, password string) error {
 	}
 
 	portTCP := fmt.Sprintf(":%s", s.Conf.Port)
-	conn, err := s.ClientConn.GetClientConn(portTCP, s.Log)
+	conn, err := s.ClientConn.GetClientConn(portTCP, s.Log, s.getInterceptors())
 	if err != nil {
 		return fmt.Errorf("server is not available: %s", err.Error())
 	}

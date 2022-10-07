@@ -33,7 +33,7 @@ func (k *Keeper) Run() {
 	lpRepo := postgres.NewLoginPassPostgres(pgx.DB, k.Log)
 	repo := storage.NewRepository(authRepo, lpRepo)
 
-	jwt := service.NewJWTManager(k.Cfg.SecretKeyToken, k.Cfg.TokenDuration)
+	jwt := service.NewJWTManager(k.Cfg.SecretKeyToken, k.Cfg.TokenDuration, k.Log)
 	authService := service.NewAuthService(repo.Auth, k.Log, jwt, k.Cfg.SecretKeyPassword)
 	lpService := service.NewLoginPassService(repo.LoginPass, k.Log)
 	srvc := service.NewService(authService, lpService)

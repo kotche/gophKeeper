@@ -36,11 +36,6 @@ func (auth *AuthService) CreateUser(ctx context.Context, user *domain.User) erro
 	if err != nil {
 		return fmt.Errorf("user is not create: %w", err)
 	}
-	token, err := auth.jwt.Generate(user)
-	if err != nil {
-		return fmt.Errorf("user auth error: %w", err)
-	}
-	user.Token = token
 	return nil
 }
 
@@ -51,12 +46,6 @@ func (auth *AuthService) AuthenticationUser(ctx context.Context, user *domain.Us
 		return err
 	}
 	user.ID = userID
-
-	token, err := auth.GenerateToken(user)
-	if err != nil {
-		return fmt.Errorf("user auth error: %w", err)
-	}
-	user.Token = token
 	return nil
 }
 

@@ -9,6 +9,7 @@ import (
 	"github.com/rs/zerolog"
 )
 
+// LoginPassPostgres login-password pair
 type LoginPassPostgres struct {
 	db  *sql.DB
 	log *zerolog.Logger
@@ -21,6 +22,7 @@ func NewLoginPassPostgres(db *sql.DB, log *zerolog.Logger) *LoginPassPostgres {
 	}
 }
 
+// Create creates a login-password pair and data version
 func (l *LoginPassPostgres) Create(ctx context.Context, lp *dataType.LoginPass) (err error) {
 	const fInfo = "loginPassPostgres create repo"
 
@@ -67,4 +69,36 @@ func (l *LoginPassPostgres) Create(ctx context.Context, lp *dataType.LoginPass) 
 	lp.ID = int(id.Int64)
 
 	return nil
+}
+
+// GetAll returns all login-password pairs by user id
+func (l *LoginPassPostgres) GetAll(ctx context.Context, userID int) ([]dataType.LoginPass, error) {
+	const fInfo = "loginPassPostgres getAll repo"
+
+	rows, err := l.db.QueryContext(ctx, "SELECT * FROM login_pass WHERE user_id=$1", userID)
+	if err != nil {
+		l.log.Err(err).Msgf("%s get rows error", fInfo)
+		return nil, err
+	}
+
+	defer func() {
+		err := rows.Close()
+		if err != nil {
+			l.log.Err(err).Msgf("%s rows close error", fInfo)
+		}
+	}()
+
+	dataOutput := make([]dataType.LoginPass, 0)
+	for rows.Next() {
+		var data dataType.LoginPass
+		rows.Scan(&data)
+
+		dataOutput = append(dataOutput, data)
+	}
+
+	if err = rows.Err(); err != nil {
+		l.log.Err(err).Msgf("%s rows scan error", fInfo)
+	}
+
+	return dataOutput, nil
 }

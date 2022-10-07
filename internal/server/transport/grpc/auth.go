@@ -28,7 +28,13 @@ func (h *Handler) Login(ctx context.Context, r *pb.UserRequest) (*pb.UserRespons
 		return nil, status.Error(codes.Internal, "internal error")
 	}
 
-	response := pb.UserResponse{Id: int64(user.ID), Token: user.Token}
+	token, err := h.Service.Auth.GenerateToken(&user)
+	if err != nil {
+		h.Log.Error().Err(err).Msg("handler login generate token error")
+		return nil, status.Error(codes.Internal, "internal error")
+	}
+
+	response := pb.UserResponse{Id: int64(user.ID), Token: token}
 	return &response, nil
 }
 
@@ -49,6 +55,12 @@ func (h *Handler) Authentication(ctx context.Context, r *pb.UserRequest) (*pb.Us
 		return nil, status.Errorf(codes.Internal, "Internal error")
 	}
 
-	response := pb.UserResponse{Id: int64(user.ID), Token: user.Token}
+	token, err := h.Service.Auth.GenerateToken(&user)
+	if err != nil {
+		h.Log.Error().Err(err).Msg("handler authentication generate token error")
+		return nil, status.Error(codes.Internal, "internal error")
+	}
+
+	response := pb.UserResponse{Id: int64(user.ID), Token: token}
 	return &response, nil
 }

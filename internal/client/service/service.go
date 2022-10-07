@@ -10,6 +10,7 @@ import (
 type ICache interface {
 	SetUserParams(userID int, token string) error
 	GetCurrentUserID() (int, error)
+	GetToken() (string, error)
 }
 
 type Service struct {
@@ -45,4 +46,8 @@ func (s *Service) SetUserParams(userID int, token string) error {
 
 func (s *Service) GetCurrentUserID() (int, error) {
 	return s.Storage.GetCurrentUserID()
+}
+
+func (s *Service) GetToken() (string, error) {
+	return s.Storage.GetToken()
 }
