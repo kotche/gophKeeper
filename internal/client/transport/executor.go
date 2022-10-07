@@ -100,14 +100,16 @@ func (c *Commander) CreateDataType(in string) {
 
 func (c *Commander) getMetaInfo(in string, blocks []string) (int, string) {
 	var indMeta int
-	if strings.Contains(in, metaInfo) {
-		for i, v := range blocks {
-			if string(v) == metaInfo {
-				indMeta = i
-				break
-			}
+	if !strings.Contains(in, metaInfo) {
+		return -1, ""
+	}
+	for i, v := range blocks {
+		if string(v) == metaInfo {
+			indMeta = i
+			break
 		}
 	}
+
 	meta := strings.Join(blocks[indMeta+1:], " ")
 	return indMeta, meta
 }
