@@ -13,7 +13,7 @@ import (
 
 // UnaryAuthorize returns a server interceptor function authorize unary RPC
 func (h *Handler) UnaryAuthorize(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-	h.Log.Debug().Msgf("UnaryAuthorize interceptor: %s", info.FullMethod)
+	//h.Log.Debug().Msgf("UnaryAuthorize interceptor: %s", info.FullMethod)
 
 	if strings.Contains(info.FullMethod, "/Login") || strings.Contains(info.FullMethod, "/Authentication") {
 		return handler(ctx, req)
@@ -66,8 +66,10 @@ func (h *Handler) getUserIDFromRequest(req interface{}) (int, error) {
 	switch req.(type) {
 	case *pb.LoginPassRequest:
 		userID = req.(*pb.LoginPassRequest).UserId
+	case *pb.GetAllRequest:
+		userID = req.(*pb.GetAllRequest).UserId
 	default:
-		h.Log.Debug().Msg("handler server getUserIDFromRequest req unsupported type for get user id")
+		h.Log.Debug().Msg("handler server getUserIDFromRequest request unsupported type for get user id")
 		return -1, status.Errorf(codes.Internal, "internal error")
 	}
 

@@ -16,6 +16,7 @@ type IAuthService interface {
 
 type ILoginPassService interface {
 	Create(ctx context.Context, lp *dataType.LoginPass) error
+	GetAll(ctx context.Context, userID int) ([]dataType.LoginPass, error)
 }
 
 type Service struct {

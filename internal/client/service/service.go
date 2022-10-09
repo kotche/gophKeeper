@@ -4,6 +4,8 @@ import (
 	"errors"
 
 	"github.com/kotche/gophKeeper/config/client"
+	"github.com/kotche/gophKeeper/internal/client/domain"
+	"github.com/kotche/gophKeeper/internal/client/domain/dataType"
 	"github.com/rs/zerolog"
 )
 
@@ -11,6 +13,10 @@ type ICache interface {
 	SetUserParams(userID int, token string) error
 	GetCurrentUserID() (int, error)
 	GetToken() (string, error)
+	IncVersion() error
+	AddLoginPassword(data *domain.LoginPass) error
+	ReadData(dt dataType.DataType) (interface{}, error)
+	ReadLoginPassword() ([]*domain.LoginPass, error)
 }
 
 type Service struct {
@@ -50,4 +56,18 @@ func (s *Service) GetCurrentUserID() (int, error) {
 
 func (s *Service) GetToken() (string, error) {
 	return s.Storage.GetToken()
+}
+
+func (s *Service) AddLoginPassword(data *domain.LoginPass) error {
+	return s.Storage.AddLoginPassword(data)
+}
+
+// TODO SLICE
+func (s *Service) ReadAllLoginPassword() ([]*domain.LoginPass, error) {
+	return s.Storage.ReadLoginPassword()
+}
+
+// TODO MAP
+func (s *Service) ReadDataCache(dt dataType.DataType) (interface{}, error) {
+	return s.Storage.ReadData(dt)
 }

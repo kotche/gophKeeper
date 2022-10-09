@@ -23,7 +23,7 @@ func NewApp(conf *client.Config, log *zerolog.Logger) *App {
 
 func (a *App) Run() {
 	clientConn := grpcTransport.Connection{}
-	cache := storage.NewCache()
+	cache := storage.NewCache(a.Log)
 	srvc := service.NewService(cache, a.Conf, a.Log)
 	sender := grpcTransport.NewSender(srvc, clientConn, a.Conf, a.Log)
 	commander := transport.NewCommander(sender, a.Conf, a.Log)

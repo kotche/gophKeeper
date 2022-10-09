@@ -2,6 +2,7 @@ package transport
 
 import (
 	"github.com/kotche/gophKeeper/config/client"
+	"github.com/kotche/gophKeeper/internal/client/domain"
 	"github.com/rs/zerolog"
 )
 
@@ -9,6 +10,7 @@ type ISender interface {
 	Login(username, password string) error
 	Authentication(login, password string) error
 	CreateLoginPass(login, password, meta string) error
+	ReadLoginPassCache() ([]*domain.LoginPass, error)
 }
 
 type Commander struct {

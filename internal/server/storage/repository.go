@@ -14,6 +14,7 @@ type IAuthRepo interface {
 
 type ILoginPassRepo interface {
 	Create(ctx context.Context, lp *dataType.LoginPass) error
+	GetAll(ctx context.Context, userID int) ([]dataType.LoginPass, error)
 }
 
 type Repository struct {

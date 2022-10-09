@@ -27,3 +27,24 @@ func (h *Handler) CreateLoginPass(ctx context.Context, r *pb.LoginPassRequest) (
 	response := pb.LoginPassResponse{Id: int64(loginPass.ID)}
 	return &response, nil
 }
+
+func (h *Handler) GetAllLoginPass(ctx context.Context, r *pb.GetAllRequest) (*pb.GetAllResponse, error) {
+	userID := int(r.UserId)
+	lpPairs, err := h.Service.LoginPass.GetAll(ctx, userID)
+	if err != nil {
+		h.Log.Error().Err(err).Msg("handler getAllLoginPass error")
+		return nil, status.Error(codes.Internal, "internal error")
+	}
+
+	response := pb.GetAllResponse{}
+	for _, lp := range lpPairs {
+		response.LoginPassPairs = append(response.LoginPassPairs, &pb.GetAllLoginPassResponse{
+			Id:       int64(lp.ID),
+			Login:    lp.Login,
+			Password: lp.Password,
+			MetaInfo: lp.MetaInfo,
+		})
+	}
+
+	return &response, nil
+}

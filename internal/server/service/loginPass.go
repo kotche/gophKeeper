@@ -9,6 +9,7 @@ import (
 
 type ILoginPassRepo interface {
 	Create(ctx context.Context, lp *dataType.LoginPass) error
+	GetAll(ctx context.Context, userID int) ([]dataType.LoginPass, error)
 }
 
 type LoginPassService struct {
@@ -29,4 +30,8 @@ func (l *LoginPassService) Create(ctx context.Context, lp *dataType.LoginPass) e
 		return err
 	}
 	return nil
+}
+
+func (l *LoginPassService) GetAll(ctx context.Context, userID int) ([]dataType.LoginPass, error) {
+	return l.repo.GetAll(ctx, userID)
 }

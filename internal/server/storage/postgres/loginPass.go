@@ -75,7 +75,7 @@ func (l *LoginPassPostgres) Create(ctx context.Context, lp *dataType.LoginPass) 
 func (l *LoginPassPostgres) GetAll(ctx context.Context, userID int) ([]dataType.LoginPass, error) {
 	const fInfo = "loginPassPostgres getAll repo"
 
-	rows, err := l.db.QueryContext(ctx, "SELECT * FROM login_pass WHERE user_id=$1", userID)
+	rows, err := l.db.QueryContext(ctx, "SELECT id, user_id, login, password, meta_info FROM login_pass WHERE user_id=$1", userID)
 	if err != nil {
 		l.log.Err(err).Msgf("%s get rows error", fInfo)
 		return nil, err
@@ -91,7 +91,7 @@ func (l *LoginPassPostgres) GetAll(ctx context.Context, userID int) ([]dataType.
 	dataOutput := make([]dataType.LoginPass, 0)
 	for rows.Next() {
 		var data dataType.LoginPass
-		rows.Scan(&data)
+		rows.Scan(&data.ID, &data.UserID, &data.Login, &data.Password, &data.MetaInfo)
 
 		dataOutput = append(dataOutput, data)
 	}

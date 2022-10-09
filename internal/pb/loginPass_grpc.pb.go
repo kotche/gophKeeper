@@ -23,6 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type LoginPassServiceClient interface {
 	CreateLoginPass(ctx context.Context, in *LoginPassRequest, opts ...grpc.CallOption) (*LoginPassResponse, error)
+	GetAllLoginPass(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*GetAllResponse, error)
 }
 
 type loginPassServiceClient struct {
@@ -42,11 +43,21 @@ func (c *loginPassServiceClient) CreateLoginPass(ctx context.Context, in *LoginP
 	return out, nil
 }
 
+func (c *loginPassServiceClient) GetAllLoginPass(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*GetAllResponse, error) {
+	out := new(GetAllResponse)
+	err := c.cc.Invoke(ctx, "/keeper.LoginPassService/GetAllLoginPass", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // LoginPassServiceServer is the server API for LoginPassService service.
 // All implementations must embed UnimplementedLoginPassServiceServer
 // for forward compatibility
 type LoginPassServiceServer interface {
 	CreateLoginPass(context.Context, *LoginPassRequest) (*LoginPassResponse, error)
+	GetAllLoginPass(context.Context, *GetAllRequest) (*GetAllResponse, error)
 	mustEmbedUnimplementedLoginPassServiceServer()
 }
 
@@ -56,6 +67,9 @@ type UnimplementedLoginPassServiceServer struct {
 
 func (UnimplementedLoginPassServiceServer) CreateLoginPass(context.Context, *LoginPassRequest) (*LoginPassResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateLoginPass not implemented")
+}
+func (UnimplementedLoginPassServiceServer) GetAllLoginPass(context.Context, *GetAllRequest) (*GetAllResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllLoginPass not implemented")
 }
 func (UnimplementedLoginPassServiceServer) mustEmbedUnimplementedLoginPassServiceServer() {}
 
@@ -88,6 +102,24 @@ func _LoginPassService_CreateLoginPass_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _LoginPassService_GetAllLoginPass_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LoginPassServiceServer).GetAllLoginPass(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/keeper.LoginPassService/GetAllLoginPass",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LoginPassServiceServer).GetAllLoginPass(ctx, req.(*GetAllRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // LoginPassService_ServiceDesc is the grpc.ServiceDesc for LoginPassService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -98,6 +130,10 @@ var LoginPassService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateLoginPass",
 			Handler:    _LoginPassService_CreateLoginPass_Handler,
+		},
+		{
+			MethodName: "GetAllLoginPass",
+			Handler:    _LoginPassService_GetAllLoginPass_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

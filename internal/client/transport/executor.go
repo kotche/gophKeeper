@@ -16,13 +16,13 @@ func (c *Commander) Executor(in string) {
 	case authentication:
 		c.UserAuthentication(blocks)
 	case create:
-		c.CreateDataType(in)
+		c.CreateData(in)
 	case update:
 		//update
 	case delete:
 		//delete
 	case read:
-		//read
+		c.ReadData(in)
 	case exit:
 		fmt.Println("GophKeeper stop")
 		os.Exit(0)
@@ -68,7 +68,7 @@ func (c *Commander) UserAuthentication(blocks []string) {
 	fmt.Println("authentication is successful")
 }
 
-func (c *Commander) CreateDataType(in string) {
+func (c *Commander) CreateData(in string) {
 	blocks := strings.Split(in, " ")
 	if len(blocks) < 3 {
 		fmt.Println(invalidFormat)
@@ -92,12 +92,39 @@ func (c *Commander) CreateDataType(in string) {
 			fmt.Printf("create login password failed: %s\n", err.Error())
 			return
 		}
-
+		fmt.Println("create login password successful")
 	default:
 		fmt.Println(invalidFormat)
 	}
 }
 
+func (c *Commander) ReadData(in string) {
+	blocks := strings.Split(in, " ")
+	if len(blocks) != 2 {
+		fmt.Println(invalidFormat)
+		return
+	}
+
+	switch blocks[1] {
+	case loginPassDataType:
+		c.Log.Debug().Msg("read lp")
+
+		lpPairs, err := c.Sender.ReadLoginPassCache()
+		if err != nil {
+			fmt.Printf("failed read data login password : %s\n", err.Error())
+			return
+		}
+		if len(lpPairs) == 0 {
+			fmt.Println("no data login password")
+		}
+		for _, v := range lpPairs {
+			fmt.Printf("%+v\n", v)
+		}
+
+	default:
+		fmt.Println(invalidFormat)
+	}
+}
 func (c *Commander) getMetaInfo(in string, blocks []string) (int, string) {
 	var indMeta int
 	if !strings.Contains(in, metaInfo) {

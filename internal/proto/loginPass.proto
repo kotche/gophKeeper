@@ -15,6 +15,22 @@ message LoginPassResponse{
   int64 id = 1;
 }
 
+message GetAllRequest{
+  int64 user_id = 1;
+}
+
+message GetAllLoginPassResponse{
+  int64 id = 1;
+  string login = 2;
+  string password = 3;
+  string meta_info = 4;
+}
+
+message GetAllResponse{
+  repeated GetAllLoginPassResponse loginPassPairs = 1;
+}
+
 service LoginPassService {
   rpc CreateLoginPass(LoginPassRequest) returns (LoginPassResponse);
+  rpc GetAllLoginPass(GetAllRequest) returns (GetAllResponse);
 }
