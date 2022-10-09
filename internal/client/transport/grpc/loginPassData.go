@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/kotche/gophKeeper/internal/client/domain"
-	"github.com/kotche/gophKeeper/internal/client/domain/dataType"
 	"github.com/kotche/gophKeeper/internal/pb"
 )
 
@@ -60,18 +59,8 @@ func (s *Sender) CreateLoginPass(login, password, meta string) error {
 	return nil
 }
 
-// TODO SLICE
 func (s *Sender) ReadLoginPassCache() ([]*domain.LoginPass, error) {
 	return s.Service.ReadAllLoginPassword()
-}
-
-// TODO MAP
-func (s *Sender) ReadLoginPassCache_() ([]*domain.LoginPass, error) {
-	data, err := s.Service.ReadDataCache(dataType.LP)
-	if err != nil {
-		return nil, err
-	}
-	return data.([]*domain.LoginPass), err
 }
 
 func (s *Sender) GetLoginPass() ([]domain.LoginPass, error) {

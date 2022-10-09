@@ -118,9 +118,8 @@ func (c *Commander) ReadData(in string) {
 			fmt.Println("no data login password")
 		}
 		for _, v := range lpPairs {
-			fmt.Printf("%+v\n", v)
+			fmt.Printf("id: %d, login: %s, password: %s, info: %s\n", v.ID, v.Login, v.Password, v.MetaInfo)
 		}
-
 	default:
 		fmt.Println(invalidFormat)
 	}

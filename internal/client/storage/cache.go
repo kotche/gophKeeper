@@ -5,37 +5,30 @@ import (
 	"sync/atomic"
 
 	"github.com/kotche/gophKeeper/internal/client/domain"
-	"github.com/kotche/gophKeeper/internal/client/domain/dataType"
 	"github.com/rs/zerolog"
 )
 
 type Cache struct {
-	userID  int
-	token   string
-	version atomic.Uint64
-	data    map[dataType.DataType]interface{}
-
-	//TODO SLICE temporarily
-	lpData     []*domain.LoginPass
-	textData   []*domain.Text
-	binaryData []*domain.Binary
-	bankData   []*domain.BankCard
+	userID     int
+	token      string
+	version    atomic.Uint64
+	lpData     map[int]*domain.LoginPass
+	textData   map[int]*domain.Text
+	binaryData map[int]*domain.Binary
+	bankData   map[int]*domain.BankCard
 
 	mu  sync.RWMutex
 	Log *zerolog.Logger
 }
 
 func NewCache(log *zerolog.Logger) *Cache {
-	data := make(map[dataType.DataType]interface{})
-	data[dataType.LP] = make([]*domain.LoginPass, 0)
-	data[dataType.TEXT] = make([]*domain.Text, 0)
-	data[dataType.BINARY] = make([]*domain.Binary, 0)
-	data[dataType.BANKCARD] = make([]*domain.BankCard, 0)
-
 	return &Cache{
-		userID: -1,
-		data:   data,
-		Log:    log,
+		userID:     -1,
+		Log:        log,
+		lpData:     make(map[int]*domain.LoginPass),
+		textData:   make(map[int]*domain.Text),
+		binaryData: make(map[int]*domain.Binary),
+		bankData:   make(map[int]*domain.BankCard),
 	}
 }
 
@@ -58,42 +51,24 @@ func (c *Cache) IncVersion() error {
 	return nil
 }
 
-//TODO MAP
-func (c *Cache) ReadData(dt dataType.DataType) (interface{}, error) {
-
-	c.Log.Debug().Msgf("read data '%s' from cache", dt)
-	c.mu.RLock()
-	defer c.mu.RUnlock()
-	data := c.data[dt]
-
-	c.Log.Debug().Msgf("len cache map lp example: %d\n", len(data.([]*domain.LoginPass)))
-
-	return data, nil
-}
-
 func (c *Cache) AddLoginPassword(dt *domain.LoginPass) error {
-	c.Log.Debug().Msgf("add data '%+v' from cache", dt)
+	c.Log.Debug().Msgf("add lp '%+v' from cache", dt)
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	lpPairs := c.data[dataType.LP].([]*domain.LoginPass)
-	lpPairs = append(lpPairs, dt)
-
-	c.Log.Debug().Msgf("len cache lp: %d", len(lpPairs))
-
-	//TODO SLICE temporarily
-	c.lpData = append(c.lpData, dt)
+	c.lpData[dt.ID] = dt
 
 	return nil
 }
 
-//TODO SLICE
-func (c *Cache) ReadLoginPassword() ([]*domain.LoginPass, error) {
-	c.Log.Debug().Msgf("read data lp from cache")
+func (c *Cache) ReadAllLoginPassword() ([]*domain.LoginPass, error) {
+	c.Log.Debug().Msgf("read all lp from cache")
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 
-	data := make([]*domain.LoginPass, len(c.lpData))
-	copy(data, c.lpData)
+	lpPairs := make([]*domain.LoginPass, 0, len(c.lpData))
+	for _, v := range c.lpData {
+		lpPairs = append(lpPairs, v)
+	}
 
-	return data, nil
+	return lpPairs, nil
 }
