@@ -46,29 +46,16 @@ func (c *Cache) GetCurrentUserID() (int, error) {
 	return c.userID, nil
 }
 
+func (c *Cache) GetVersion() (int, error) {
+	return int(c.version.Load()), nil
+}
+
 func (c *Cache) IncVersion() error {
 	c.version.Add(1)
 	return nil
 }
 
-func (c *Cache) AddLoginPassword(dt *domain.LoginPass) error {
-	c.Log.Debug().Msgf("add lp '%+v' from cache", dt)
-	c.mu.Lock()
-	defer c.mu.Unlock()
-	c.lpData[dt.ID] = dt
-
+func (c *Cache) SetVersion(version int) error {
+	c.version.Swap(uint64(version))
 	return nil
-}
-
-func (c *Cache) ReadAllLoginPassword() ([]*domain.LoginPass, error) {
-	c.Log.Debug().Msgf("read all lp from cache")
-	c.mu.RLock()
-	defer c.mu.RUnlock()
-
-	lpPairs := make([]*domain.LoginPass, 0, len(c.lpData))
-	for _, v := range c.lpData {
-		lpPairs = append(lpPairs, v)
-	}
-
-	return lpPairs, nil
 }

@@ -7,6 +7,10 @@ import (
 	"github.com/kotche/gophKeeper/internal/server/domain/dataType"
 )
 
+type ICommon interface {
+	GetVersion(ctx context.Context, userID int) (uint, error)
+}
+
 type IAuthService interface {
 	CreateUser(ctx context.Context, user *domain.User) error
 	AuthenticationUser(ctx context.Context, user *domain.User) error
@@ -20,12 +24,14 @@ type ILoginPassService interface {
 }
 
 type Service struct {
+	Common    ICommon
 	Auth      IAuthService
 	LoginPass ILoginPassService
 }
 
-func NewService(auth IAuthService, lp ILoginPassService) *Service {
+func NewService(com ICommon, auth IAuthService, lp ILoginPassService) *Service {
 	return &Service{
+		Common:    com,
 		Auth:      auth,
 		LoginPass: lp,
 	}

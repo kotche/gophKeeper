@@ -12,7 +12,7 @@ func (s *Sender) authorize(ctx context.Context, method string, req interface{},
 	reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker,
 	opts ...grpc.CallOption) error {
 
-	s.Log.Debug().Msgf("authorize interceptors method: %s", method)
+	//s.Log.Debug().Msgf("authorize interceptors method: %s", method)
 
 	if strings.Contains(method, "/Login") || strings.Contains(method, "/Authentication") {
 		return invoker(ctx, method, req, reply, cc, opts...)
@@ -25,7 +25,7 @@ func (s *Sender) authorize(ctx context.Context, method string, req interface{},
 	md := metadata.New(map[string]string{"token": token})
 	ctx = metadata.NewOutgoingContext(ctx, md)
 
-	s.Log.Debug().Msgf("authorize interceptors method: %s token %s", method, token)
+	//s.Log.Debug().Msgf("authorize interceptors method: %s token %s", method, token)
 	return invoker(ctx, method, req, reply, cc, opts...)
 }
 

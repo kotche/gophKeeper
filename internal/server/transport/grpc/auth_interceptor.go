@@ -64,6 +64,8 @@ func (h *Handler) getUserIDFromRequest(req interface{}) (int, error) {
 	var userID int64
 
 	switch req.(type) {
+	case *pb.GetVersionRequest:
+		userID = req.(*pb.GetVersionRequest).UserId
 	case *pb.LoginPassRequest:
 		userID = req.(*pb.LoginPassRequest).UserId
 	case *pb.GetAllRequest:

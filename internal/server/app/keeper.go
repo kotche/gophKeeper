@@ -29,14 +29,16 @@ func (k *Keeper) Run() {
 	if err != nil {
 		k.Log.Fatal().Err(err).Msg("db connection error")
 	}
+	commonRepo := postgres.NewCommonPostgres(pgx.DB, k.Log)
 	authRepo := postgres.NewAuthPostgres(pgx.DB, k.Log)
 	lpRepo := postgres.NewLoginPassPostgres(pgx.DB, k.Log)
-	repo := storage.NewRepository(authRepo, lpRepo)
+	repo := storage.NewRepository(commonRepo, authRepo, lpRepo)
 
 	jwt := service.NewJWTManager(k.Cfg.SecretKeyToken, k.Cfg.TokenDuration, k.Log)
 	authService := service.NewAuthService(repo.Auth, k.Log, jwt, k.Cfg.SecretKeyPassword)
+	commonService := service.NewCommonService(commonRepo, k.Log)
 	lpService := service.NewLoginPassService(repo.LoginPass, k.Log)
-	srvc := service.NewService(authService, lpService)
+	srvc := service.NewService(commonService, authService, lpService)
 
 	handler := grpcHandler.NewHandler(srvc, k.Log, k.Cfg)
 	grpcSrv := grpcServer.NewServer(k.Cfg, handler)

@@ -26,10 +26,6 @@ func (c *Commander) Completer(d prompt.Document) []prompt.Suggest {
 		sug = getDataTypeText(update, d.Text)
 	} else if strings.Contains(d.Text, delete) {
 		sug = getDataTypeText(delete, d.Text)
-	} else if d.Text == exit {
-		sug = []prompt.Suggest{
-			{Text: exit, Description: exitDesc},
-		}
 	} else {
 		sug = []prompt.Suggest{
 			{Text: registration, Description: registrationDesc},
@@ -38,7 +34,6 @@ func (c *Commander) Completer(d prompt.Document) []prompt.Suggest {
 			{Text: read, Description: readDesc},
 			{Text: update, Description: updateDesc},
 			{Text: delete, Description: deleteDesc},
-			{Text: exit, Description: exitDesc},
 		}
 	}
 	return prompt.FilterHasPrefix(sug, d.GetWordBeforeCursor(), true)

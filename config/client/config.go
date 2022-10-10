@@ -4,14 +4,16 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"time"
 
 	"github.com/ilyakaznacheev/cleanenv"
 )
 
 type (
 	Config struct {
-		TCP    `yaml:"tcp"`
-		Logger `yaml:"logger"`
+		TCP     `yaml:"tcp"`
+		Logger  `yaml:"logger"`
+		Updater `yaml:"updater"`
 	}
 
 	TCP struct {
@@ -20,6 +22,10 @@ type (
 
 	Logger struct {
 		LogLevel string `env-required:"true" yaml:"log_level" env:"LOG_LEVEL"`
+	}
+
+	Updater struct {
+		Timeout time.Duration `env-required:"true" yaml:"update_timeout" env:"UPDATE_TIMEOUT"`
 	}
 )
 

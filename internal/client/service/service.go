@@ -12,9 +12,12 @@ type ICache interface {
 	SetUserParams(userID int, token string) error
 	GetCurrentUserID() (int, error)
 	GetToken() (string, error)
+	GetVersion() (int, error)
+	SetVersion(version int) error
 	IncVersion() error
 	AddLoginPassword(data *domain.LoginPass) error
 	ReadAllLoginPassword() ([]*domain.LoginPass, error)
+	UpdateAllLoginPass(lpPairs []*domain.LoginPass) error
 }
 
 type Service struct {
@@ -56,10 +59,10 @@ func (s *Service) GetToken() (string, error) {
 	return s.Storage.GetToken()
 }
 
-func (s *Service) AddLoginPassword(data *domain.LoginPass) error {
-	return s.Storage.AddLoginPassword(data)
+func (s *Service) GetVersionCache() (int, error) {
+	return s.Storage.GetVersion()
 }
 
-func (s *Service) ReadAllLoginPassword() ([]*domain.LoginPass, error) {
-	return s.Storage.ReadAllLoginPassword()
+func (s *Service) SetVersionCache(version int) error {
+	return s.Storage.SetVersion(version)
 }

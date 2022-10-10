@@ -2,7 +2,6 @@ package transport
 
 import (
 	"fmt"
-	"os"
 	"strings"
 )
 
@@ -23,10 +22,6 @@ func (c *Commander) Executor(in string) {
 		//delete
 	case read:
 		c.ReadData(in)
-	case exit:
-		fmt.Println("GophKeeper stop")
-		os.Exit(0)
-		return
 	default:
 		fmt.Println(invalidFormat)
 	}

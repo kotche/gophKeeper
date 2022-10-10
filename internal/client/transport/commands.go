@@ -29,10 +29,6 @@ const (
 	delete     = "-delete"
 	deleteDesc = "<-delete> 'data type' 'id data'"
 
-	//common
-	exit     = "-exit"
-	exitDesc = "exit program"
-
 	//data errors
 	invalidFormat = "invalid format"
 )

@@ -60,10 +60,10 @@ func (s *Sender) CreateLoginPass(login, password, meta string) error {
 }
 
 func (s *Sender) ReadLoginPassCache() ([]*domain.LoginPass, error) {
-	return s.Service.ReadAllLoginPassword()
+	return s.Service.ReadAllLoginPasswordCache()
 }
 
-func (s *Sender) GetLoginPass() ([]domain.LoginPass, error) {
+func (s *Sender) GetAllLoginPass(ctx context.Context) ([]*domain.LoginPass, error) {
 	portTCP := fmt.Sprintf(":%s", s.Conf.Port)
 	conn, err := s.ClientConn.GetClientConn(portTCP, s.Log, s.getInterceptors())
 	if err != nil {
@@ -72,7 +72,7 @@ func (s *Sender) GetLoginPass() ([]domain.LoginPass, error) {
 	defer func() {
 		err := conn.Close()
 		if err != nil {
-			s.Log.Err(err).Msg("readLoginPass conn close error")
+			s.Log.Err(err).Msg("getAllLoginPass conn close error")
 		}
 	}()
 
@@ -84,15 +84,14 @@ func (s *Sender) GetLoginPass() ([]domain.LoginPass, error) {
 	}
 	r := &pb.GetAllRequest{UserId: int64(userID)}
 
-	ctx := context.Background()
 	resp, err := c.GetAllLoginPass(ctx, r)
 	if err != nil {
 		return nil, err
 	}
 
-	lpPairs := make([]domain.LoginPass, 0, len(resp.LoginPassPairs))
+	lpPairs := make([]*domain.LoginPass, 0, len(resp.LoginPassPairs))
 	for _, v := range resp.LoginPassPairs {
-		lpPairs = append(lpPairs, domain.LoginPass{
+		lpPairs = append(lpPairs, &domain.LoginPass{
 			ID:       int(v.Id),
 			Login:    v.Login,
 			Password: v.Password,

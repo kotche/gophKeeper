@@ -9,6 +9,7 @@ import (
 
 type Handler struct {
 	Service *service.Service
+	pb.UnimplementedVersionServiceServer
 	pb.UnimplementedAuthServiceServer
 	pb.UnimplementedLoginPassServiceServer
 	Conf *server.Config

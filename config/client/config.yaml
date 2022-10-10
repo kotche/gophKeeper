@@ -3,3 +3,6 @@ tcp:
 
 logger:
   log_level: 'debug'
+
+updater:
+  update_timeout: 10s
