@@ -68,6 +68,10 @@ func (h *Handler) getUserIDFromRequest(req interface{}) (int, error) {
 		userID = req.(*pb.GetVersionRequest).UserId
 	case *pb.LoginPassRequest:
 		userID = req.(*pb.LoginPassRequest).UserId
+	case *pb.LoginPassUpdateRequest:
+		userID = req.(*pb.LoginPassUpdateRequest).UserId
+	case *pb.LoginPassDeleteRequest:
+		userID = req.(*pb.LoginPassDeleteRequest).UserId
 	case *pb.GetAllRequest:
 		userID = req.(*pb.GetAllRequest).UserId
 	default:

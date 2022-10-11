@@ -15,6 +15,25 @@ message LoginPassResponse{
   int64 id = 1;
 }
 
+message LoginPassUpdateRequest{
+  int64 id = 1;
+  int64 user_id = 2;
+  string username = 3;
+  string password = 4;
+  string meta_info = 5;
+}
+
+message LoginPassUpdateResponse{
+}
+
+message LoginPassDeleteRequest{
+  int64 id = 1;
+  int64 user_id = 2;
+}
+
+message LoginPassDeleteResponse{
+}
+
 message GetAllRequest{
   int64 user_id = 1;
 }
@@ -32,5 +51,7 @@ message GetAllResponse{
 
 service LoginPassService {
   rpc CreateLoginPass(LoginPassRequest) returns (LoginPassResponse);
+  rpc UpdateLoginPass(LoginPassUpdateRequest) returns (LoginPassUpdateResponse);
+  rpc DeleteLoginPass(LoginPassDeleteRequest)  returns (LoginPassDeleteResponse);
   rpc GetAllLoginPass(GetAllRequest) returns (GetAllResponse);
 }

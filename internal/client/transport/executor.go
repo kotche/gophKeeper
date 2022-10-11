@@ -2,6 +2,7 @@ package transport
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -17,9 +18,9 @@ func (c *Commander) Executor(in string) {
 	case create:
 		c.CreateData(in)
 	case update:
-		//update
+		c.UpdateData(in)
 	case delete:
-		//delete
+		c.DeleteData(in)
 	case read:
 		c.ReadData(in)
 	default:
@@ -65,7 +66,7 @@ func (c *Commander) UserAuthentication(blocks []string) {
 
 func (c *Commander) CreateData(in string) {
 	blocks := strings.Split(in, " ")
-	if len(blocks) < 3 {
+	if len(blocks) < 4 {
 		fmt.Println(invalidFormat)
 		return
 	}
@@ -88,6 +89,73 @@ func (c *Commander) CreateData(in string) {
 			return
 		}
 		fmt.Println("create login password successful")
+	default:
+		fmt.Println(invalidFormat)
+	}
+}
+
+func (c *Commander) UpdateData(in string) {
+	blocks := strings.Split(in, " ")
+	if len(blocks) < 5 {
+		fmt.Println(invalidFormat)
+		return
+	}
+
+	indMeta, meta := c.getMetaInfo(in, blocks)
+	if indMeta > 0 {
+		blocks = blocks[:indMeta]
+	}
+
+	switch blocks[1] {
+	case loginPassDataType:
+		idStr := blocks[2]
+		id, err := strconv.Atoi(idStr)
+		if err != nil {
+			c.Log.Err(err).Msgf("commander updateData convert id '%d' to int error", idStr)
+			fmt.Printf("id %s is not a number", idStr)
+			return
+		}
+		login := blocks[3]
+		password := blocks[4]
+
+		c.Log.Debug().Msgf("update lp: id %d login: %s, password: %s meta: %s", id, login, password, meta)
+
+		err = c.Sender.UpdateLoginPass(id, login, password, meta)
+		if err != nil {
+			fmt.Printf("update login password failed: %s\n", err.Error())
+			return
+		}
+		fmt.Println("update login password successful")
+	default:
+		fmt.Println(invalidFormat)
+	}
+}
+
+func (c *Commander) DeleteData(in string) {
+	blocks := strings.Split(in, " ")
+	if len(blocks) < 3 {
+		fmt.Println(invalidFormat)
+		return
+	}
+
+	switch blocks[1] {
+	case loginPassDataType:
+		idStr := blocks[2]
+		id, err := strconv.Atoi(idStr)
+		if err != nil {
+			c.Log.Err(err).Msgf("commander deleteData convert id '%d' to int error", idStr)
+			fmt.Printf("id %s is not a number", idStr)
+			return
+		}
+
+		c.Log.Debug().Msgf("delete lp: id %d", id)
+
+		err = c.Sender.DeleteLoginPass(id)
+		if err != nil {
+			fmt.Printf("delete login password failed: %s\n", err.Error())
+			return
+		}
+		fmt.Println("delete login password successful")
 	default:
 		fmt.Println(invalidFormat)
 	}

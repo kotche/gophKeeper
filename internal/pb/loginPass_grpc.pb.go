@@ -23,6 +23,8 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type LoginPassServiceClient interface {
 	CreateLoginPass(ctx context.Context, in *LoginPassRequest, opts ...grpc.CallOption) (*LoginPassResponse, error)
+	UpdateLoginPass(ctx context.Context, in *LoginPassUpdateRequest, opts ...grpc.CallOption) (*LoginPassUpdateResponse, error)
+	DeleteLoginPass(ctx context.Context, in *LoginPassDeleteRequest, opts ...grpc.CallOption) (*LoginPassDeleteResponse, error)
 	GetAllLoginPass(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*GetAllResponse, error)
 }
 
@@ -43,6 +45,24 @@ func (c *loginPassServiceClient) CreateLoginPass(ctx context.Context, in *LoginP
 	return out, nil
 }
 
+func (c *loginPassServiceClient) UpdateLoginPass(ctx context.Context, in *LoginPassUpdateRequest, opts ...grpc.CallOption) (*LoginPassUpdateResponse, error) {
+	out := new(LoginPassUpdateResponse)
+	err := c.cc.Invoke(ctx, "/keeper.LoginPassService/UpdateLoginPass", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *loginPassServiceClient) DeleteLoginPass(ctx context.Context, in *LoginPassDeleteRequest, opts ...grpc.CallOption) (*LoginPassDeleteResponse, error) {
+	out := new(LoginPassDeleteResponse)
+	err := c.cc.Invoke(ctx, "/keeper.LoginPassService/DeleteLoginPass", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *loginPassServiceClient) GetAllLoginPass(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*GetAllResponse, error) {
 	out := new(GetAllResponse)
 	err := c.cc.Invoke(ctx, "/keeper.LoginPassService/GetAllLoginPass", in, out, opts...)
@@ -57,6 +77,8 @@ func (c *loginPassServiceClient) GetAllLoginPass(ctx context.Context, in *GetAll
 // for forward compatibility
 type LoginPassServiceServer interface {
 	CreateLoginPass(context.Context, *LoginPassRequest) (*LoginPassResponse, error)
+	UpdateLoginPass(context.Context, *LoginPassUpdateRequest) (*LoginPassUpdateResponse, error)
+	DeleteLoginPass(context.Context, *LoginPassDeleteRequest) (*LoginPassDeleteResponse, error)
 	GetAllLoginPass(context.Context, *GetAllRequest) (*GetAllResponse, error)
 	mustEmbedUnimplementedLoginPassServiceServer()
 }
@@ -67,6 +89,12 @@ type UnimplementedLoginPassServiceServer struct {
 
 func (UnimplementedLoginPassServiceServer) CreateLoginPass(context.Context, *LoginPassRequest) (*LoginPassResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateLoginPass not implemented")
+}
+func (UnimplementedLoginPassServiceServer) UpdateLoginPass(context.Context, *LoginPassUpdateRequest) (*LoginPassUpdateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateLoginPass not implemented")
+}
+func (UnimplementedLoginPassServiceServer) DeleteLoginPass(context.Context, *LoginPassDeleteRequest) (*LoginPassDeleteResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteLoginPass not implemented")
 }
 func (UnimplementedLoginPassServiceServer) GetAllLoginPass(context.Context, *GetAllRequest) (*GetAllResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllLoginPass not implemented")
@@ -102,6 +130,42 @@ func _LoginPassService_CreateLoginPass_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _LoginPassService_UpdateLoginPass_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LoginPassUpdateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LoginPassServiceServer).UpdateLoginPass(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/keeper.LoginPassService/UpdateLoginPass",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LoginPassServiceServer).UpdateLoginPass(ctx, req.(*LoginPassUpdateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _LoginPassService_DeleteLoginPass_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LoginPassDeleteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LoginPassServiceServer).DeleteLoginPass(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/keeper.LoginPassService/DeleteLoginPass",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LoginPassServiceServer).DeleteLoginPass(ctx, req.(*LoginPassDeleteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _LoginPassService_GetAllLoginPass_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetAllRequest)
 	if err := dec(in); err != nil {
@@ -130,6 +194,14 @@ var LoginPassService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateLoginPass",
 			Handler:    _LoginPassService_CreateLoginPass_Handler,
+		},
+		{
+			MethodName: "UpdateLoginPass",
+			Handler:    _LoginPassService_UpdateLoginPass_Handler,
+		},
+		{
+			MethodName: "DeleteLoginPass",
+			Handler:    _LoginPassService_DeleteLoginPass_Handler,
 		},
 		{
 			MethodName: "GetAllLoginPass",

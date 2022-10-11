@@ -10,6 +10,14 @@ func (s *Service) AddLoginPassword(data *domain.LoginPass) error {
 	return s.Storage.AddLoginPassword(data)
 }
 
+func (s *Service) UpdateLoginPassword(data *domain.LoginPass) error {
+	return s.Storage.UpdateLoginPassword(data)
+}
+
+func (s *Service) DeleteLoginPassword(id int) error {
+	return s.Storage.DeleteLoginPassword(id)
+}
+
 func (s *Service) ReadAllLoginPasswordCache() ([]*domain.LoginPass, error) {
 	lpPairs, err := s.Storage.ReadAllLoginPassword()
 	if err != nil {

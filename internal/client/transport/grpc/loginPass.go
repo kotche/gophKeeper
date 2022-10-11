@@ -59,6 +59,93 @@ func (s *Sender) CreateLoginPass(login, password, meta string) error {
 	return nil
 }
 
+func (s *Sender) UpdateLoginPass(id int, login, password, meta string) error {
+	portTCP := fmt.Sprintf(":%s", s.Conf.Port)
+	conn, err := s.ClientConn.GetClientConn(portTCP, s.Log, s.getInterceptors())
+	if err != nil {
+		return fmt.Errorf("server is not available: %s", err.Error())
+	}
+	defer func() {
+		err := conn.Close()
+		if err != nil {
+			s.Log.Err(err).Msg("updateLoginPass conn close error")
+		}
+	}()
+
+	c := pb.NewLoginPassServiceClient(conn)
+
+	userID, err := s.Service.GetCurrentUserID()
+	if err != nil {
+		return err
+	}
+	r := &pb.LoginPassUpdateRequest{Id: int64(id), UserId: int64(userID), Username: login, Password: password, MetaInfo: meta}
+
+	ctx := context.Background()
+	_, err = c.UpdateLoginPass(ctx, r)
+	if err != nil {
+		return err
+	}
+
+	s.Log.Debug().Msgf("type lp update, userID %d, id: %d", userID, id)
+
+	lp := &domain.LoginPass{
+		ID:       id,
+		Login:    login,
+		Password: password,
+		MetaInfo: meta,
+	}
+
+	if err = s.Service.UpdateLoginPassword(lp); err != nil {
+		s.Log.Err(err).Msgf("updateLoginPass update lp to cache '%+v' error: %w", lp, err)
+	}
+
+	if err = s.Service.Storage.IncVersion(); err != nil {
+		s.Log.Debug().Msgf("updateLoginPass inc version error: %w", err)
+	}
+
+	return nil
+}
+
+func (s *Sender) DeleteLoginPass(id int) error {
+	portTCP := fmt.Sprintf(":%s", s.Conf.Port)
+	conn, err := s.ClientConn.GetClientConn(portTCP, s.Log, s.getInterceptors())
+	if err != nil {
+		return fmt.Errorf("server is not available: %s", err.Error())
+	}
+	defer func() {
+		err := conn.Close()
+		if err != nil {
+			s.Log.Err(err).Msg("deleteLoginPass conn close error")
+		}
+	}()
+
+	c := pb.NewLoginPassServiceClient(conn)
+
+	userID, err := s.Service.GetCurrentUserID()
+	if err != nil {
+		return err
+	}
+	r := &pb.LoginPassDeleteRequest{Id: int64(id), UserId: int64(userID)}
+
+	ctx := context.Background()
+	_, err = c.DeleteLoginPass(ctx, r)
+	if err != nil {
+		return err
+	}
+
+	s.Log.Debug().Msgf("lp delete, userID %d, id: %d", userID, id)
+
+	if err = s.Service.DeleteLoginPassword(id); err != nil {
+		s.Log.Err(err).Msgf("deleteLoginPass delete lp to cache '%d' error: %w", id, err)
+	}
+
+	if err = s.Service.Storage.IncVersion(); err != nil {
+		s.Log.Debug().Msgf("deleteLoginPass inc version error: %w", err)
+	}
+
+	return nil
+}
+
 func (s *Sender) ReadLoginPassCache() ([]*domain.LoginPass, error) {
 	return s.Service.ReadAllLoginPasswordCache()
 }

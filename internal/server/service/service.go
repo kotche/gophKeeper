@@ -20,6 +20,8 @@ type IAuthService interface {
 
 type ILoginPassService interface {
 	Create(ctx context.Context, lp *dataType.LoginPass) error
+	Update(ctx context.Context, lp *dataType.LoginPass) error
+	Delete(ctx context.Context, lp *dataType.LoginPass) error
 	GetAll(ctx context.Context, userID int) ([]dataType.LoginPass, error)
 }
 

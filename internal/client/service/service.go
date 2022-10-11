@@ -15,7 +15,10 @@ type ICache interface {
 	GetVersion() (int, error)
 	SetVersion(version int) error
 	IncVersion() error
+
 	AddLoginPassword(data *domain.LoginPass) error
+	UpdateLoginPassword(data *domain.LoginPass) error
+	DeleteLoginPassword(id int) error
 	ReadAllLoginPassword() ([]*domain.LoginPass, error)
 	UpdateAllLoginPass(lpPairs []*domain.LoginPass) error
 }

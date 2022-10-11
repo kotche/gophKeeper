@@ -11,6 +11,24 @@ func (c *Cache) AddLoginPassword(dt *domain.LoginPass) error {
 	return nil
 }
 
+func (c *Cache) UpdateLoginPassword(dt *domain.LoginPass) error {
+	c.Log.Debug().Msgf("cache update lp '%+v'", dt)
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.lpData[dt.ID] = dt
+
+	return nil
+}
+
+func (c *Cache) DeleteLoginPassword(id int) error {
+	c.Log.Debug().Msgf("cache delete lp '%d'", id)
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	delete(c.lpData, id)
+
+	return nil
+}
+
 func (c *Cache) ReadAllLoginPassword() ([]*domain.LoginPass, error) {
 	c.Log.Debug().Msgf("cache read all lp")
 	c.mu.RLock()

@@ -44,19 +44,19 @@ func getDataTypeText(command, text string) []prompt.Suggest {
 
 	if strings.Contains(text, loginPassDataType) {
 		sug = []prompt.Suggest{
-			{Text: fmt.Sprint(command, " ", loginPassDataType), Description: loginPassDataTypeDesc},
+			{Text: fmt.Sprint(command, " ", loginPassDataType), Description: getDesc(command, loginPassDataTypeDesc)},
 		}
 	} else if strings.Contains(text, textDataType) {
 		sug = []prompt.Suggest{
-			{Text: fmt.Sprint(command, " ", textDataType), Description: textDataTypeDesc},
+			{Text: fmt.Sprint(command, " ", textDataType), Description: getDesc(command, textDataTypeDesc)},
 		}
 	} else if strings.Contains(text, binaryDataType) {
 		sug = []prompt.Suggest{
-			{Text: fmt.Sprint(command, " ", binaryDataType), Description: binaryDataTypeDesc},
+			{Text: fmt.Sprint(command, " ", binaryDataType), Description: getDesc(command, binaryDataTypeDesc)},
 		}
 	} else if strings.Contains(text, bankCardDataType) {
 		sug = []prompt.Suggest{
-			{Text: fmt.Sprint(command, " ", bankCardDataType), Description: bankCardDataTypeDesc},
+			{Text: fmt.Sprint(command, " ", bankCardDataType), Description: getDesc(command, bankCardDataTypeDesc)},
 		}
 	} else {
 		sug = []prompt.Suggest{
@@ -67,4 +67,15 @@ func getDataTypeText(command, text string) []prompt.Suggest {
 		}
 	}
 	return sug
+}
+
+func getDesc(command, dataTypeDesc string) string {
+	switch command {
+	case update:
+		return fmt.Sprintf("%s %s", "id", dataTypeDesc)
+	case delete:
+		return "id"
+	default:
+		return dataTypeDesc
+	}
 }

@@ -9,7 +9,10 @@ import (
 type ISender interface {
 	Login(username, password string) error
 	Authentication(login, password string) error
+
 	CreateLoginPass(login, password, meta string) error
+	UpdateLoginPass(id int, login, password, meta string) error
+	DeleteLoginPass(id int) error
 	ReadLoginPassCache() ([]*domain.LoginPass, error)
 }
 

@@ -71,6 +71,85 @@ func (l *LoginPassPostgres) Create(ctx context.Context, lp *dataType.LoginPass) 
 	return nil
 }
 
+func (l *LoginPassPostgres) Update(ctx context.Context, lp *dataType.LoginPass) (err error) {
+	const fInfo = "loginPassPostgres update repo"
+
+	tx, err := l.db.BeginTx(ctx, nil)
+	if err != nil {
+		l.log.Err(err).Msgf("%s start tx error", fInfo)
+		return err
+	}
+
+	defer func() {
+		if err != nil {
+			txError := tx.Rollback()
+			if txError != nil {
+				l.log.Err(txError).Msgf("%s rollback error", fInfo)
+				err = fmt.Errorf("%s defer rollback error %s: %s", fInfo, txError.Error(), err.Error())
+			}
+		}
+	}()
+
+	_, err = tx.ExecContext(ctx,
+		"UPDATE public.login_pass SET login=$1, password=$2, meta_info=$3 WHERE id=$4 AND user_id=$5",
+		lp.Login, lp.Password, lp.MetaInfo, lp.ID, lp.UserID)
+
+	if err != nil {
+		l.log.Err(err).Msgf("%s error", fInfo)
+		return err
+	}
+
+	if err = updateVersion(ctx, lp.UserID, tx, l.log); err != nil {
+		l.log.Err(err).Msgf("%s error", fInfo)
+		return err
+	}
+
+	if err = tx.Commit(); err != nil {
+		l.log.Err(err).Msgf("%s commit error", fInfo)
+		return err
+	}
+
+	return nil
+}
+
+func (l *LoginPassPostgres) Delete(ctx context.Context, lp *dataType.LoginPass) (err error) {
+	const fInfo = "loginPassPostgres delete repo"
+
+	tx, err := l.db.BeginTx(ctx, nil)
+	if err != nil {
+		l.log.Err(err).Msgf("%s start tx error", fInfo)
+		return err
+	}
+
+	defer func() {
+		if err != nil {
+			txError := tx.Rollback()
+			if txError != nil {
+				l.log.Err(txError).Msgf("%s rollback error", fInfo)
+				err = fmt.Errorf("%s defer rollback error %s: %s", fInfo, txError.Error(), err.Error())
+			}
+		}
+	}()
+
+	_, err = tx.ExecContext(ctx, "DELETE FROM public.login_pass WHERE id=$1 AND user_id=$2", lp.ID, lp.UserID)
+	if err != nil {
+		l.log.Err(err).Msgf("%s error", fInfo)
+		return err
+	}
+
+	if err = updateVersion(ctx, lp.UserID, tx, l.log); err != nil {
+		l.log.Err(err).Msgf("%s error", fInfo)
+		return err
+	}
+
+	if err = tx.Commit(); err != nil {
+		l.log.Err(err).Msgf("%s commit error", fInfo)
+		return err
+	}
+
+	return nil
+}
+
 // GetAll returns all login-password pairs by user id
 func (l *LoginPassPostgres) GetAll(ctx context.Context, userID int) ([]dataType.LoginPass, error) {
 	const fInfo = "loginPassPostgres getAll repo"
