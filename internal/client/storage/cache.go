@@ -33,8 +33,12 @@ func NewCache(log *zerolog.Logger) *Cache {
 }
 
 func (c *Cache) SetUserParams(userID int, token string) error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
 	c.userID = userID
 	c.token = token
+	c.lpData = make(map[int]*domain.LoginPass)
+	c.version.Swap(0)
 	return nil
 }
 
