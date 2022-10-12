@@ -41,15 +41,15 @@ func (s *Sender) CreateLoginPass(login, password, meta string) error {
 
 	s.Log.Debug().Msgf("type lp create, userID %d, id: %d", userID, resp.Id)
 
-	lp := &domain.LoginPass{
+	data := &domain.LoginPass{
 		ID:       int(resp.Id),
 		Login:    login,
 		Password: password,
 		MetaInfo: meta,
 	}
 
-	if err = s.Service.AddLoginPassword(lp); err != nil {
-		s.Log.Err(err).Msgf("createLoginPass add to cache '%+v' error: %w", lp, err)
+	if err = s.Service.AddLoginPassword(data); err != nil {
+		s.Log.Err(err).Msgf("createLoginPass add to cache '%+v' error: %w", data, err)
 	}
 
 	if err = s.Service.Storage.IncVersion(); err != nil {
@@ -88,15 +88,15 @@ func (s *Sender) UpdateLoginPass(id int, login, password, meta string) error {
 
 	s.Log.Debug().Msgf("type lp update, userID %d, id: %d", userID, id)
 
-	lp := &domain.LoginPass{
+	data := &domain.LoginPass{
 		ID:       id,
 		Login:    login,
 		Password: password,
 		MetaInfo: meta,
 	}
 
-	if err = s.Service.UpdateLoginPassword(lp); err != nil {
-		s.Log.Err(err).Msgf("updateLoginPass update lp to cache '%+v' error: %w", lp, err)
+	if err = s.Service.UpdateLoginPassword(data); err != nil {
+		s.Log.Err(err).Msgf("updateLoginPass update lp to cache '%+v' error: %w", data, err)
 	}
 
 	if err = s.Service.Storage.IncVersion(); err != nil {
@@ -169,16 +169,16 @@ func (s *Sender) GetAllLoginPass(ctx context.Context) ([]*domain.LoginPass, erro
 	if err != nil {
 		return nil, err
 	}
-	r := &pb.GetAllRequest{UserId: int64(userID)}
+	r := &pb.LoginPassGetAllRequest{UserId: int64(userID)}
 
 	resp, err := c.GetAllLoginPass(ctx, r)
 	if err != nil {
 		return nil, err
 	}
 
-	lpPairs := make([]*domain.LoginPass, 0, len(resp.LoginPassPairs))
+	data := make([]*domain.LoginPass, 0, len(resp.LoginPassPairs))
 	for _, v := range resp.LoginPassPairs {
-		lpPairs = append(lpPairs, &domain.LoginPass{
+		data = append(data, &domain.LoginPass{
 			ID:       int(v.Id),
 			Login:    v.Login,
 			Password: v.Password,
@@ -186,5 +186,5 @@ func (s *Sender) GetAllLoginPass(ctx context.Context) ([]*domain.LoginPass, erro
 		})
 	}
 
-	return lpPairs, nil
+	return data, nil
 }

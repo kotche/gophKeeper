@@ -5,11 +5,11 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/kotche/gophKeeper/internal/server/domain/dataType"
+	"github.com/kotche/gophKeeper/internal/server/domain"
 	"github.com/rs/zerolog"
 )
 
-// LoginPassPostgres login-password pair
+// LoginPassPostgres login-password pair data
 type LoginPassPostgres struct {
 	db  *sql.DB
 	log *zerolog.Logger
@@ -22,8 +22,8 @@ func NewLoginPassPostgres(db *sql.DB, log *zerolog.Logger) *LoginPassPostgres {
 	}
 }
 
-// Create creates a login-password pair and data version
-func (l *LoginPassPostgres) Create(ctx context.Context, lp *dataType.LoginPass) (err error) {
+// Create creates a login-password pair and updates data version
+func (l *LoginPassPostgres) Create(ctx context.Context, lp *domain.LoginPass) (err error) {
 	const fInfo = "loginPassPostgres create repo"
 
 	tx, err := l.db.BeginTx(ctx, nil)
@@ -42,7 +42,8 @@ func (l *LoginPassPostgres) Create(ctx context.Context, lp *dataType.LoginPass) 
 		}
 	}()
 
-	row := tx.QueryRowContext(ctx, "INSERT INTO public.login_pass(login, password, meta_info,user_id) VALUES ($1,$2,$3,$4) RETURNING id", lp.Login, lp.Password, lp.MetaInfo, lp.UserID)
+	row := tx.QueryRowContext(ctx,
+		"INSERT INTO public.login_pass(login, password, meta_info,user_id) VALUES ($1,$2,$3,$4) RETURNING id", lp.Login, lp.Password, lp.MetaInfo, lp.UserID)
 
 	var id sql.NullInt64
 	if err = row.Scan(&id); err != nil {
@@ -71,7 +72,8 @@ func (l *LoginPassPostgres) Create(ctx context.Context, lp *dataType.LoginPass) 
 	return nil
 }
 
-func (l *LoginPassPostgres) Update(ctx context.Context, lp *dataType.LoginPass) (err error) {
+// Update updates a login-password pair and data version
+func (l *LoginPassPostgres) Update(ctx context.Context, lp *domain.LoginPass) (err error) {
 	const fInfo = "loginPassPostgres update repo"
 
 	tx, err := l.db.BeginTx(ctx, nil)
@@ -112,7 +114,8 @@ func (l *LoginPassPostgres) Update(ctx context.Context, lp *dataType.LoginPass) 
 	return nil
 }
 
-func (l *LoginPassPostgres) Delete(ctx context.Context, lp *dataType.LoginPass) (err error) {
+// Delete deletes a login-password pair and updates data version
+func (l *LoginPassPostgres) Delete(ctx context.Context, lp *domain.LoginPass) (err error) {
 	const fInfo = "loginPassPostgres delete repo"
 
 	tx, err := l.db.BeginTx(ctx, nil)
@@ -151,7 +154,7 @@ func (l *LoginPassPostgres) Delete(ctx context.Context, lp *dataType.LoginPass) 
 }
 
 // GetAll returns all login-password pairs by user id
-func (l *LoginPassPostgres) GetAll(ctx context.Context, userID int) ([]dataType.LoginPass, error) {
+func (l *LoginPassPostgres) GetAll(ctx context.Context, userID int) ([]domain.LoginPass, error) {
 	const fInfo = "loginPassPostgres getAll repo"
 
 	rows, err := l.db.QueryContext(ctx, "SELECT id, user_id, login, password, meta_info FROM login_pass WHERE user_id=$1", userID)
@@ -167,9 +170,9 @@ func (l *LoginPassPostgres) GetAll(ctx context.Context, userID int) ([]dataType.
 		}
 	}()
 
-	dataOutput := make([]dataType.LoginPass, 0)
+	dataOutput := make([]domain.LoginPass, 0)
 	for rows.Next() {
-		var data dataType.LoginPass
+		var data domain.LoginPass
 		rows.Scan(&data.ID, &data.UserID, &data.Login, &data.Password, &data.MetaInfo)
 
 		dataOutput = append(dataOutput, data)

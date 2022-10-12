@@ -66,14 +66,43 @@ func (h *Handler) getUserIDFromRequest(req interface{}) (int, error) {
 	switch req.(type) {
 	case *pb.GetVersionRequest:
 		userID = req.(*pb.GetVersionRequest).UserId
+
 	case *pb.LoginPassRequest:
 		userID = req.(*pb.LoginPassRequest).UserId
 	case *pb.LoginPassUpdateRequest:
 		userID = req.(*pb.LoginPassUpdateRequest).UserId
 	case *pb.LoginPassDeleteRequest:
 		userID = req.(*pb.LoginPassDeleteRequest).UserId
-	case *pb.GetAllRequest:
-		userID = req.(*pb.GetAllRequest).UserId
+	case *pb.LoginPassGetAllRequest:
+		userID = req.(*pb.LoginPassGetAllRequest).UserId
+
+	case *pb.TextRequest:
+		userID = req.(*pb.TextRequest).UserId
+	case *pb.TextUpdateRequest:
+		userID = req.(*pb.TextUpdateRequest).UserId
+	case *pb.TextDeleteRequest:
+		userID = req.(*pb.TextDeleteRequest).UserId
+	case *pb.TextGetAllRequest:
+		userID = req.(*pb.TextGetAllRequest).UserId
+
+	case *pb.BinaryRequest:
+		userID = req.(*pb.BinaryRequest).UserId
+	case *pb.BinaryUpdateRequest:
+		userID = req.(*pb.BinaryUpdateRequest).UserId
+	case *pb.BinaryDeleteRequest:
+		userID = req.(*pb.BinaryDeleteRequest).UserId
+	case *pb.BinaryGetAllRequest:
+		userID = req.(*pb.BinaryGetAllRequest).UserId
+
+	case *pb.BankCardRequest:
+		userID = req.(*pb.BankCardRequest).UserId
+	case *pb.BankCardUpdateRequest:
+		userID = req.(*pb.BankCardUpdateRequest).UserId
+	case *pb.BankCardDeleteRequest:
+		userID = req.(*pb.BankCardDeleteRequest).UserId
+	case *pb.BankCardGetAllRequest:
+		userID = req.(*pb.BankCardGetAllRequest).UserId
+
 	default:
 		h.Log.Debug().Msg("handler server getUserIDFromRequest request unsupported type for get user id")
 		return -1, status.Errorf(codes.Internal, "internal error")

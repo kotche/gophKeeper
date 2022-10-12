@@ -20,7 +20,25 @@ type ICache interface {
 	UpdateLoginPassword(data *domain.LoginPass) error
 	DeleteLoginPassword(id int) error
 	ReadAllLoginPassword() ([]*domain.LoginPass, error)
-	UpdateAllLoginPass(lpPairs []*domain.LoginPass) error
+	UpdateAllLoginPass(data []*domain.LoginPass) error
+
+	AddText(data *domain.Text) error
+	UpdateText(data *domain.Text) error
+	DeleteText(id int) error
+	ReadAllText() ([]*domain.Text, error)
+	UpdateAllText(data []*domain.Text) error
+
+	AddBinary(data *domain.Binary) error
+	UpdateBinary(data *domain.Binary) error
+	DeleteBinary(id int) error
+	ReadAllBinary() ([]*domain.Binary, error)
+	UpdateAllBinary(data []*domain.Binary) error
+
+	AddBankCard(data *domain.BankCard) error
+	UpdateBankCard(data *domain.BankCard) error
+	DeleteBankCard(id int) error
+	ReadAllBankCard() ([]*domain.BankCard, error)
+	UpdateAllBankCard(data []*domain.BankCard) error
 }
 
 type Service struct {

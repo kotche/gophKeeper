@@ -4,14 +4,14 @@ import (
 	"context"
 
 	"github.com/kotche/gophKeeper/internal/pb"
-	"github.com/kotche/gophKeeper/internal/server/domain/dataType"
+	"github.com/kotche/gophKeeper/internal/server/domain"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 // CreateLoginPass creates a login password pair
 func (h *Handler) CreateLoginPass(ctx context.Context, r *pb.LoginPassRequest) (*pb.LoginPassResponse, error) {
-	loginPass := dataType.LoginPass{
+	loginPass := domain.LoginPass{
 		UserID:   int(r.UserId),
 		Login:    r.Username,
 		Password: r.Password,
@@ -30,7 +30,7 @@ func (h *Handler) CreateLoginPass(ctx context.Context, r *pb.LoginPassRequest) (
 
 // UpdateLoginPass updates a login password pair
 func (h *Handler) UpdateLoginPass(ctx context.Context, r *pb.LoginPassUpdateRequest) (*pb.LoginPassUpdateResponse, error) {
-	loginPass := dataType.LoginPass{
+	loginPass := domain.LoginPass{
 		ID:       int(r.Id),
 		UserID:   int(r.UserId),
 		Login:    r.Username,
@@ -50,7 +50,7 @@ func (h *Handler) UpdateLoginPass(ctx context.Context, r *pb.LoginPassUpdateRequ
 
 // DeleteLoginPass deletes a login password pair
 func (h *Handler) DeleteLoginPass(ctx context.Context, r *pb.LoginPassDeleteRequest) (*pb.LoginPassDeleteResponse, error) {
-	loginPass := dataType.LoginPass{
+	loginPass := domain.LoginPass{
 		ID:     int(r.Id),
 		UserID: int(r.UserId),
 	}
@@ -65,22 +65,22 @@ func (h *Handler) DeleteLoginPass(ctx context.Context, r *pb.LoginPassDeleteRequ
 	return &response, nil
 }
 
-// GetAllLoginPass returns all login password pairs
-func (h *Handler) GetAllLoginPass(ctx context.Context, r *pb.GetAllRequest) (*pb.GetAllResponse, error) {
+// GetAllLoginPass returns all login password pairs by user id
+func (h *Handler) GetAllLoginPass(ctx context.Context, r *pb.LoginPassGetAllRequest) (*pb.LoginPassGetAllResponse, error) {
 	userID := int(r.UserId)
-	lpPairs, err := h.Service.LoginPass.GetAll(ctx, userID)
+	data, err := h.Service.LoginPass.GetAll(ctx, userID)
 	if err != nil {
 		h.Log.Error().Err(err).Msg("handler getAllLoginPass error")
 		return nil, status.Error(codes.Internal, "internal error")
 	}
 
-	response := pb.GetAllResponse{}
-	for _, lp := range lpPairs {
+	response := pb.LoginPassGetAllResponse{}
+	for _, v := range data {
 		response.LoginPassPairs = append(response.LoginPassPairs, &pb.GetAllLoginPassResponse{
-			Id:       int64(lp.ID),
-			Login:    lp.Login,
-			Password: lp.Password,
-			MetaInfo: lp.MetaInfo,
+			Id:       int64(v.ID),
+			Login:    v.Login,
+			Password: v.Password,
+			MetaInfo: v.MetaInfo,
 		})
 	}
 

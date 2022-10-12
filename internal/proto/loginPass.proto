@@ -34,7 +34,7 @@ message LoginPassDeleteRequest{
 message LoginPassDeleteResponse{
 }
 
-message GetAllRequest{
+message LoginPassGetAllRequest{
   int64 user_id = 1;
 }
 
@@ -45,7 +45,7 @@ message GetAllLoginPassResponse{
   string meta_info = 4;
 }
 
-message GetAllResponse{
+message LoginPassGetAllResponse{
   repeated GetAllLoginPassResponse loginPassPairs = 1;
 }
 
@@ -53,5 +53,5 @@ service LoginPassService {
   rpc CreateLoginPass(LoginPassRequest) returns (LoginPassResponse);
   rpc UpdateLoginPass(LoginPassUpdateRequest) returns (LoginPassUpdateResponse);
   rpc DeleteLoginPass(LoginPassDeleteRequest)  returns (LoginPassDeleteResponse);
-  rpc GetAllLoginPass(GetAllRequest) returns (GetAllResponse);
+  rpc GetAllLoginPass(LoginPassGetAllRequest) returns (LoginPassGetAllResponse);
 }

@@ -14,6 +14,21 @@ type ISender interface {
 	UpdateLoginPass(id int, login, password, meta string) error
 	DeleteLoginPass(id int) error
 	ReadLoginPassCache() ([]*domain.LoginPass, error)
+
+	CreateText(text, meta string) error
+	UpdateText(id int, text, meta string) error
+	DeleteText(id int) error
+	ReadTextCache() ([]*domain.Text, error)
+
+	CreateBinary(binary, meta string) error
+	UpdateBinary(id int, binary, meta string) error
+	DeleteBinary(id int) error
+	ReadBinaryCache() ([]*domain.Binary, error)
+
+	CreateBankCard(number, meta string) error
+	UpdateBankCard(id int, number, meta string) error
+	DeleteBankCard(id int) error
+	ReadBankCardCache() ([]*domain.BankCard, error)
 }
 
 type Commander struct {

@@ -19,18 +19,18 @@ func (s *Service) DeleteLoginPassword(id int) error {
 }
 
 func (s *Service) ReadAllLoginPasswordCache() ([]*domain.LoginPass, error) {
-	lpPairs, err := s.Storage.ReadAllLoginPassword()
+	data, err := s.Storage.ReadAllLoginPassword()
 	if err != nil {
-		return lpPairs, err
+		return data, err
 	}
 
-	sort.Slice(lpPairs, func(i, j int) bool {
-		return lpPairs[i].ID < lpPairs[j].ID
+	sort.Slice(data, func(i, j int) bool {
+		return data[i].ID < data[j].ID
 	})
 
-	return lpPairs, err
+	return data, err
 }
 
-func (s *Service) UpdateAllLoginPassCache(lpPairs []*domain.LoginPass) error {
-	return s.Storage.UpdateAllLoginPass(lpPairs)
+func (s *Service) UpdateAllLoginPassCache(data []*domain.LoginPass) error {
+	return s.Storage.UpdateAllLoginPass(data)
 }

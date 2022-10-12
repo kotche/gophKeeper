@@ -13,12 +13,18 @@ import (
 type ISender interface {
 	GetVersionServer(ctx context.Context) (int, error)
 	GetAllLoginPass(ctx context.Context) ([]*domain.LoginPass, error)
+	GetAllText(ctx context.Context) ([]*domain.Text, error)
+	GetAllBinary(ctx context.Context) ([]*domain.Binary, error)
+	GetAllBankCard(ctx context.Context) ([]*domain.BankCard, error)
 }
 
 type IService interface {
 	GetVersionCache() (int, error)
 	SetVersionCache(version int) error
-	UpdateAllLoginPassCache(lpPairs []*domain.LoginPass) error
+	UpdateAllLoginPassCache(data []*domain.LoginPass) error
+	UpdateAllTextCache(data []*domain.Text) error
+	UpdateAllBinaryCache(data []*domain.Binary) error
+	UpdateAllBankCardCache(data []*domain.BankCard) error
 }
 
 type Updater struct {
@@ -78,6 +84,27 @@ func (w *Updater) updateData(ctx context.Context) error {
 		}
 		return nil
 	})
+	grp.Go(func() error {
+		err := w.updateTextCache(ctx)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	grp.Go(func() error {
+		err := w.updateBinary(ctx)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	grp.Go(func() error {
+		err := w.updateBankCard(ctx)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
 
 	if err := grp.Wait(); err != nil {
 		return err
@@ -87,14 +114,56 @@ func (w *Updater) updateData(ctx context.Context) error {
 }
 
 func (w *Updater) updateLoginPassCache(ctx context.Context) error {
-	lpPairs, err := w.Sender.GetAllLoginPass(ctx)
+	data, err := w.Sender.GetAllLoginPass(ctx)
 	if err != nil {
 		w.Log.Err(err).Msg("worker getAllLoginPass error")
 		return err
 	}
-	err = w.Service.UpdateAllLoginPassCache(lpPairs)
+	err = w.Service.UpdateAllLoginPassCache(data)
 	if err != nil {
 		w.Log.Err(err).Msg("worker updateAllLoginPass error")
+		return err
+	}
+	return nil
+}
+
+func (w *Updater) updateTextCache(ctx context.Context) error {
+	data, err := w.Sender.GetAllText(ctx)
+	if err != nil {
+		w.Log.Err(err).Msg("worker GetAllText error")
+		return err
+	}
+	err = w.Service.UpdateAllTextCache(data)
+	if err != nil {
+		w.Log.Err(err).Msg("worker UpdateAllTextCache error")
+		return err
+	}
+	return nil
+}
+
+func (w *Updater) updateBinary(ctx context.Context) error {
+	data, err := w.Sender.GetAllBinary(ctx)
+	if err != nil {
+		w.Log.Err(err).Msg("worker GetAllBinary error")
+		return err
+	}
+	err = w.Service.UpdateAllBinaryCache(data)
+	if err != nil {
+		w.Log.Err(err).Msg("worker UpdateAllBinaryCache error")
+		return err
+	}
+	return nil
+}
+
+func (w *Updater) updateBankCard(ctx context.Context) error {
+	data, err := w.Sender.GetAllBankCard(ctx)
+	if err != nil {
+		w.Log.Err(err).Msg("worker GetAllBankCard error")
+		return err
+	}
+	err = w.Service.UpdateAllBankCardCache(data)
+	if err != nil {
+		w.Log.Err(err).Msg("worker UpdateAllBankCardCache error")
 		return err
 	}
 	return nil

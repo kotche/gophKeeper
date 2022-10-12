@@ -30,6 +30,9 @@ func (s *Server) Run() error {
 	pb.RegisterVersionServiceServer(s.grpcServer, s.handler)
 	pb.RegisterAuthServiceServer(s.grpcServer, s.handler)
 	pb.RegisterLoginPassServiceServer(s.grpcServer, s.handler)
+	pb.RegisterTextServiceServer(s.grpcServer, s.handler)
+	pb.RegisterBinaryServiceServer(s.grpcServer, s.handler)
+	pb.RegisterBankCardServiceServer(s.grpcServer, s.handler)
 
 	listen, err := net.Listen("tcp", fmt.Sprintf(":%s", s.cfg.TCP.Port))
 	if err != nil {

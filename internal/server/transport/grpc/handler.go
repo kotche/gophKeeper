@@ -12,6 +12,9 @@ type Handler struct {
 	pb.UnimplementedVersionServiceServer
 	pb.UnimplementedAuthServiceServer
 	pb.UnimplementedLoginPassServiceServer
+	pb.UnimplementedTextServiceServer
+	pb.UnimplementedBinaryServiceServer
+	pb.UnimplementedBankCardServiceServer
 	Conf *server.Config
 	Log  *zerolog.Logger
 }

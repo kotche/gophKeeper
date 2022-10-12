@@ -25,7 +25,7 @@ type LoginPassServiceClient interface {
 	CreateLoginPass(ctx context.Context, in *LoginPassRequest, opts ...grpc.CallOption) (*LoginPassResponse, error)
 	UpdateLoginPass(ctx context.Context, in *LoginPassUpdateRequest, opts ...grpc.CallOption) (*LoginPassUpdateResponse, error)
 	DeleteLoginPass(ctx context.Context, in *LoginPassDeleteRequest, opts ...grpc.CallOption) (*LoginPassDeleteResponse, error)
-	GetAllLoginPass(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*GetAllResponse, error)
+	GetAllLoginPass(ctx context.Context, in *LoginPassGetAllRequest, opts ...grpc.CallOption) (*LoginPassGetAllResponse, error)
 }
 
 type loginPassServiceClient struct {
@@ -63,8 +63,8 @@ func (c *loginPassServiceClient) DeleteLoginPass(ctx context.Context, in *LoginP
 	return out, nil
 }
 
-func (c *loginPassServiceClient) GetAllLoginPass(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*GetAllResponse, error) {
-	out := new(GetAllResponse)
+func (c *loginPassServiceClient) GetAllLoginPass(ctx context.Context, in *LoginPassGetAllRequest, opts ...grpc.CallOption) (*LoginPassGetAllResponse, error) {
+	out := new(LoginPassGetAllResponse)
 	err := c.cc.Invoke(ctx, "/keeper.LoginPassService/GetAllLoginPass", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -79,7 +79,7 @@ type LoginPassServiceServer interface {
 	CreateLoginPass(context.Context, *LoginPassRequest) (*LoginPassResponse, error)
 	UpdateLoginPass(context.Context, *LoginPassUpdateRequest) (*LoginPassUpdateResponse, error)
 	DeleteLoginPass(context.Context, *LoginPassDeleteRequest) (*LoginPassDeleteResponse, error)
-	GetAllLoginPass(context.Context, *GetAllRequest) (*GetAllResponse, error)
+	GetAllLoginPass(context.Context, *LoginPassGetAllRequest) (*LoginPassGetAllResponse, error)
 	mustEmbedUnimplementedLoginPassServiceServer()
 }
 
@@ -96,7 +96,7 @@ func (UnimplementedLoginPassServiceServer) UpdateLoginPass(context.Context, *Log
 func (UnimplementedLoginPassServiceServer) DeleteLoginPass(context.Context, *LoginPassDeleteRequest) (*LoginPassDeleteResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteLoginPass not implemented")
 }
-func (UnimplementedLoginPassServiceServer) GetAllLoginPass(context.Context, *GetAllRequest) (*GetAllResponse, error) {
+func (UnimplementedLoginPassServiceServer) GetAllLoginPass(context.Context, *LoginPassGetAllRequest) (*LoginPassGetAllResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllLoginPass not implemented")
 }
 func (UnimplementedLoginPassServiceServer) mustEmbedUnimplementedLoginPassServiceServer() {}
@@ -167,7 +167,7 @@ func _LoginPassService_DeleteLoginPass_Handler(srv interface{}, ctx context.Cont
 }
 
 func _LoginPassService_GetAllLoginPass_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetAllRequest)
+	in := new(LoginPassGetAllRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -179,7 +179,7 @@ func _LoginPassService_GetAllLoginPass_Handler(srv interface{}, ctx context.Cont
 		FullMethod: "/keeper.LoginPassService/GetAllLoginPass",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LoginPassServiceServer).GetAllLoginPass(ctx, req.(*GetAllRequest))
+		return srv.(LoginPassServiceServer).GetAllLoginPass(ctx, req.(*LoginPassGetAllRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

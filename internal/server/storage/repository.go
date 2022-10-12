@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/kotche/gophKeeper/internal/server/domain"
-	"github.com/kotche/gophKeeper/internal/server/domain/dataType"
 )
 
 type ICommonRepo interface {
@@ -17,22 +16,51 @@ type IAuthRepo interface {
 }
 
 type ILoginPassRepo interface {
-	Create(ctx context.Context, lp *dataType.LoginPass) error
-	Update(ctx context.Context, lp *dataType.LoginPass) error
-	Delete(ctx context.Context, lp *dataType.LoginPass) error
-	GetAll(ctx context.Context, userID int) ([]dataType.LoginPass, error)
+	Create(ctx context.Context, lp *domain.LoginPass) error
+	Update(ctx context.Context, lp *domain.LoginPass) error
+	Delete(ctx context.Context, lp *domain.LoginPass) error
+	GetAll(ctx context.Context, userID int) ([]domain.LoginPass, error)
+}
+
+type ITextPassRepo interface {
+	Create(ctx context.Context, text *domain.Text) error
+	Update(ctx context.Context, text *domain.Text) error
+	Delete(ctx context.Context, text *domain.Text) error
+	GetAll(ctx context.Context, userID int) ([]domain.Text, error)
+}
+
+type IBinaryRepo interface {
+	Create(ctx context.Context, text *domain.Binary) error
+	Update(ctx context.Context, text *domain.Binary) error
+	Delete(ctx context.Context, text *domain.Binary) error
+	GetAll(ctx context.Context, userID int) ([]domain.Binary, error)
+}
+
+type IBankCardRepo interface {
+	Create(ctx context.Context, text *domain.BankCard) error
+	Update(ctx context.Context, text *domain.BankCard) error
+	Delete(ctx context.Context, text *domain.BankCard) error
+	GetAll(ctx context.Context, userID int) ([]domain.BankCard, error)
 }
 
 type Repository struct {
 	Common    ICommonRepo
 	Auth      IAuthRepo
 	LoginPass ILoginPassRepo
+	Text      ITextPassRepo
+	Binary    IBinaryRepo
+	BankCard  IBankCardRepo
 }
 
-func NewRepository(com ICommonRepo, auth IAuthRepo, loginPass ILoginPassRepo) *Repository {
+func NewRepository(com ICommonRepo, auth IAuthRepo, loginPass ILoginPassRepo, text ITextPassRepo,
+	binary IBinaryRepo, bankCard IBankCardRepo) *Repository {
+
 	return &Repository{
 		Common:    com,
 		Auth:      auth,
 		LoginPass: loginPass,
+		Text:      text,
+		Binary:    binary,
+		BankCard:  bankCard,
 	}
 }
