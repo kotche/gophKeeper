@@ -9,6 +9,13 @@ import (
 	"github.com/rs/zerolog"
 )
 
+const (
+	bankCardCreate = "bankCardPostgres Create repo"
+	bankCardUpdate = "bankCardPostgres Update repo"
+	bankCardDelete = "bankCardPostgres Delete repo"
+	bankCardGetAll = "bankCardPostgres GetAll repo"
+)
+
 // BankCardPostgres bank card data db
 type BankCardPostgres struct {
 	db  *sql.DB
@@ -24,11 +31,9 @@ func NewBankCardPostgres(db *sql.DB, log *zerolog.Logger) *BankCardPostgres {
 
 // Create creates a bank card data and updates data version
 func (b *BankCardPostgres) Create(ctx context.Context, bank *domain.BankCard) (err error) {
-	const fInfo = "bankCardPostgres create repo"
-
 	tx, err := b.db.BeginTx(ctx, nil)
 	if err != nil {
-		b.log.Err(err).Msgf("%s start tx error", fInfo)
+		b.log.Err(err).Msgf("%s start tx error", bankCardCreate)
 		return err
 	}
 
@@ -36,8 +41,8 @@ func (b *BankCardPostgres) Create(ctx context.Context, bank *domain.BankCard) (e
 		if err != nil {
 			txError := tx.Rollback()
 			if txError != nil {
-				b.log.Err(txError).Msgf("%s rollback error", fInfo)
-				err = fmt.Errorf("%s defer rollback error %s: %s", fInfo, txError.Error(), err.Error())
+				b.log.Err(txError).Msgf("%s rollback error", bankCardCreate)
+				err = fmt.Errorf("%s defer rollback error %s: %s", bankCardCreate, txError.Error(), err.Error())
 			}
 		}
 	}()
@@ -47,23 +52,23 @@ func (b *BankCardPostgres) Create(ctx context.Context, bank *domain.BankCard) (e
 
 	var id sql.NullInt64
 	if err = row.Scan(&id); err != nil {
-		b.log.Err(err).Msgf("%s scan id error", fInfo)
+		b.log.Err(err).Msgf("%s scan id error", bankCardCreate)
 		return err
 	}
 
 	if !id.Valid {
 		err = fmt.Errorf("id bank card data no valid")
-		b.log.Err(err).Msgf("%s error", fInfo)
+		b.log.Err(err).Msgf("%s error", bankCardCreate)
 		return err
 	}
 
 	if err = updateVersion(ctx, bank.UserID, tx, b.log); err != nil {
-		b.log.Err(err).Msgf("%s error", fInfo)
+		b.log.Err(err).Msgf("%s error", bankCardCreate)
 		return err
 	}
 
 	if err = tx.Commit(); err != nil {
-		b.log.Err(err).Msgf("%s commit error", fInfo)
+		b.log.Err(err).Msgf("%s commit error", bankCardCreate)
 		return err
 	}
 
@@ -74,11 +79,9 @@ func (b *BankCardPostgres) Create(ctx context.Context, bank *domain.BankCard) (e
 
 // Update updates a bank card data and data version
 func (b *BankCardPostgres) Update(ctx context.Context, bank *domain.BankCard) (err error) {
-	const fInfo = "bankCardPostgres update repo"
-
 	tx, err := b.db.BeginTx(ctx, nil)
 	if err != nil {
-		b.log.Err(err).Msgf("%s start tx error", fInfo)
+		b.log.Err(err).Msgf("%s start tx error", bankCardUpdate)
 		return err
 	}
 
@@ -86,8 +89,8 @@ func (b *BankCardPostgres) Update(ctx context.Context, bank *domain.BankCard) (e
 		if err != nil {
 			txError := tx.Rollback()
 			if txError != nil {
-				b.log.Err(txError).Msgf("%s rollback error", fInfo)
-				err = fmt.Errorf("%s defer rollback error %s: %s", fInfo, txError.Error(), err.Error())
+				b.log.Err(txError).Msgf("%s rollback error", bankCardUpdate)
+				err = fmt.Errorf("%s defer rollback error %s: %s", bankCardUpdate, txError.Error(), err.Error())
 			}
 		}
 	}()
@@ -97,17 +100,17 @@ func (b *BankCardPostgres) Update(ctx context.Context, bank *domain.BankCard) (e
 		bank.Number, bank.MetaInfo, bank.ID, bank.UserID)
 
 	if err != nil {
-		b.log.Err(err).Msgf("%s error", fInfo)
+		b.log.Err(err).Msgf("%s error", bankCardUpdate)
 		return err
 	}
 
 	if err = updateVersion(ctx, bank.UserID, tx, b.log); err != nil {
-		b.log.Err(err).Msgf("%s error", fInfo)
+		b.log.Err(err).Msgf("%s error", bankCardUpdate)
 		return err
 	}
 
 	if err = tx.Commit(); err != nil {
-		b.log.Err(err).Msgf("%s commit error", fInfo)
+		b.log.Err(err).Msgf("%s commit error", bankCardUpdate)
 		return err
 	}
 
@@ -116,11 +119,9 @@ func (b *BankCardPostgres) Update(ctx context.Context, bank *domain.BankCard) (e
 
 // Delete deletes a bank card data and updates data version
 func (b *BankCardPostgres) Delete(ctx context.Context, bank *domain.BankCard) (err error) {
-	const fInfo = "bankCardPostgres delete repo"
-
 	tx, err := b.db.BeginTx(ctx, nil)
 	if err != nil {
-		b.log.Err(err).Msgf("%s start tx error", fInfo)
+		b.log.Err(err).Msgf("%s start tx error", bankCardDelete)
 		return err
 	}
 
@@ -128,25 +129,25 @@ func (b *BankCardPostgres) Delete(ctx context.Context, bank *domain.BankCard) (e
 		if err != nil {
 			txError := tx.Rollback()
 			if txError != nil {
-				b.log.Err(txError).Msgf("%s rollback error", fInfo)
-				err = fmt.Errorf("%s defer rollback error %s: %s", fInfo, txError.Error(), err.Error())
+				b.log.Err(txError).Msgf("%s rollback error", bankCardDelete)
+				err = fmt.Errorf("%s defer rollback error %s: %s", bankCardDelete, txError.Error(), err.Error())
 			}
 		}
 	}()
 
 	_, err = tx.ExecContext(ctx, "DELETE FROM public.bank_card WHERE id=$1 AND user_id=$2", bank.ID, bank.UserID)
 	if err != nil {
-		b.log.Err(err).Msgf("%s error", fInfo)
+		b.log.Err(err).Msgf("%s error", bankCardDelete)
 		return err
 	}
 
 	if err = updateVersion(ctx, bank.UserID, tx, b.log); err != nil {
-		b.log.Err(err).Msgf("%s error", fInfo)
+		b.log.Err(err).Msgf("%s error", bankCardDelete)
 		return err
 	}
 
 	if err = tx.Commit(); err != nil {
-		b.log.Err(err).Msgf("%s commit error", fInfo)
+		b.log.Err(err).Msgf("%s commit error", bankCardDelete)
 		return err
 	}
 
@@ -155,18 +156,16 @@ func (b *BankCardPostgres) Delete(ctx context.Context, bank *domain.BankCard) (e
 
 // GetAll returns all bank card data by user id
 func (b *BankCardPostgres) GetAll(ctx context.Context, userID int) ([]domain.BankCard, error) {
-	const fInfo = "BankCardPostgres getAll repo"
-
 	rows, err := b.db.QueryContext(ctx, "SELECT id, user_id, number, meta_info FROM bank_card WHERE user_id=$1", userID)
 	if err != nil {
-		b.log.Err(err).Msgf("%s get rows error", fInfo)
+		b.log.Err(err).Msgf("%s get rows error", bankCardGetAll)
 		return nil, err
 	}
 
 	defer func() {
 		err := rows.Close()
 		if err != nil {
-			b.log.Err(err).Msgf("%s rows close error", fInfo)
+			b.log.Err(err).Msgf("%s rows close error", bankCardGetAll)
 		}
 	}()
 
@@ -179,7 +178,7 @@ func (b *BankCardPostgres) GetAll(ctx context.Context, userID int) ([]domain.Ban
 	}
 
 	if err = rows.Err(); err != nil {
-		b.log.Err(err).Msgf("%s rows scan error", fInfo)
+		b.log.Err(err).Msgf("%s rows scan error", bankCardGetAll)
 	}
 
 	return dataOutput, nil

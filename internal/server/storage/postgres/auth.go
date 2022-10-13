@@ -3,11 +3,16 @@ package postgres
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/kotche/gophKeeper/internal/server/domain"
 	ers "github.com/kotche/gophKeeper/internal/server/domain/errs"
 	"github.com/rs/zerolog"
+)
+
+const (
+	authCreateUser = "authPostgres createUser repo"
 )
 
 type AuthPostgres struct {
@@ -23,10 +28,22 @@ func NewAuthPostgres(db *sql.DB, log *zerolog.Logger) *AuthPostgres {
 }
 
 func (a *AuthPostgres) CreateUser(ctx context.Context, user *domain.User) error {
-	const fInfo = "authPostgres createUser repo"
+	var userIdExist int
+	row := a.db.QueryRowContext(ctx, "SELECT id FROM public.users WHERE login=$1", user.Username)
+	err := row.Scan(&userIdExist)
+	if err == nil {
+		a.log.Debug().Msgf("%s conflict username '%s'", authCreateUser, user.Username)
+		return ers.ConflictLoginError{
+			Username: user.Username,
+		}
+	} else if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		a.log.Err(err).Msgf("%s scan userIdExist error", authCreateUser)
+		return err
+	}
+
 	tx, err := a.db.BeginTx(ctx, nil)
 	if err != nil {
-		a.log.Err(err).Msgf("%s tx error", fInfo)
+		a.log.Err(err).Msgf("%s tx error", authCreateUser)
 		return err
 	}
 
@@ -34,34 +51,30 @@ func (a *AuthPostgres) CreateUser(ctx context.Context, user *domain.User) error 
 		if err != nil {
 			txError := tx.Rollback()
 			if txError != nil {
-				a.log.Err(txError).Msgf("%s rollback error", fInfo)
-				err = fmt.Errorf("%s defer rollback error %w: %s", fInfo, txError, err.Error())
+				a.log.Err(txError).Msgf("%s rollback error", authCreateUser)
+				err = fmt.Errorf("%s defer rollback error %w: %s", authCreateUser, txError, err.Error())
 			}
 		}
 	}()
 
-	row := tx.QueryRowContext(ctx, "INSERT INTO public.users(login,password) VALUES ($1,$2) RETURNING id", user.Username, user.Password)
-	var userID sql.NullInt64
+	row = tx.QueryRowContext(ctx, "INSERT INTO public.users(login,password) VALUES ($1,$2) RETURNING id", user.Username, user.Password)
+	var userID int
 	if err = row.Scan(&userID); err != nil {
-		a.log.Err(err).Msgf("%s scan userID error", fInfo)
-	}
-	if !userID.Valid {
-		return ers.ConflictLoginError{
-			Username: user.Username,
-		}
+		a.log.Err(err).Msgf("%s scan userID error", authCreateUser)
+		return err
 	}
 
-	if err = insertVersion(ctx, int(userID.Int64), tx, a.log); err != nil {
-		a.log.Err(err).Msgf("%s error", fInfo)
+	if err = insertVersion(ctx, userID, tx, a.log); err != nil {
+		a.log.Err(err).Msgf("%s error", authCreateUser)
 		return err
 	}
 
 	if err = tx.Commit(); err != nil {
-		a.log.Err(err).Msgf("%s commit error", fInfo)
+		a.log.Err(err).Msgf("%s commit error", authCreateUser)
 		return err
 	}
 
-	user.ID = int(userID.Int64)
+	user.ID = userID
 	return nil
 }
 
