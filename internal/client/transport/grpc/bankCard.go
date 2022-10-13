@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/kotche/gophKeeper/internal/client/domain"
+	"github.com/kotche/gophKeeper/internal/client/domain/dataType"
 	"github.com/kotche/gophKeeper/internal/pb"
 )
 
@@ -43,7 +44,7 @@ func (s *Sender) CreateBankCard(number, meta string) error {
 		MetaInfo: meta,
 	}
 
-	if err = s.Service.AddBankCard(data); err != nil {
+	if err = s.Service.Save(data); err != nil {
 		s.Log.Err(err).Msgf("createBankCard add to cache '%+v' error: %w", data, err)
 	}
 
@@ -89,7 +90,7 @@ func (s *Sender) UpdateBankCard(id int, number, meta string) error {
 		MetaInfo: meta,
 	}
 
-	if err = s.Service.UpdateBankCard(data); err != nil {
+	if err = s.Service.Update(data); err != nil {
 		s.Log.Err(err).Msgf("updateBankCard update bank card to cache '%+v' error: %w", data, err)
 	}
 
@@ -129,7 +130,11 @@ func (s *Sender) DeleteBankCard(id int) error {
 
 	s.Log.Debug().Msgf("BankCard delete, userID %d, id: %d", userID, id)
 
-	if err = s.Service.DeleteBankCard(id); err != nil {
+	data := &domain.BankCard{
+		ID: id,
+	}
+
+	if err = s.Service.Delete(data); err != nil {
 		s.Log.Err(err).Msgf("deleteBankCard delete bank card to cache '%d' error: %w", id, err)
 	}
 
@@ -141,7 +146,11 @@ func (s *Sender) DeleteBankCard(id int) error {
 }
 
 func (s *Sender) ReadBankCardCache() ([]*domain.BankCard, error) {
-	return s.Service.ReadAllBankCardCache()
+	data, err := s.Service.GetAll(dataType.BANKCARD)
+	if err != nil {
+		return nil, err
+	}
+	return data.([]*domain.BankCard), nil
 }
 
 func (s *Sender) GetAllBankCard(ctx context.Context) ([]*domain.BankCard, error) {

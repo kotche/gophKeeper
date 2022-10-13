@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/kotche/gophKeeper/internal/client/domain"
+	"github.com/kotche/gophKeeper/internal/client/domain/dataType"
 	"github.com/kotche/gophKeeper/internal/pb"
 )
 
@@ -43,7 +44,7 @@ func (s *Sender) CreateBinary(binary, meta string) error {
 		MetaInfo: meta,
 	}
 
-	if err = s.Service.AddBinary(data); err != nil {
+	if err = s.Service.Save(data); err != nil {
 		s.Log.Err(err).Msgf("createBinary add to cache '%+v' error: %w", data, err)
 	}
 
@@ -89,7 +90,7 @@ func (s *Sender) UpdateBinary(id int, binary, meta string) error {
 		MetaInfo: meta,
 	}
 
-	if err = s.Service.UpdateBinary(data); err != nil {
+	if err = s.Service.Update(data); err != nil {
 		s.Log.Err(err).Msgf("updateBinary update binary to cache '%+v' error: %w", data, err)
 	}
 
@@ -129,7 +130,11 @@ func (s *Sender) DeleteBinary(id int) error {
 
 	s.Log.Debug().Msgf("binary delete, userID %d, id: %d", userID, id)
 
-	if err = s.Service.DeleteBinary(id); err != nil {
+	data := &domain.Binary{
+		ID: id,
+	}
+
+	if err = s.Service.Delete(data); err != nil {
 		s.Log.Err(err).Msgf("deleteBinary delete binary to cache '%d' error: %w", id, err)
 	}
 
@@ -141,7 +146,11 @@ func (s *Sender) DeleteBinary(id int) error {
 }
 
 func (s *Sender) ReadBinaryCache() ([]*domain.Binary, error) {
-	return s.Service.ReadAllBinaryCache()
+	data, err := s.Service.GetAll(dataType.BINARY)
+	if err != nil {
+		return nil, err
+	}
+	return data.([]*domain.Binary), nil
 }
 
 func (s *Sender) GetAllBinary(ctx context.Context) ([]*domain.Binary, error) {

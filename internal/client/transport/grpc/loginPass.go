@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/kotche/gophKeeper/internal/client/domain"
+	"github.com/kotche/gophKeeper/internal/client/domain/dataType"
 	"github.com/kotche/gophKeeper/internal/pb"
 )
 
@@ -48,7 +49,7 @@ func (s *Sender) CreateLoginPass(login, password, meta string) error {
 		MetaInfo: meta,
 	}
 
-	if err = s.Service.AddLoginPassword(data); err != nil {
+	if err = s.Service.Save(data); err != nil {
 		s.Log.Err(err).Msgf("createLoginPass add to cache '%+v' error: %w", data, err)
 	}
 
@@ -95,7 +96,7 @@ func (s *Sender) UpdateLoginPass(id int, login, password, meta string) error {
 		MetaInfo: meta,
 	}
 
-	if err = s.Service.UpdateLoginPassword(data); err != nil {
+	if err = s.Service.Update(data); err != nil {
 		s.Log.Err(err).Msgf("updateLoginPass update lp to cache '%+v' error: %w", data, err)
 	}
 
@@ -135,7 +136,11 @@ func (s *Sender) DeleteLoginPass(id int) error {
 
 	s.Log.Debug().Msgf("lp delete, userID %d, id: %d", userID, id)
 
-	if err = s.Service.DeleteLoginPassword(id); err != nil {
+	data := &domain.LoginPass{
+		ID: id,
+	}
+
+	if err = s.Service.Delete(data); err != nil {
 		s.Log.Err(err).Msgf("deleteLoginPass delete lp to cache '%d' error: %w", id, err)
 	}
 
@@ -147,7 +152,11 @@ func (s *Sender) DeleteLoginPass(id int) error {
 }
 
 func (s *Sender) ReadLoginPassCache() ([]*domain.LoginPass, error) {
-	return s.Service.ReadAllLoginPasswordCache()
+	data, err := s.Service.GetAll(dataType.LP)
+	if err != nil {
+		return nil, err
+	}
+	return data.([]*domain.LoginPass), nil
 }
 
 func (s *Sender) GetAllLoginPass(ctx context.Context) ([]*domain.LoginPass, error) {

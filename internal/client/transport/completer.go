@@ -24,8 +24,8 @@ func (c *Commander) Completer(d prompt.Document) []prompt.Suggest {
 		sug = getDataTypeText(read, d.Text)
 	} else if strings.Contains(d.Text, update) {
 		sug = getDataTypeText(update, d.Text)
-	} else if strings.Contains(d.Text, delete) {
-		sug = getDataTypeText(delete, d.Text)
+	} else if strings.Contains(d.Text, del) {
+		sug = getDataTypeText(del, d.Text)
 	} else {
 		sug = []prompt.Suggest{
 			{Text: registration, Description: registrationDesc},
@@ -33,7 +33,7 @@ func (c *Commander) Completer(d prompt.Document) []prompt.Suggest {
 			{Text: create, Description: createDesc},
 			{Text: read, Description: readDesc},
 			{Text: update, Description: updateDesc},
-			{Text: delete, Description: deleteDesc},
+			{Text: del, Description: delDesc},
 		}
 	}
 	return prompt.FilterHasPrefix(sug, d.GetWordBeforeCursor(), true)
@@ -73,7 +73,7 @@ func getDesc(command, dataTypeDesc string) string {
 	switch command {
 	case update:
 		return fmt.Sprintf("%s %s", "id", dataTypeDesc)
-	case delete:
+	case del:
 		return "id"
 	default:
 		return dataTypeDesc

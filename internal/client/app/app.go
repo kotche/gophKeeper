@@ -30,6 +30,9 @@ func (a *App) Run() {
 	ctx, cancel := context.WithCancel(context.Background())
 
 	clientConn := grpcTransport.Connection{}
+	//conn := clientConn.GetClientConn()
+	//defer conn.Close()
+
 	cache := storage.NewCache(a.Log)
 	srvc := service.NewService(cache, a.Conf, a.Log)
 	sender := grpcTransport.NewSender(srvc, clientConn, a.Conf, a.Log)

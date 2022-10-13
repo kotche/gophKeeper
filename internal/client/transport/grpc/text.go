@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/kotche/gophKeeper/internal/client/domain"
+	"github.com/kotche/gophKeeper/internal/client/domain/dataType"
 	"github.com/kotche/gophKeeper/internal/pb"
 )
 
@@ -43,7 +44,7 @@ func (s *Sender) CreateText(text, meta string) error {
 		MetaInfo: meta,
 	}
 
-	if err = s.Service.AddText(data); err != nil {
+	if err = s.Service.Save(data); err != nil {
 		s.Log.Err(err).Msgf("createText add to cache '%+v' error: %w", data, err)
 	}
 
@@ -89,7 +90,7 @@ func (s *Sender) UpdateText(id int, text, meta string) error {
 		MetaInfo: meta,
 	}
 
-	if err = s.Service.UpdateText(data); err != nil {
+	if err = s.Service.Update(data); err != nil {
 		s.Log.Err(err).Msgf("updateText update text to cache '%+v' error: %w", data, err)
 	}
 
@@ -129,8 +130,12 @@ func (s *Sender) DeleteText(id int) error {
 
 	s.Log.Debug().Msgf("lp delete, userID %d, id: %d", userID, id)
 
-	if err = s.Service.DeleteText(id); err != nil {
-		s.Log.Err(err).Msgf("deleteText delete text to cache '%d' error: %w", id, err)
+	data := &domain.Text{
+		ID: id,
+	}
+
+	if err = s.Service.Delete(data); err != nil {
+		s.Log.Err(err).Msgf("delete text to cache '%d' error: %w", id, err)
 	}
 
 	if err = s.Service.Storage.IncVersion(); err != nil {
@@ -141,7 +146,11 @@ func (s *Sender) DeleteText(id int) error {
 }
 
 func (s *Sender) ReadTextCache() ([]*domain.Text, error) {
-	return s.Service.ReadAllTextCache()
+	data, err := s.Service.GetAll(dataType.TEXT)
+	if err != nil {
+		return nil, err
+	}
+	return data.([]*domain.Text), nil
 }
 
 func (s *Sender) GetAllText(ctx context.Context) ([]*domain.Text, error) {

@@ -26,8 +26,8 @@ const (
 	readDesc   = "<-read> 'data type'"
 	update     = "-update"
 	updateDesc = "<-update> 'data type' 'id data' 'data format'"
-	delete     = "-delete"
-	deleteDesc = "<-delete> 'data type' 'id data'"
+	del        = "-delete"
+	delDesc    = "<-delete> 'data type' 'id data'"
 
 	//data errors
 	invalidFormat = "invalid format"

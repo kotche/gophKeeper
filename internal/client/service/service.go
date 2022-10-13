@@ -2,9 +2,13 @@ package service
 
 import (
 	"errors"
+	"fmt"
+	"reflect"
+	"sort"
 
 	"github.com/kotche/gophKeeper/config/client"
 	"github.com/kotche/gophKeeper/internal/client/domain"
+	"github.com/kotche/gophKeeper/internal/client/domain/dataType"
 	"github.com/rs/zerolog"
 )
 
@@ -16,29 +20,11 @@ type ICache interface {
 	SetVersion(version int) error
 	IncVersion() error
 
-	AddLoginPassword(data *domain.LoginPass) error
-	UpdateLoginPassword(data *domain.LoginPass) error
-	DeleteLoginPassword(id int) error
-	ReadAllLoginPassword() ([]*domain.LoginPass, error)
-	UpdateAllLoginPass(data []*domain.LoginPass) error
-
-	AddText(data *domain.Text) error
-	UpdateText(data *domain.Text) error
-	DeleteText(id int) error
-	ReadAllText() ([]*domain.Text, error)
-	UpdateAllText(data []*domain.Text) error
-
-	AddBinary(data *domain.Binary) error
-	UpdateBinary(data *domain.Binary) error
-	DeleteBinary(id int) error
-	ReadAllBinary() ([]*domain.Binary, error)
-	UpdateAllBinary(data []*domain.Binary) error
-
-	AddBankCard(data *domain.BankCard) error
-	UpdateBankCard(data *domain.BankCard) error
-	DeleteBankCard(id int) error
-	ReadAllBankCard() ([]*domain.BankCard, error)
-	UpdateAllBankCard(data []*domain.BankCard) error
+	Save(data any) error
+	Update(data any) error
+	Delete(data any) error
+	GetAll(dt dataType.DataType) (any, error)
+	UpdateAll(data any) error
 }
 
 type Service struct {
@@ -86,4 +72,54 @@ func (s *Service) GetVersionCache() (int, error) {
 
 func (s *Service) SetVersionCache(version int) error {
 	return s.Storage.SetVersion(version)
+}
+
+func (s *Service) Save(data any) error {
+	return s.Storage.Save(data)
+}
+
+func (s *Service) Update(data any) error {
+	return s.Storage.Update(data)
+}
+
+func (s *Service) Delete(data any) error {
+	return s.Storage.Delete(data)
+}
+
+func (s *Service) GetAll(dt dataType.DataType) (any, error) {
+	data, err := s.Storage.GetAll(dt)
+	if err != nil {
+		return nil, err
+	}
+
+	switch d := data.(type) {
+	case []*domain.LoginPass:
+		sort.Slice(d, func(i, j int) bool {
+			return d[i].ID < d[j].ID
+		})
+		return d, nil
+	case []*domain.Text:
+		sort.Slice(d, func(i, j int) bool {
+			return d[i].ID < d[j].ID
+		})
+		return d, nil
+	case []*domain.Binary:
+		sort.Slice(d, func(i, j int) bool {
+			return d[i].ID < d[j].ID
+		})
+		return d, nil
+	case []*domain.BankCard:
+		sort.Slice(d, func(i, j int) bool {
+			return d[i].ID < d[j].ID
+		})
+		return d, nil
+	default:
+		err = fmt.Errorf("unsupported type '%v'", reflect.TypeOf(data))
+		s.Log.Err(err).Msg("service getAll error")
+		return nil, err
+	}
+}
+
+func (s *Service) UpdateAll(data any) error {
+	return s.Storage.UpdateAll(data)
 }

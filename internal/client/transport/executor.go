@@ -19,7 +19,7 @@ func (c *Commander) Executor(in string) {
 		c.CreateData(in)
 	case update:
 		c.UpdateData(in)
-	case delete:
+	case del:
 		c.DeleteData(in)
 	case read:
 		c.ReadData(in)

@@ -2,10 +2,13 @@ package updater
 
 import (
 	"context"
+	"fmt"
+	"reflect"
 	"time"
 
 	"github.com/kotche/gophKeeper/config/client"
 	"github.com/kotche/gophKeeper/internal/client/domain"
+	"github.com/kotche/gophKeeper/internal/client/domain/dataType"
 	"github.com/rs/zerolog"
 	"golang.org/x/sync/errgroup"
 )
@@ -21,10 +24,7 @@ type ISender interface {
 type IService interface {
 	GetVersionCache() (int, error)
 	SetVersionCache(version int) error
-	UpdateAllLoginPassCache(data []*domain.LoginPass) error
-	UpdateAllTextCache(data []*domain.Text) error
-	UpdateAllBinaryCache(data []*domain.Binary) error
-	UpdateAllBankCardCache(data []*domain.BankCard) error
+	UpdateAll(data any) error
 }
 
 type Updater struct {
@@ -76,35 +76,24 @@ func (w *Updater) Run(ctx context.Context) {
 }
 
 func (w *Updater) updateData(ctx context.Context) error {
+	dataTypes := []dataType.DataType{
+		dataType.LP,
+		dataType.TEXT,
+		dataType.BINARY,
+		dataType.BANKCARD,
+	}
+
 	grp, ctx := errgroup.WithContext(ctx)
-	grp.Go(func() error {
-		err := w.updateLoginPassCache(ctx)
-		if err != nil {
-			return err
-		}
-		return nil
-	})
-	grp.Go(func() error {
-		err := w.updateTextCache(ctx)
-		if err != nil {
-			return err
-		}
-		return nil
-	})
-	grp.Go(func() error {
-		err := w.updateBinary(ctx)
-		if err != nil {
-			return err
-		}
-		return nil
-	})
-	grp.Go(func() error {
-		err := w.updateBankCard(ctx)
-		if err != nil {
-			return err
-		}
-		return nil
-	})
+	for _, dt := range dataTypes {
+		dt := dt
+		grp.Go(func() error {
+			err := w.update(ctx, dt)
+			if err != nil {
+				return err
+			}
+			return nil
+		})
+	}
 
 	if err := grp.Wait(); err != nil {
 		return err
@@ -113,57 +102,46 @@ func (w *Updater) updateData(ctx context.Context) error {
 	return nil
 }
 
-func (w *Updater) updateLoginPassCache(ctx context.Context) error {
-	data, err := w.Sender.GetAllLoginPass(ctx)
-	if err != nil {
-		w.Log.Err(err).Msg("worker getAllLoginPass error")
-		return err
-	}
-	err = w.Service.UpdateAllLoginPassCache(data)
-	if err != nil {
-		w.Log.Err(err).Msg("worker updateAllLoginPass error")
-		return err
-	}
-	return nil
-}
+func (w *Updater) update(ctx context.Context, dt dataType.DataType) error {
+	var (
+		data any
+		err  error
+	)
 
-func (w *Updater) updateTextCache(ctx context.Context) error {
-	data, err := w.Sender.GetAllText(ctx)
-	if err != nil {
-		w.Log.Err(err).Msg("worker GetAllText error")
+	switch dt {
+	case dataType.LP:
+		data, err = w.Sender.GetAllLoginPass(ctx)
+		if err != nil {
+			w.Log.Err(err).Msg("worker GetAllLoginPass error")
+			return err
+		}
+	case dataType.TEXT:
+		data, err = w.Sender.GetAllText(ctx)
+		if err != nil {
+			w.Log.Err(err).Msg("worker GetAllText error")
+			return err
+		}
+	case dataType.BINARY:
+		data, err = w.Sender.GetAllBinary(ctx)
+		if err != nil {
+			w.Log.Err(err).Msg("worker GetAllBinary error")
+			return err
+		}
+	case dataType.BANKCARD:
+		data, err = w.Sender.GetAllBankCard(ctx)
+		if err != nil {
+			w.Log.Err(err).Msg("worker GetAllBankCard error")
+			return err
+		}
+	default:
+		err = fmt.Errorf("unsupported type '%v'", reflect.TypeOf(dt))
+		w.Log.Err(err).Msg("updater update error")
 		return err
 	}
-	err = w.Service.UpdateAllTextCache(data)
-	if err != nil {
-		w.Log.Err(err).Msg("worker UpdateAllTextCache error")
-		return err
-	}
-	return nil
-}
 
-func (w *Updater) updateBinary(ctx context.Context) error {
-	data, err := w.Sender.GetAllBinary(ctx)
+	err = w.Service.UpdateAll(data)
 	if err != nil {
-		w.Log.Err(err).Msg("worker GetAllBinary error")
-		return err
-	}
-	err = w.Service.UpdateAllBinaryCache(data)
-	if err != nil {
-		w.Log.Err(err).Msg("worker UpdateAllBinaryCache error")
-		return err
-	}
-	return nil
-}
-
-func (w *Updater) updateBankCard(ctx context.Context) error {
-	data, err := w.Sender.GetAllBankCard(ctx)
-	if err != nil {
-		w.Log.Err(err).Msg("worker GetAllBankCard error")
-		return err
-	}
-	err = w.Service.UpdateAllBankCardCache(data)
-	if err != nil {
-		w.Log.Err(err).Msg("worker UpdateAllBankCardCache error")
+		w.Log.Err(err).Msg("updater update error")
 		return err
 	}
 	return nil
