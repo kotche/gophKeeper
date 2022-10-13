@@ -125,7 +125,7 @@ func (c *Commander) CreateData(in string) {
 
 func (c *Commander) UpdateData(in string) {
 	blocks := strings.Split(in, " ")
-	if len(blocks) < 5 {
+	if len(blocks) < 4 {
 		fmt.Println(invalidFormat)
 		return
 	}

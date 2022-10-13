@@ -32,7 +32,7 @@ func (a *AuthPostgres) CreateUser(ctx context.Context, user *domain.User) error 
 	row := a.db.QueryRowContext(ctx, "SELECT id FROM public.users WHERE login=$1", user.Username)
 	err := row.Scan(&userIdExist)
 	if err == nil {
-		a.log.Debug().Msgf("%s conflict username '%s'", authCreateUser, user.Username)
+		a.log.Warn().Msgf("%s conflict username '%s'", authCreateUser, user.Username)
 		return ers.ConflictLoginError{
 			Username: user.Username,
 		}

@@ -11,6 +11,8 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+const handlerAuthorize = "handler server authorize"
+
 // UnaryAuthorize returns a server interceptor function authorize unary RPC
 func (h *Handler) UnaryAuthorize(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 	//h.Log.Debug().Msgf("UnaryAuthorize interceptor: %s", info.FullMethod)
@@ -31,29 +33,27 @@ func (h *Handler) UnaryAuthorize(ctx context.Context, req interface{}, info *grp
 }
 
 func (h *Handler) authorize(ctx context.Context, userID int) error {
-	const fInfo = "handler server authorize"
-
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
-		h.Log.Debug().Msgf("%s metadata is not provided", fInfo)
+		h.Log.Debug().Msgf("%s metadata is not provided", handlerAuthorize)
 		return status.Errorf(codes.Unauthenticated, "authorization error")
 	}
 
 	values := md.Get("token")
 	if len(values) == 0 {
-		h.Log.Debug().Msgf("%s authorization token is not provided", fInfo)
+		h.Log.Debug().Msgf("%s authorization token is not provided", handlerAuthorize)
 		return status.Errorf(codes.Unauthenticated, "authorization error")
 	}
 
 	accessToken := values[0]
 	claims, err := h.Service.Auth.Verify(accessToken)
 	if err != nil {
-		h.Log.Err(err).Msgf("%s access token is invalid", fInfo)
+		h.Log.Err(err).Msgf("%s access token is invalid", handlerAuthorize)
 		return status.Error(codes.Unauthenticated, "authorization error")
 	}
 
 	if claims.ID != userID {
-		h.Log.Debug().Msgf("%s user id claims '%d' not equal user id req '%d'", fInfo, claims.ID, userID)
+		h.Log.Debug().Msgf("%s user id claims '%d' not equal user id req '%d'", handlerAuthorize, claims.ID, userID)
 		return status.Error(codes.Unauthenticated, "authorization error")
 	}
 

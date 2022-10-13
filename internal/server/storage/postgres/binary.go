@@ -9,6 +9,13 @@ import (
 	"github.com/rs/zerolog"
 )
 
+const (
+	binaryCreate = "binaryPostgres Create repo"
+	binaryUpdate = "binaryPostgres Update repo"
+	binaryDelete = "binaryPostgres Delete repo"
+	binaryGetAll = "binaryPostgres GetAll repo"
+)
+
 // BinaryPostgres binary data db
 type BinaryPostgres struct {
 	db  *sql.DB
@@ -24,11 +31,9 @@ func NewBinaryPostgres(db *sql.DB, log *zerolog.Logger) *BinaryPostgres {
 
 // Create creates a binary data and updates data version
 func (b *BinaryPostgres) Create(ctx context.Context, bin *domain.Binary) (err error) {
-	const fInfo = "binaryPostgres create repo"
-
 	tx, err := b.db.BeginTx(ctx, nil)
 	if err != nil {
-		b.log.Err(err).Msgf("%s start tx error", fInfo)
+		b.log.Err(err).Msgf("%s start tx error", binaryCreate)
 		return err
 	}
 
@@ -36,8 +41,8 @@ func (b *BinaryPostgres) Create(ctx context.Context, bin *domain.Binary) (err er
 		if err != nil {
 			txError := tx.Rollback()
 			if txError != nil {
-				b.log.Err(txError).Msgf("%s rollback error", fInfo)
-				err = fmt.Errorf("%s defer rollback error %s: %s", fInfo, txError.Error(), err.Error())
+				b.log.Err(txError).Msgf("%s rollback error", binaryCreate)
+				err = fmt.Errorf("%s defer rollback error %s: %s", binaryCreate, txError.Error(), err.Error())
 			}
 		}
 	}()
@@ -47,23 +52,23 @@ func (b *BinaryPostgres) Create(ctx context.Context, bin *domain.Binary) (err er
 
 	var id sql.NullInt64
 	if err = row.Scan(&id); err != nil {
-		b.log.Err(err).Msgf("%s scan id error", fInfo)
+		b.log.Err(err).Msgf("%s scan id error", binaryCreate)
 		return err
 	}
 
 	if !id.Valid {
 		err = fmt.Errorf("id binary data no valid")
-		b.log.Err(err).Msgf("%s error", fInfo)
+		b.log.Err(err).Msgf("%s error", binaryCreate)
 		return err
 	}
 
 	if err = updateVersion(ctx, bin.UserID, tx, b.log); err != nil {
-		b.log.Err(err).Msgf("%s error", fInfo)
+		b.log.Err(err).Msgf("%s error", binaryCreate)
 		return err
 	}
 
 	if err = tx.Commit(); err != nil {
-		b.log.Err(err).Msgf("%s commit error", fInfo)
+		b.log.Err(err).Msgf("%s commit error", binaryCreate)
 		return err
 	}
 
@@ -74,11 +79,9 @@ func (b *BinaryPostgres) Create(ctx context.Context, bin *domain.Binary) (err er
 
 // Update updates a binary data and data version
 func (b *BinaryPostgres) Update(ctx context.Context, bin *domain.Binary) (err error) {
-	const fInfo = "binaryPostgres update repo"
-
 	tx, err := b.db.BeginTx(ctx, nil)
 	if err != nil {
-		b.log.Err(err).Msgf("%s start tx error", fInfo)
+		b.log.Err(err).Msgf("%s start tx error", binaryUpdate)
 		return err
 	}
 
@@ -86,8 +89,8 @@ func (b *BinaryPostgres) Update(ctx context.Context, bin *domain.Binary) (err er
 		if err != nil {
 			txError := tx.Rollback()
 			if txError != nil {
-				b.log.Err(txError).Msgf("%s rollback error", fInfo)
-				err = fmt.Errorf("%s defer rollback error %s: %s", fInfo, txError.Error(), err.Error())
+				b.log.Err(txError).Msgf("%s rollback error", binaryUpdate)
+				err = fmt.Errorf("%s defer rollback error %s: %s", binaryUpdate, txError.Error(), err.Error())
 			}
 		}
 	}()
@@ -97,17 +100,17 @@ func (b *BinaryPostgres) Update(ctx context.Context, bin *domain.Binary) (err er
 		bin.Binary, bin.MetaInfo, bin.ID, bin.UserID)
 
 	if err != nil {
-		b.log.Err(err).Msgf("%s error", fInfo)
+		b.log.Err(err).Msgf("%s error", binaryUpdate)
 		return err
 	}
 
 	if err = updateVersion(ctx, bin.UserID, tx, b.log); err != nil {
-		b.log.Err(err).Msgf("%s error", fInfo)
+		b.log.Err(err).Msgf("%s error", binaryUpdate)
 		return err
 	}
 
 	if err = tx.Commit(); err != nil {
-		b.log.Err(err).Msgf("%s commit error", fInfo)
+		b.log.Err(err).Msgf("%s commit error", binaryUpdate)
 		return err
 	}
 
@@ -116,11 +119,9 @@ func (b *BinaryPostgres) Update(ctx context.Context, bin *domain.Binary) (err er
 
 // Delete deletes a binary data and updates data version
 func (b *BinaryPostgres) Delete(ctx context.Context, bin *domain.Binary) (err error) {
-	const fInfo = "BinaryPostgres delete repo"
-
 	tx, err := b.db.BeginTx(ctx, nil)
 	if err != nil {
-		b.log.Err(err).Msgf("%s start tx error", fInfo)
+		b.log.Err(err).Msgf("%s start tx error", binaryDelete)
 		return err
 	}
 
@@ -128,25 +129,25 @@ func (b *BinaryPostgres) Delete(ctx context.Context, bin *domain.Binary) (err er
 		if err != nil {
 			txError := tx.Rollback()
 			if txError != nil {
-				b.log.Err(txError).Msgf("%s rollback error", fInfo)
-				err = fmt.Errorf("%s defer rollback error %s: %s", fInfo, txError.Error(), err.Error())
+				b.log.Err(txError).Msgf("%s rollback error", binaryDelete)
+				err = fmt.Errorf("%s defer rollback error %s: %s", binaryDelete, txError.Error(), err.Error())
 			}
 		}
 	}()
 
 	_, err = tx.ExecContext(ctx, "DELETE FROM public.binary_data WHERE id=$1 AND user_id=$2", bin.ID, bin.UserID)
 	if err != nil {
-		b.log.Err(err).Msgf("%s error", fInfo)
+		b.log.Err(err).Msgf("%s error", binaryDelete)
 		return err
 	}
 
 	if err = updateVersion(ctx, bin.UserID, tx, b.log); err != nil {
-		b.log.Err(err).Msgf("%s error", fInfo)
+		b.log.Err(err).Msgf("%s error", binaryDelete)
 		return err
 	}
 
 	if err = tx.Commit(); err != nil {
-		b.log.Err(err).Msgf("%s commit error", fInfo)
+		b.log.Err(err).Msgf("%s commit error", binaryDelete)
 		return err
 	}
 
@@ -155,18 +156,16 @@ func (b *BinaryPostgres) Delete(ctx context.Context, bin *domain.Binary) (err er
 
 // GetAll returns all binary data by user id
 func (b *BinaryPostgres) GetAll(ctx context.Context, userID int) ([]domain.Binary, error) {
-	const fInfo = "binaryPostgres getAll repo"
-
 	rows, err := b.db.QueryContext(ctx, "SELECT id, user_id, data, meta_info FROM binary_data WHERE user_id=$1", userID)
 	if err != nil {
-		b.log.Err(err).Msgf("%s get rows error", fInfo)
+		b.log.Err(err).Msgf("%s get rows error", binaryGetAll)
 		return nil, err
 	}
 
 	defer func() {
 		err := rows.Close()
 		if err != nil {
-			b.log.Err(err).Msgf("%s rows close error", fInfo)
+			b.log.Err(err).Msgf("%s rows close error", binaryGetAll)
 		}
 	}()
 
@@ -179,7 +178,7 @@ func (b *BinaryPostgres) GetAll(ctx context.Context, userID int) ([]domain.Binar
 	}
 
 	if err = rows.Err(); err != nil {
-		b.log.Err(err).Msgf("%s rows scan error", fInfo)
+		b.log.Err(err).Msgf("%s rows scan error", binaryGetAll)
 	}
 
 	return dataOutput, nil

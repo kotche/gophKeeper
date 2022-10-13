@@ -40,11 +40,8 @@ func (k *Keeper) Run() {
 	jwt := service.NewJWTManager(k.Cfg.SecretKeyToken, k.Cfg.TokenDuration, k.Log)
 	authService := service.NewAuthService(repo.Auth, k.Log, jwt, k.Cfg.SecretKeyPassword)
 	commonService := service.NewCommonService(commonRepo, k.Log)
-	lpService := service.NewLoginPassService(repo.LoginPass, k.Log)
-	textService := service.NewTextService(repo.Text, k.Log)
-	binaryService := service.NewBinaryService(repo.Binary, k.Log)
-	bankCardService := service.NewBankCardService(repo.BankCard, k.Log)
-	srvc := service.NewService(commonService, authService, lpService, textService, binaryService, bankCardService)
+	dataService := service.NewDataService(repo.LoginPass, repo.Text, repo.Binary, repo.BankCard, k.Log)
+	srvc := service.NewService(commonService, authService, dataService)
 
 	handler := grpcHandler.NewHandler(srvc, k.Log, k.Cfg)
 	grpcSrv := grpcServer.NewServer(k.Cfg, handler)

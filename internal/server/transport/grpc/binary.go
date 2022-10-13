@@ -5,6 +5,7 @@ import (
 
 	"github.com/kotche/gophKeeper/internal/pb"
 	"github.com/kotche/gophKeeper/internal/server/domain"
+	"github.com/kotche/gophKeeper/internal/server/domain/dataType"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -17,7 +18,7 @@ func (h *Handler) CreateBinary(ctx context.Context, r *pb.BinaryRequest) (*pb.Bi
 		MetaInfo: r.MetaInfo,
 	}
 
-	err := h.Service.Binary.Create(ctx, &Binary)
+	err := h.Service.Data.Create(ctx, &Binary)
 	if err != nil {
 		h.Log.Error().Err(err).Msg("handler createBinary error")
 		return nil, status.Error(codes.Internal, err.Error())
@@ -36,7 +37,7 @@ func (h *Handler) UpdateBinary(ctx context.Context, r *pb.BinaryUpdateRequest) (
 		MetaInfo: r.MetaInfo,
 	}
 
-	err := h.Service.Binary.Update(ctx, &Binary)
+	err := h.Service.Data.Update(ctx, &Binary)
 	if err != nil {
 		h.Log.Error().Err(err).Msg("handler updateBinary error")
 		return nil, status.Error(codes.Internal, err.Error())
@@ -53,7 +54,7 @@ func (h *Handler) DeleteBinary(ctx context.Context, r *pb.BinaryDeleteRequest) (
 		UserID: int(r.UserId),
 	}
 
-	err := h.Service.Binary.Delete(ctx, &Binary)
+	err := h.Service.Data.Delete(ctx, &Binary)
 	if err != nil {
 		h.Log.Error().Err(err).Msg("handler deleteBinary error")
 		return nil, status.Error(codes.Internal, err.Error())
@@ -66,14 +67,14 @@ func (h *Handler) DeleteBinary(ctx context.Context, r *pb.BinaryDeleteRequest) (
 // GetAllBinary returns all binary data by user id
 func (h *Handler) GetAllBinary(ctx context.Context, r *pb.BinaryGetAllRequest) (*pb.BinaryGetAllResponse, error) {
 	userID := int(r.UserId)
-	data, err := h.Service.Binary.GetAll(ctx, userID)
+	data, err := h.Service.Data.GetAll(ctx, userID, dataType.BINARY)
 	if err != nil {
 		h.Log.Error().Err(err).Msg("handler getAllBinary error")
 		return nil, status.Error(codes.Internal, "internal error")
 	}
 
 	response := pb.BinaryGetAllResponse{}
-	for _, v := range data {
+	for _, v := range data.([]domain.Binary) {
 		response.Binary = append(response.Binary, &pb.GetAllBinaryResponse{
 			Id:       int64(v.ID),
 			Binary:   v.Binary,

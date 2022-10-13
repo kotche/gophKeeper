@@ -5,6 +5,7 @@ import (
 
 	"github.com/kotche/gophKeeper/internal/pb"
 	"github.com/kotche/gophKeeper/internal/server/domain"
+	"github.com/kotche/gophKeeper/internal/server/domain/dataType"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -17,7 +18,7 @@ func (h *Handler) CreateBankCard(ctx context.Context, r *pb.BankCardRequest) (*p
 		MetaInfo: r.MetaInfo,
 	}
 
-	err := h.Service.BankCard.Create(ctx, &BankCard)
+	err := h.Service.Data.Create(ctx, &BankCard)
 	if err != nil {
 		h.Log.Error().Err(err).Msg("handler createBankCard error")
 		return nil, status.Error(codes.Internal, err.Error())
@@ -36,7 +37,7 @@ func (h *Handler) UpdateBankCard(ctx context.Context, r *pb.BankCardUpdateReques
 		MetaInfo: r.MetaInfo,
 	}
 
-	err := h.Service.BankCard.Update(ctx, &BankCard)
+	err := h.Service.Data.Update(ctx, &BankCard)
 	if err != nil {
 		h.Log.Error().Err(err).Msg("handler updateBankCard error")
 		return nil, status.Error(codes.Internal, err.Error())
@@ -53,7 +54,7 @@ func (h *Handler) DeleteBankCard(ctx context.Context, r *pb.BankCardDeleteReques
 		UserID: int(r.UserId),
 	}
 
-	err := h.Service.BankCard.Delete(ctx, &BankCard)
+	err := h.Service.Data.Delete(ctx, &BankCard)
 	if err != nil {
 		h.Log.Error().Err(err).Msg("handler deleteBankCard error")
 		return nil, status.Error(codes.Internal, err.Error())
@@ -66,14 +67,14 @@ func (h *Handler) DeleteBankCard(ctx context.Context, r *pb.BankCardDeleteReques
 // GetAllBankCard returns all bank card by user id
 func (h *Handler) GetAllBankCard(ctx context.Context, r *pb.BankCardGetAllRequest) (*pb.BankCardGetAllResponse, error) {
 	userID := int(r.UserId)
-	data, err := h.Service.BankCard.GetAll(ctx, userID)
+	data, err := h.Service.Data.GetAll(ctx, userID, dataType.BANKCARD)
 	if err != nil {
 		h.Log.Error().Err(err).Msg("handler getAllBankCard error")
 		return nil, status.Error(codes.Internal, "internal error")
 	}
 
 	response := pb.BankCardGetAllResponse{}
-	for _, v := range data {
+	for _, v := range data.([]domain.BankCard) {
 		response.BankCard = append(response.BankCard, &pb.GetAllBankCardResponse{
 			Id:       int64(v.ID),
 			Number:   v.Number,

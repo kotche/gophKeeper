@@ -5,6 +5,7 @@ import (
 
 	"github.com/kotche/gophKeeper/internal/pb"
 	"github.com/kotche/gophKeeper/internal/server/domain"
+	"github.com/kotche/gophKeeper/internal/server/domain/dataType"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -18,7 +19,7 @@ func (h *Handler) CreateLoginPass(ctx context.Context, r *pb.LoginPassRequest) (
 		MetaInfo: r.MetaInfo,
 	}
 
-	err := h.Service.LoginPass.Create(ctx, &loginPass)
+	err := h.Service.Data.Create(ctx, &loginPass)
 	if err != nil {
 		h.Log.Error().Err(err).Msg("handler createLoginPass error")
 		return nil, status.Error(codes.Internal, err.Error())
@@ -38,7 +39,7 @@ func (h *Handler) UpdateLoginPass(ctx context.Context, r *pb.LoginPassUpdateRequ
 		MetaInfo: r.MetaInfo,
 	}
 
-	err := h.Service.LoginPass.Update(ctx, &loginPass)
+	err := h.Service.Data.Update(ctx, &loginPass)
 	if err != nil {
 		h.Log.Error().Err(err).Msg("handler updateLoginPass error")
 		return nil, status.Error(codes.Internal, err.Error())
@@ -55,7 +56,7 @@ func (h *Handler) DeleteLoginPass(ctx context.Context, r *pb.LoginPassDeleteRequ
 		UserID: int(r.UserId),
 	}
 
-	err := h.Service.LoginPass.Delete(ctx, &loginPass)
+	err := h.Service.Data.Delete(ctx, &loginPass)
 	if err != nil {
 		h.Log.Error().Err(err).Msg("handler deleteLoginPass error")
 		return nil, status.Error(codes.Internal, err.Error())
@@ -68,14 +69,14 @@ func (h *Handler) DeleteLoginPass(ctx context.Context, r *pb.LoginPassDeleteRequ
 // GetAllLoginPass returns all login password pairs by user id
 func (h *Handler) GetAllLoginPass(ctx context.Context, r *pb.LoginPassGetAllRequest) (*pb.LoginPassGetAllResponse, error) {
 	userID := int(r.UserId)
-	data, err := h.Service.LoginPass.GetAll(ctx, userID)
+	data, err := h.Service.Data.GetAll(ctx, userID, dataType.LP)
 	if err != nil {
 		h.Log.Error().Err(err).Msg("handler getAllLoginPass error")
 		return nil, status.Error(codes.Internal, "internal error")
 	}
 
 	response := pb.LoginPassGetAllResponse{}
-	for _, v := range data {
+	for _, v := range data.([]domain.LoginPass) {
 		response.LoginPassPairs = append(response.LoginPassPairs, &pb.GetAllLoginPassResponse{
 			Id:       int64(v.ID),
 			Login:    v.Login,
