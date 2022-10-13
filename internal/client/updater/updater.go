@@ -22,8 +22,8 @@ type ISender interface {
 }
 
 type IService interface {
-	GetVersionCache() (int, error)
-	SetVersionCache(version int) error
+	GetVersionCache() int
+	SetVersionCache(version int)
 	UpdateAll(data any) error
 }
 
@@ -49,11 +49,7 @@ func (w *Updater) Run(ctx context.Context) {
 	for {
 		select {
 		case <-ticker.C:
-			verCache, err := w.Service.GetVersionCache()
-			if err != nil {
-				w.Log.Err(err).Msg("worker getVersionCache error")
-				continue
-			}
+			verCache := w.Service.GetVersionCache()
 			verServer, err := w.Sender.GetVersionServer(ctx)
 			if err != nil {
 				w.Log.Err(err).Msg("worker getVersionServer error")

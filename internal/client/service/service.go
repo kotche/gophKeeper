@@ -13,12 +13,12 @@ import (
 )
 
 type ICache interface {
-	SetUserParams(userID int, token string) error
-	GetCurrentUserID() (int, error)
-	GetToken() (string, error)
-	GetVersion() (int, error)
-	SetVersion(version int) error
-	IncVersion() error
+	SetUserParams(userID int, token string)
+	GetCurrentUserID() int
+	GetToken() string
+	GetVersion() int
+	SetVersion(version int)
+	IncVersion()
 
 	Save(data any) error
 	Update(data any) error
@@ -52,26 +52,24 @@ func (s *Service) SetUserParams(userID int, token string) error {
 		return errors.New("internal error")
 	}
 
-	if err := s.Storage.SetUserParams(userID, token); err != nil {
-		return err
-	}
+	s.Storage.SetUserParams(userID, token)
 	return nil
 }
 
-func (s *Service) GetCurrentUserID() (int, error) {
+func (s *Service) GetCurrentUserID() int {
 	return s.Storage.GetCurrentUserID()
 }
 
-func (s *Service) GetToken() (string, error) {
+func (s *Service) GetToken() string {
 	return s.Storage.GetToken()
 }
 
-func (s *Service) GetVersionCache() (int, error) {
+func (s *Service) GetVersionCache() int {
 	return s.Storage.GetVersion()
 }
 
-func (s *Service) SetVersionCache(version int) error {
-	return s.Storage.SetVersion(version)
+func (s *Service) SetVersionCache(version int) {
+	s.Storage.SetVersion(version)
 }
 
 func (s *Service) Save(data any) error {

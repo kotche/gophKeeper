@@ -9,11 +9,11 @@ import (
 	"github.com/kotche/gophKeeper/internal/pb"
 )
 
-func (s *Sender) CreateBinary(binary, meta string) error {
+func (s *Sender) CreateBinary(binary, meta string) (int, error) {
 	portTCP := fmt.Sprintf(":%s", s.Conf.Port)
 	conn, err := s.ClientConn.GetClientConn(portTCP, s.Log, s.getInterceptors())
 	if err != nil {
-		return fmt.Errorf("server is not available: %s", err.Error())
+		return -1, fmt.Errorf("server is not available: %s", err.Error())
 	}
 	defer func() {
 		err := conn.Close()
@@ -24,16 +24,13 @@ func (s *Sender) CreateBinary(binary, meta string) error {
 
 	c := pb.NewBinaryServiceClient(conn)
 
-	userID, err := s.Service.GetCurrentUserID()
-	if err != nil {
-		return err
-	}
+	userID := s.Service.GetCurrentUserID()
 	r := &pb.BinaryRequest{UserId: int64(userID), Binary: binary, MetaInfo: meta}
 
 	ctx := context.Background()
 	resp, err := c.CreateBinary(ctx, r)
 	if err != nil {
-		return err
+		return -1, err
 	}
 
 	s.Log.Debug().Msgf("type binary create, userID %d, id: %d", userID, resp.Id)
@@ -48,11 +45,9 @@ func (s *Sender) CreateBinary(binary, meta string) error {
 		s.Log.Err(err).Msgf("createBinary add to cache '%+v' error: %w", data, err)
 	}
 
-	if err = s.Service.Storage.IncVersion(); err != nil {
-		s.Log.Debug().Msgf("createBinary inc version error: %w", err)
-	}
+	s.Service.Storage.IncVersion()
 
-	return nil
+	return data.ID, nil
 }
 
 func (s *Sender) UpdateBinary(id int, binary, meta string) error {
@@ -70,10 +65,7 @@ func (s *Sender) UpdateBinary(id int, binary, meta string) error {
 
 	c := pb.NewBinaryServiceClient(conn)
 
-	userID, err := s.Service.GetCurrentUserID()
-	if err != nil {
-		return err
-	}
+	userID := s.Service.GetCurrentUserID()
 	r := &pb.BinaryUpdateRequest{Id: int64(id), UserId: int64(userID), Binary: binary, MetaInfo: meta}
 
 	ctx := context.Background()
@@ -94,9 +86,7 @@ func (s *Sender) UpdateBinary(id int, binary, meta string) error {
 		s.Log.Err(err).Msgf("updateBinary update binary to cache '%+v' error: %w", data, err)
 	}
 
-	if err = s.Service.Storage.IncVersion(); err != nil {
-		s.Log.Debug().Msgf("updateBinary inc version error: %w", err)
-	}
+	s.Service.Storage.IncVersion()
 
 	return nil
 }
@@ -116,10 +106,7 @@ func (s *Sender) DeleteBinary(id int) error {
 
 	c := pb.NewBinaryServiceClient(conn)
 
-	userID, err := s.Service.GetCurrentUserID()
-	if err != nil {
-		return err
-	}
+	userID := s.Service.GetCurrentUserID()
 	r := &pb.BinaryDeleteRequest{Id: int64(id), UserId: int64(userID)}
 
 	ctx := context.Background()
@@ -138,9 +125,7 @@ func (s *Sender) DeleteBinary(id int) error {
 		s.Log.Err(err).Msgf("deleteBinary delete binary to cache '%d' error: %w", id, err)
 	}
 
-	if err = s.Service.Storage.IncVersion(); err != nil {
-		s.Log.Debug().Msgf("deleteBinary inc version error: %w", err)
-	}
+	s.Service.Storage.IncVersion()
 
 	return nil
 }
@@ -168,10 +153,8 @@ func (s *Sender) GetAllBinary(ctx context.Context) ([]*domain.Binary, error) {
 
 	c := pb.NewBinaryServiceClient(conn)
 
-	userID, err := s.Service.GetCurrentUserID()
-	if err != nil {
-		return nil, err
-	}
+	userID := s.Service.GetCurrentUserID()
+
 	r := &pb.BinaryGetAllRequest{UserId: int64(userID)}
 
 	resp, err := c.GetAllBinary(ctx, r)

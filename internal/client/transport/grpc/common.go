@@ -7,7 +7,7 @@ import (
 	"github.com/kotche/gophKeeper/internal/pb"
 )
 
-func (s *Sender) GetVersionCache() (int, error) {
+func (s *Sender) GetVersionCache() int {
 	return s.Service.Storage.GetVersion()
 }
 
@@ -24,10 +24,7 @@ func (s *Sender) GetVersionServer(ctx context.Context) (int, error) {
 		}
 	}()
 
-	userID, err := s.Service.GetCurrentUserID()
-	if err != nil {
-		return 0, err
-	}
+	userID := s.Service.GetCurrentUserID()
 
 	c := pb.NewVersionServiceClient(conn)
 	r := &pb.GetVersionRequest{UserId: int64(userID)}

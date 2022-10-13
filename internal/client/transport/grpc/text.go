@@ -9,11 +9,11 @@ import (
 	"github.com/kotche/gophKeeper/internal/pb"
 )
 
-func (s *Sender) CreateText(text, meta string) error {
+func (s *Sender) CreateText(text, meta string) (int, error) {
 	portTCP := fmt.Sprintf(":%s", s.Conf.Port)
 	conn, err := s.ClientConn.GetClientConn(portTCP, s.Log, s.getInterceptors())
 	if err != nil {
-		return fmt.Errorf("server is not available: %s", err.Error())
+		return -1, fmt.Errorf("server is not available: %s", err.Error())
 	}
 	defer func() {
 		err := conn.Close()
@@ -24,16 +24,13 @@ func (s *Sender) CreateText(text, meta string) error {
 
 	c := pb.NewTextServiceClient(conn)
 
-	userID, err := s.Service.GetCurrentUserID()
-	if err != nil {
-		return err
-	}
+	userID := s.Service.GetCurrentUserID()
 	r := &pb.TextRequest{UserId: int64(userID), Text: text, MetaInfo: meta}
 
 	ctx := context.Background()
 	resp, err := c.CreateText(ctx, r)
 	if err != nil {
-		return err
+		return -1, err
 	}
 
 	s.Log.Debug().Msgf("type text create, userID %d, id: %d", userID, resp.Id)
@@ -48,11 +45,9 @@ func (s *Sender) CreateText(text, meta string) error {
 		s.Log.Err(err).Msgf("createText add to cache '%+v' error: %w", data, err)
 	}
 
-	if err = s.Service.Storage.IncVersion(); err != nil {
-		s.Log.Debug().Msgf("createText inc version error: %w", err)
-	}
+	s.Service.Storage.IncVersion()
 
-	return nil
+	return data.ID, nil
 }
 
 func (s *Sender) UpdateText(id int, text, meta string) error {
@@ -70,10 +65,7 @@ func (s *Sender) UpdateText(id int, text, meta string) error {
 
 	c := pb.NewTextServiceClient(conn)
 
-	userID, err := s.Service.GetCurrentUserID()
-	if err != nil {
-		return err
-	}
+	userID := s.Service.GetCurrentUserID()
 	r := &pb.TextUpdateRequest{Id: int64(id), UserId: int64(userID), Text: text, MetaInfo: meta}
 
 	ctx := context.Background()
@@ -94,9 +86,7 @@ func (s *Sender) UpdateText(id int, text, meta string) error {
 		s.Log.Err(err).Msgf("updateText update text to cache '%+v' error: %w", data, err)
 	}
 
-	if err = s.Service.Storage.IncVersion(); err != nil {
-		s.Log.Debug().Msgf("updateText inc version error: %w", err)
-	}
+	s.Service.Storage.IncVersion()
 
 	return nil
 }
@@ -116,10 +106,7 @@ func (s *Sender) DeleteText(id int) error {
 
 	c := pb.NewTextServiceClient(conn)
 
-	userID, err := s.Service.GetCurrentUserID()
-	if err != nil {
-		return err
-	}
+	userID := s.Service.GetCurrentUserID()
 	r := &pb.TextDeleteRequest{Id: int64(id), UserId: int64(userID)}
 
 	ctx := context.Background()
@@ -138,9 +125,7 @@ func (s *Sender) DeleteText(id int) error {
 		s.Log.Err(err).Msgf("delete text to cache '%d' error: %w", id, err)
 	}
 
-	if err = s.Service.Storage.IncVersion(); err != nil {
-		s.Log.Debug().Msgf("deleteText inc version error: %w", err)
-	}
+	s.Service.Storage.IncVersion()
 
 	return nil
 }
@@ -168,10 +153,7 @@ func (s *Sender) GetAllText(ctx context.Context) ([]*domain.Text, error) {
 
 	c := pb.NewTextServiceClient(conn)
 
-	userID, err := s.Service.GetCurrentUserID()
-	if err != nil {
-		return nil, err
-	}
+	userID := s.Service.GetCurrentUserID()
 	r := &pb.TextGetAllRequest{UserId: int64(userID)}
 
 	resp, err := c.GetAllText(ctx, r)

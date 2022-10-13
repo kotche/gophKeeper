@@ -10,22 +10,22 @@ type ISender interface {
 	Login(username, password string) error
 	Authentication(login, password string) error
 
-	CreateLoginPass(login, password, meta string) error
+	CreateLoginPass(login, password, meta string) (int, error)
 	UpdateLoginPass(id int, login, password, meta string) error
 	DeleteLoginPass(id int) error
 	ReadLoginPassCache() ([]*domain.LoginPass, error)
 
-	CreateText(text, meta string) error
+	CreateText(text, meta string) (int, error)
 	UpdateText(id int, text, meta string) error
 	DeleteText(id int) error
 	ReadTextCache() ([]*domain.Text, error)
 
-	CreateBinary(binary, meta string) error
+	CreateBinary(binary, meta string) (int, error)
 	UpdateBinary(id int, binary, meta string) error
 	DeleteBinary(id int) error
 	ReadBinaryCache() ([]*domain.Binary, error)
 
-	CreateBankCard(number, meta string) error
+	CreateBankCard(number, meta string) (int, error)
 	UpdateBankCard(id int, number, meta string) error
 	DeleteBankCard(id int) error
 	ReadBankCardCache() ([]*domain.BankCard, error)

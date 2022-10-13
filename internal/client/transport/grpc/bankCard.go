@@ -9,11 +9,11 @@ import (
 	"github.com/kotche/gophKeeper/internal/pb"
 )
 
-func (s *Sender) CreateBankCard(number, meta string) error {
+func (s *Sender) CreateBankCard(number, meta string) (int, error) {
 	portTCP := fmt.Sprintf(":%s", s.Conf.Port)
 	conn, err := s.ClientConn.GetClientConn(portTCP, s.Log, s.getInterceptors())
 	if err != nil {
-		return fmt.Errorf("server is not available: %s", err.Error())
+		return -1, fmt.Errorf("server is not available: %s", err.Error())
 	}
 	defer func() {
 		err := conn.Close()
@@ -24,16 +24,13 @@ func (s *Sender) CreateBankCard(number, meta string) error {
 
 	c := pb.NewBankCardServiceClient(conn)
 
-	userID, err := s.Service.GetCurrentUserID()
-	if err != nil {
-		return err
-	}
+	userID := s.Service.GetCurrentUserID()
 	r := &pb.BankCardRequest{UserId: int64(userID), Number: number, MetaInfo: meta}
 
 	ctx := context.Background()
 	resp, err := c.CreateBankCard(ctx, r)
 	if err != nil {
-		return err
+		return -1, err
 	}
 
 	s.Log.Debug().Msgf("type bank card create, userID %d, id: %d", userID, resp.Id)
@@ -48,11 +45,9 @@ func (s *Sender) CreateBankCard(number, meta string) error {
 		s.Log.Err(err).Msgf("createBankCard add to cache '%+v' error: %w", data, err)
 	}
 
-	if err = s.Service.Storage.IncVersion(); err != nil {
-		s.Log.Debug().Msgf("createBankCard inc version error: %w", err)
-	}
+	s.Service.Storage.IncVersion()
 
-	return nil
+	return data.ID, nil
 }
 
 func (s *Sender) UpdateBankCard(id int, number, meta string) error {
@@ -70,10 +65,7 @@ func (s *Sender) UpdateBankCard(id int, number, meta string) error {
 
 	c := pb.NewBankCardServiceClient(conn)
 
-	userID, err := s.Service.GetCurrentUserID()
-	if err != nil {
-		return err
-	}
+	userID := s.Service.GetCurrentUserID()
 	r := &pb.BankCardUpdateRequest{Id: int64(id), UserId: int64(userID), Number: number, MetaInfo: meta}
 
 	ctx := context.Background()
@@ -94,9 +86,7 @@ func (s *Sender) UpdateBankCard(id int, number, meta string) error {
 		s.Log.Err(err).Msgf("updateBankCard update bank card to cache '%+v' error: %w", data, err)
 	}
 
-	if err = s.Service.Storage.IncVersion(); err != nil {
-		s.Log.Debug().Msgf("updateBankCard inc version error: %w", err)
-	}
+	s.Service.Storage.IncVersion()
 
 	return nil
 }
@@ -116,10 +106,7 @@ func (s *Sender) DeleteBankCard(id int) error {
 
 	c := pb.NewBankCardServiceClient(conn)
 
-	userID, err := s.Service.GetCurrentUserID()
-	if err != nil {
-		return err
-	}
+	userID := s.Service.GetCurrentUserID()
 	r := &pb.BankCardDeleteRequest{Id: int64(id), UserId: int64(userID)}
 
 	ctx := context.Background()
@@ -138,9 +125,7 @@ func (s *Sender) DeleteBankCard(id int) error {
 		s.Log.Err(err).Msgf("deleteBankCard delete bank card to cache '%d' error: %w", id, err)
 	}
 
-	if err = s.Service.Storage.IncVersion(); err != nil {
-		s.Log.Debug().Msgf("deleteBankCard inc version error: %w", err)
-	}
+	s.Service.Storage.IncVersion()
 
 	return nil
 }
@@ -168,10 +153,7 @@ func (s *Sender) GetAllBankCard(ctx context.Context) ([]*domain.BankCard, error)
 
 	c := pb.NewBankCardServiceClient(conn)
 
-	userID, err := s.Service.GetCurrentUserID()
-	if err != nil {
-		return nil, err
-	}
+	userID := s.Service.GetCurrentUserID()
 	r := &pb.BankCardGetAllRequest{UserId: int64(userID)}
 
 	resp, err := c.GetAllBankCard(ctx, r)

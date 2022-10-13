@@ -18,10 +18,7 @@ func (s *Sender) authorize(ctx context.Context, method string, req interface{},
 		return invoker(ctx, method, req, reply, cc, opts...)
 	}
 
-	token, err := s.Service.GetToken()
-	if err != nil {
-		s.Log.Err(err).Msg("sender client authorize token error")
-	}
+	token := s.Service.GetToken()
 	md := metadata.New(map[string]string{"token": token})
 	ctx = metadata.NewOutgoingContext(ctx, md)
 

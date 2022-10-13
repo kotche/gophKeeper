@@ -84,48 +84,40 @@ func (c *Commander) CreateData(in string) {
 	case loginPassDataType:
 		login := blocks[2]
 		password := blocks[3]
-
-		c.Log.Debug().Msgf("create lp: login: %s, password: %s meta: %s", login, password, meta)
-
-		err := c.Sender.CreateLoginPass(login, password, meta)
+		id, err := c.Sender.CreateLoginPass(login, password, meta)
 		if err != nil {
 			fmt.Printf("create login password failed: %s\n", err.Error())
 			return
 		}
-		fmt.Println("create login password successful")
+		c.Log.Debug().Msgf("create lp: login: %s, password: %s meta: %s", login, password, meta)
+		fmt.Printf("create login password id '%d' successful\n", id)
 	case textDataType:
 		text := strings.Join(blocks[2:indEnd], " ")
-
-		c.Log.Debug().Msgf("create text: text: %s, meta: %s", text, meta)
-
-		err := c.Sender.CreateText(text, meta)
+		id, err := c.Sender.CreateText(text, meta)
 		if err != nil {
 			fmt.Printf("create text data failed: %s\n", err.Error())
 			return
 		}
-		fmt.Println("create text data successful")
+		c.Log.Debug().Msgf("create text: text: %s, meta: %s", text, meta)
+		fmt.Printf("create text data id '%d' successful\n", id)
 	case binaryDataType:
 		binary := strings.Join(blocks[2:indEnd], " ")
-
-		c.Log.Debug().Msgf("create binary: binary: %s, meta: %s", binary, meta)
-
-		err := c.Sender.CreateBinary(binary, meta)
+		id, err := c.Sender.CreateBinary(binary, meta)
 		if err != nil {
 			fmt.Printf("create binary data failed: %s\n", err.Error())
 			return
 		}
-		fmt.Println("create binary data successful")
+		c.Log.Debug().Msgf("create binary: binary: %s, meta: %s", binary, meta)
+		fmt.Printf("create binary data id '%d' successful\n", id)
 	case bankCardDataType:
 		number := blocks[2]
-
-		c.Log.Debug().Msgf("create bank card: number: %s, meta: %s", number, meta)
-
-		err := c.Sender.CreateBankCard(number, meta)
+		id, err := c.Sender.CreateBankCard(number, meta)
 		if err != nil {
 			fmt.Printf("create bank card failed: %s\n", err.Error())
 			return
 		}
-		fmt.Println("create bank card successful")
+		c.Log.Debug().Msgf("create bank card: number: %s, meta: %s", number, meta)
+		fmt.Printf("create bank card id '%d' successful\n", id)
 	default:
 		fmt.Println(invalidFormat)
 	}

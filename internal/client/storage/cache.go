@@ -35,36 +35,34 @@ func NewCache(log *zerolog.Logger) *Cache {
 	}
 }
 
-func (c *Cache) SetUserParams(userID int, token string) error {
+func (c *Cache) SetUserParams(userID int, token string) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	c.userID = userID
 	c.token = token
 	c.lpData = make(map[int]*domain.LoginPass)
 	c.version.Swap(0)
-	return nil
 }
 
-func (c *Cache) GetToken() (string, error) {
-	return c.token, nil
+func (c *Cache) GetToken() string {
+	return c.token
 }
 
-func (c *Cache) GetCurrentUserID() (int, error) {
-	return c.userID, nil
+func (c *Cache) GetCurrentUserID() int {
+	return c.userID
 }
 
-func (c *Cache) GetVersion() (int, error) {
-	return int(c.version.Load()), nil
+func (c *Cache) GetVersion() int {
+	return int(c.version.Load())
 }
 
-func (c *Cache) IncVersion() error {
+func (c *Cache) IncVersion() {
 	c.version.Add(1)
-	return nil
+
 }
 
-func (c *Cache) SetVersion(version int) error {
+func (c *Cache) SetVersion(version int) {
 	c.version.Swap(uint64(version))
-	return nil
 }
 
 func (c *Cache) Save(data any) error {
