@@ -1,8 +1,10 @@
-tcp:
-  port: '3200'
-
 logger:
   log_level: 'debug'
 
 updater:
   update_timeout: 3s
+
+grpc_client:
+  grpc_address: ':3200'
+  grpc_time: 1s
+  grpc_timeout: 3s

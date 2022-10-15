@@ -2,7 +2,6 @@ package grpc
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/kotche/gophKeeper/internal/client/domain"
 	"github.com/kotche/gophKeeper/internal/client/domain/dataType"
@@ -10,25 +9,11 @@ import (
 )
 
 func (s *Sender) CreateBankCard(number, meta string) (int, error) {
-	portTCP := fmt.Sprintf(":%s", s.Conf.Port)
-	conn, err := s.ClientConn.GetClientConn(portTCP, s.Log, s.getInterceptors())
-	if err != nil {
-		return -1, fmt.Errorf("server is not available: %s", err.Error())
-	}
-	defer func() {
-		err := conn.Close()
-		if err != nil {
-			s.Log.Err(err).Msg("createBankCard conn close error")
-		}
-	}()
-
-	c := pb.NewBankCardServiceClient(conn)
-
 	userID := s.Service.GetCurrentUserID()
 	r := &pb.BankCardRequest{UserId: int64(userID), Number: number, MetaInfo: meta}
 
 	ctx := context.Background()
-	resp, err := c.CreateBankCard(ctx, r)
+	resp, err := s.ClientConn.BankCard.CreateBankCard(ctx, r)
 	if err != nil {
 		return -1, err
 	}
@@ -51,25 +36,11 @@ func (s *Sender) CreateBankCard(number, meta string) (int, error) {
 }
 
 func (s *Sender) UpdateBankCard(id int, number, meta string) error {
-	portTCP := fmt.Sprintf(":%s", s.Conf.Port)
-	conn, err := s.ClientConn.GetClientConn(portTCP, s.Log, s.getInterceptors())
-	if err != nil {
-		return fmt.Errorf("server is not available: %s", err.Error())
-	}
-	defer func() {
-		err := conn.Close()
-		if err != nil {
-			s.Log.Err(err).Msg("updateBankCard conn close error")
-		}
-	}()
-
-	c := pb.NewBankCardServiceClient(conn)
-
 	userID := s.Service.GetCurrentUserID()
 	r := &pb.BankCardUpdateRequest{Id: int64(id), UserId: int64(userID), Number: number, MetaInfo: meta}
 
 	ctx := context.Background()
-	_, err = c.UpdateBankCard(ctx, r)
+	_, err := s.ClientConn.BankCard.UpdateBankCard(ctx, r)
 	if err != nil {
 		return err
 	}
@@ -92,25 +63,11 @@ func (s *Sender) UpdateBankCard(id int, number, meta string) error {
 }
 
 func (s *Sender) DeleteBankCard(id int) error {
-	portTCP := fmt.Sprintf(":%s", s.Conf.Port)
-	conn, err := s.ClientConn.GetClientConn(portTCP, s.Log, s.getInterceptors())
-	if err != nil {
-		return fmt.Errorf("server is not available: %s", err.Error())
-	}
-	defer func() {
-		err := conn.Close()
-		if err != nil {
-			s.Log.Err(err).Msg("deleteBankCard conn close error")
-		}
-	}()
-
-	c := pb.NewBankCardServiceClient(conn)
-
 	userID := s.Service.GetCurrentUserID()
 	r := &pb.BankCardDeleteRequest{Id: int64(id), UserId: int64(userID)}
 
 	ctx := context.Background()
-	_, err = c.DeleteBankCard(ctx, r)
+	_, err := s.ClientConn.BankCard.DeleteBankCard(ctx, r)
 	if err != nil {
 		return err
 	}
@@ -139,24 +96,10 @@ func (s *Sender) ReadBankCardCache() ([]*domain.BankCard, error) {
 }
 
 func (s *Sender) GetAllBankCard(ctx context.Context) ([]*domain.BankCard, error) {
-	portTCP := fmt.Sprintf(":%s", s.Conf.Port)
-	conn, err := s.ClientConn.GetClientConn(portTCP, s.Log, s.getInterceptors())
-	if err != nil {
-		return nil, fmt.Errorf("server is not available: %s", err.Error())
-	}
-	defer func() {
-		err := conn.Close()
-		if err != nil {
-			s.Log.Err(err).Msg("getAllBankCard conn close error")
-		}
-	}()
-
-	c := pb.NewBankCardServiceClient(conn)
-
 	userID := s.Service.GetCurrentUserID()
 	r := &pb.BankCardGetAllRequest{UserId: int64(userID)}
 
-	resp, err := c.GetAllBankCard(ctx, r)
+	resp, err := s.ClientConn.BankCard.GetAllBankCard(ctx, r)
 	if err != nil {
 		return nil, err
 	}

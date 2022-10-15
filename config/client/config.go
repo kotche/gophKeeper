@@ -11,13 +11,15 @@ import (
 
 type (
 	Config struct {
-		TCP     `yaml:"tcp"`
-		Logger  `yaml:"logger"`
-		Updater `yaml:"updater"`
+		GRPCClient `yaml:"grpc_client"`
+		Logger     `yaml:"logger"`
+		Updater    `yaml:"updater"`
 	}
 
-	TCP struct {
-		Port string `env-required:"true" yaml:"port" env:"TCP_PORT"`
+	GRPCClient struct {
+		Address string        `env-required:"true" yaml:"grpc_address" env:"GRPC_ADDRESS"`
+		Time    time.Duration `env-required:"true" yaml:"grpc_time" env:"GRPC_TIME"`
+		Timeout time.Duration `env-required:"true" yaml:"grpc_timeout" env:"GRPC_TIMEOUT"`
 	}
 
 	Logger struct {

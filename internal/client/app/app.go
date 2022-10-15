@@ -29,17 +29,27 @@ func NewApp(conf *client.Config, log *zerolog.Logger) *App {
 func (a *App) Run() {
 	ctx, cancel := context.WithCancel(context.Background())
 
-	clientConn := grpcTransport.Connection{}
-	//conn := clientConn.GetClientConn()
-	//defer conn.Close()
-
 	cache := storage.NewCache(a.Log)
 	srvc := service.NewService(cache, a.Conf, a.Log)
+
+	interceptors := grpcTransport.NewInterceptors(srvc)
+	clientConn, err := grpcTransport.NewClientConnection(ctx, a.Conf, a.Log, interceptors.GetInterceptors())
+	if err != nil {
+		a.Log.Fatal().Err(err).Msg("clientConn connect error")
+	}
+	defer func() {
+		err := clientConn.Conn.Close()
+		a.Log.Err(err).Msg("close clientConn connect")
+		if err != nil {
+			a.Log.Err(err).Msg("clientConn connect close error")
+		}
+	}()
+
 	sender := grpcTransport.NewSender(srvc, clientConn, a.Conf, a.Log)
 	commander := transport.NewCommander(sender, a.Conf, a.Log)
 
-	updater := updater.NewUpdater(sender, srvc, a.Conf, a.Log)
-	go updater.Run(ctx)
+	upd := updater.NewUpdater(sender, srvc, a.Conf, a.Log)
+	go upd.Run(ctx)
 
 	termChan := make(chan os.Signal, 1)
 	signal.Notify(termChan, syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT)

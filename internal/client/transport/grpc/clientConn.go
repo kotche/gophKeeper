@@ -1,20 +1,47 @@
 package grpc
 
 import (
+	"context"
+
+	"github.com/kotche/gophKeeper/config/client"
+	"github.com/kotche/gophKeeper/internal/pb"
 	"github.com/rs/zerolog"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/keepalive"
 )
 
-type Connection struct {
-	conn *grpc.ClientConn
+type ClientConnection struct {
+	Conn     *grpc.ClientConn
+	Auth     pb.AuthServiceClient
+	Version  pb.VersionServiceClient
+	Lp       pb.LoginPassServiceClient
+	Text     pb.TextServiceClient
+	Binary   pb.BinaryServiceClient
+	BankCard pb.BankCardServiceClient
 }
 
-func (c Connection) GetClientConn(address string, log *zerolog.Logger, interceptors grpc.DialOption) (*grpc.ClientConn, error) {
-	conn, err := grpc.Dial(address, grpc.WithTransportCredentials(insecure.NewCredentials()), interceptors)
+func NewClientConnection(ctx context.Context, cfg *client.Config, log *zerolog.Logger, interceptors grpc.DialOption) (*ClientConnection, error) {
+	conn, err := grpc.DialContext(
+		ctx,
+		cfg.GRPCClient.Address,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		interceptors,
+		grpc.WithKeepaliveParams(keepalive.ClientParameters{
+			Time:    cfg.GRPCClient.Time,
+			Timeout: cfg.GRPCClient.Timeout,
+		}))
 	if err != nil {
-		log.Warn().Err(err).Msg("grpc connect error")
+		log.Err(err).Msg("grpc connect error")
 		return nil, err
 	}
-	return conn, nil
+	return &ClientConnection{
+		Conn:     conn,
+		Auth:     pb.NewAuthServiceClient(conn),
+		Version:  pb.NewVersionServiceClient(conn),
+		Lp:       pb.NewLoginPassServiceClient(conn),
+		Text:     pb.NewTextServiceClient(conn),
+		Binary:   pb.NewBinaryServiceClient(conn),
+		BankCard: pb.NewBankCardServiceClient(conn),
+	}, nil
 }

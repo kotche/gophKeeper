@@ -2,7 +2,6 @@ package grpc
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/kotche/gophKeeper/internal/client/domain"
 	"github.com/kotche/gophKeeper/internal/client/domain/dataType"
@@ -10,29 +9,11 @@ import (
 )
 
 func (s *Sender) CreateLoginPass(login, password, meta string) (int, error) {
-	if login == "" || password == "" {
-		return -1, fmt.Errorf("login or password is empty")
-	}
-
-	portTCP := fmt.Sprintf(":%s", s.Conf.Port)
-	conn, err := s.ClientConn.GetClientConn(portTCP, s.Log, s.getInterceptors())
-	if err != nil {
-		return -1, fmt.Errorf("server is not available: %s", err.Error())
-	}
-	defer func() {
-		err := conn.Close()
-		if err != nil {
-			s.Log.Err(err).Msg("createLoginPass conn close error")
-		}
-	}()
-
-	c := pb.NewLoginPassServiceClient(conn)
-
 	userID := s.Service.GetCurrentUserID()
 	r := &pb.LoginPassRequest{UserId: int64(userID), Username: login, Password: password, MetaInfo: meta}
 
 	ctx := context.Background()
-	resp, err := c.CreateLoginPass(ctx, r)
+	resp, err := s.ClientConn.Lp.CreateLoginPass(ctx, r)
 	if err != nil {
 		return -1, err
 	}
@@ -56,25 +37,11 @@ func (s *Sender) CreateLoginPass(login, password, meta string) (int, error) {
 }
 
 func (s *Sender) UpdateLoginPass(id int, login, password, meta string) error {
-	portTCP := fmt.Sprintf(":%s", s.Conf.Port)
-	conn, err := s.ClientConn.GetClientConn(portTCP, s.Log, s.getInterceptors())
-	if err != nil {
-		return fmt.Errorf("server is not available: %s", err.Error())
-	}
-	defer func() {
-		err := conn.Close()
-		if err != nil {
-			s.Log.Err(err).Msg("updateLoginPass conn close error")
-		}
-	}()
-
-	c := pb.NewLoginPassServiceClient(conn)
-
 	userID := s.Service.GetCurrentUserID()
 	r := &pb.LoginPassUpdateRequest{Id: int64(id), UserId: int64(userID), Username: login, Password: password, MetaInfo: meta}
 
 	ctx := context.Background()
-	_, err = c.UpdateLoginPass(ctx, r)
+	_, err := s.ClientConn.Lp.UpdateLoginPass(ctx, r)
 	if err != nil {
 		return err
 	}
@@ -98,25 +65,11 @@ func (s *Sender) UpdateLoginPass(id int, login, password, meta string) error {
 }
 
 func (s *Sender) DeleteLoginPass(id int) error {
-	portTCP := fmt.Sprintf(":%s", s.Conf.Port)
-	conn, err := s.ClientConn.GetClientConn(portTCP, s.Log, s.getInterceptors())
-	if err != nil {
-		return fmt.Errorf("server is not available: %s", err.Error())
-	}
-	defer func() {
-		err := conn.Close()
-		if err != nil {
-			s.Log.Err(err).Msg("deleteLoginPass conn close error")
-		}
-	}()
-
-	c := pb.NewLoginPassServiceClient(conn)
-
 	userID := s.Service.GetCurrentUserID()
 	r := &pb.LoginPassDeleteRequest{Id: int64(id), UserId: int64(userID)}
 
 	ctx := context.Background()
-	_, err = c.DeleteLoginPass(ctx, r)
+	_, err := s.ClientConn.Lp.DeleteLoginPass(ctx, r)
 	if err != nil {
 		return err
 	}
@@ -145,24 +98,10 @@ func (s *Sender) ReadLoginPassCache() ([]*domain.LoginPass, error) {
 }
 
 func (s *Sender) GetAllLoginPass(ctx context.Context) ([]*domain.LoginPass, error) {
-	portTCP := fmt.Sprintf(":%s", s.Conf.Port)
-	conn, err := s.ClientConn.GetClientConn(portTCP, s.Log, s.getInterceptors())
-	if err != nil {
-		return nil, fmt.Errorf("server is not available: %s", err.Error())
-	}
-	defer func() {
-		err := conn.Close()
-		if err != nil {
-			s.Log.Err(err).Msg("getAllLoginPass conn close error")
-		}
-	}()
-
-	c := pb.NewLoginPassServiceClient(conn)
-
 	userID := s.Service.GetCurrentUserID()
 	r := &pb.LoginPassGetAllRequest{UserId: int64(userID)}
 
-	resp, err := c.GetAllLoginPass(ctx, r)
+	resp, err := s.ClientConn.Lp.GetAllLoginPass(ctx, r)
 	if err != nil {
 		return nil, err
 	}

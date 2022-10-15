@@ -8,25 +8,34 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-func (s *Sender) authorize(ctx context.Context, method string, req interface{},
+type IService interface {
+	GetToken() string
+}
+
+type Interceptors struct {
+	Service IService
+}
+
+func NewInterceptors(s IService) *Interceptors {
+	return &Interceptors{Service: s}
+}
+
+func (i *Interceptors) GetInterceptors() grpc.DialOption {
+	auth := grpc.WithChainUnaryInterceptor(i.authorize)
+	return auth
+}
+
+func (i *Interceptors) authorize(ctx context.Context, method string, req interface{},
 	reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker,
 	opts ...grpc.CallOption) error {
-
-	//s.Log.Debug().Msgf("authorize interceptors method: %s", method)
 
 	if strings.Contains(method, "/Login") || strings.Contains(method, "/Authentication") {
 		return invoker(ctx, method, req, reply, cc, opts...)
 	}
 
-	token := s.Service.GetToken()
+	token := i.Service.GetToken()
 	md := metadata.New(map[string]string{"token": token})
 	ctx = metadata.NewOutgoingContext(ctx, md)
-
-	//s.Log.Debug().Msgf("authorize interceptors method: %s token %s", method, token)
+	
 	return invoker(ctx, method, req, reply, cc, opts...)
-}
-
-func (s *Sender) getInterceptors() grpc.DialOption {
-	auth := grpc.WithChainUnaryInterceptor(s.authorize)
-	return auth
 }

@@ -2,7 +2,6 @@ package grpc
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/kotche/gophKeeper/internal/client/domain"
 	"github.com/kotche/gophKeeper/internal/client/domain/dataType"
@@ -10,25 +9,11 @@ import (
 )
 
 func (s *Sender) CreateText(text, meta string) (int, error) {
-	portTCP := fmt.Sprintf(":%s", s.Conf.Port)
-	conn, err := s.ClientConn.GetClientConn(portTCP, s.Log, s.getInterceptors())
-	if err != nil {
-		return -1, fmt.Errorf("server is not available: %s", err.Error())
-	}
-	defer func() {
-		err := conn.Close()
-		if err != nil {
-			s.Log.Err(err).Msg("createText conn close error")
-		}
-	}()
-
-	c := pb.NewTextServiceClient(conn)
-
 	userID := s.Service.GetCurrentUserID()
 	r := &pb.TextRequest{UserId: int64(userID), Text: text, MetaInfo: meta}
 
 	ctx := context.Background()
-	resp, err := c.CreateText(ctx, r)
+	resp, err := s.ClientConn.Text.CreateText(ctx, r)
 	if err != nil {
 		return -1, err
 	}
@@ -51,25 +36,11 @@ func (s *Sender) CreateText(text, meta string) (int, error) {
 }
 
 func (s *Sender) UpdateText(id int, text, meta string) error {
-	portTCP := fmt.Sprintf(":%s", s.Conf.Port)
-	conn, err := s.ClientConn.GetClientConn(portTCP, s.Log, s.getInterceptors())
-	if err != nil {
-		return fmt.Errorf("server is not available: %s", err.Error())
-	}
-	defer func() {
-		err := conn.Close()
-		if err != nil {
-			s.Log.Err(err).Msg("updateText conn close error")
-		}
-	}()
-
-	c := pb.NewTextServiceClient(conn)
-
 	userID := s.Service.GetCurrentUserID()
 	r := &pb.TextUpdateRequest{Id: int64(id), UserId: int64(userID), Text: text, MetaInfo: meta}
 
 	ctx := context.Background()
-	_, err = c.UpdateText(ctx, r)
+	_, err := s.ClientConn.Text.UpdateText(ctx, r)
 	if err != nil {
 		return err
 	}
@@ -92,25 +63,11 @@ func (s *Sender) UpdateText(id int, text, meta string) error {
 }
 
 func (s *Sender) DeleteText(id int) error {
-	portTCP := fmt.Sprintf(":%s", s.Conf.Port)
-	conn, err := s.ClientConn.GetClientConn(portTCP, s.Log, s.getInterceptors())
-	if err != nil {
-		return fmt.Errorf("server is not available: %s", err.Error())
-	}
-	defer func() {
-		err := conn.Close()
-		if err != nil {
-			s.Log.Err(err).Msg("deleteText conn close error")
-		}
-	}()
-
-	c := pb.NewTextServiceClient(conn)
-
 	userID := s.Service.GetCurrentUserID()
 	r := &pb.TextDeleteRequest{Id: int64(id), UserId: int64(userID)}
 
 	ctx := context.Background()
-	_, err = c.DeleteText(ctx, r)
+	_, err := s.ClientConn.Text.DeleteText(ctx, r)
 	if err != nil {
 		return err
 	}
@@ -139,24 +96,10 @@ func (s *Sender) ReadTextCache() ([]*domain.Text, error) {
 }
 
 func (s *Sender) GetAllText(ctx context.Context) ([]*domain.Text, error) {
-	portTCP := fmt.Sprintf(":%s", s.Conf.Port)
-	conn, err := s.ClientConn.GetClientConn(portTCP, s.Log, s.getInterceptors())
-	if err != nil {
-		return nil, fmt.Errorf("server is not available: %s", err.Error())
-	}
-	defer func() {
-		err := conn.Close()
-		if err != nil {
-			s.Log.Err(err).Msg("getAllText conn close error")
-		}
-	}()
-
-	c := pb.NewTextServiceClient(conn)
-
 	userID := s.Service.GetCurrentUserID()
 	r := &pb.TextGetAllRequest{UserId: int64(userID)}
 
-	resp, err := c.GetAllText(ctx, r)
+	resp, err := s.ClientConn.Text.GetAllText(ctx, r)
 	if err != nil {
 		return nil, err
 	}
