@@ -19,12 +19,14 @@ const (
 // TextPostgres text data db
 type TextPostgres struct {
 	db  *sql.DB
+	ver *Version
 	log *zerolog.Logger
 }
 
-func NewTextPostgres(db *sql.DB, log *zerolog.Logger) *TextPostgres {
+func NewTextPostgres(db *sql.DB, ver *Version, log *zerolog.Logger) *TextPostgres {
 	return &TextPostgres{
 		db:  db,
+		ver: ver,
 		log: log,
 	}
 }
@@ -62,7 +64,7 @@ func (t *TextPostgres) Create(ctx context.Context, text *domain.Text) (err error
 		return err
 	}
 
-	if err = updateVersion(ctx, text.UserID, tx, t.log); err != nil {
+	if err = t.ver.UpdateVersion(ctx, text.UserID, tx); err != nil {
 		t.log.Err(err).Msgf("%s error", textCreate)
 		return err
 	}
@@ -104,7 +106,7 @@ func (t *TextPostgres) Update(ctx context.Context, text *domain.Text) (err error
 		return err
 	}
 
-	if err = updateVersion(ctx, text.UserID, tx, t.log); err != nil {
+	if err = t.ver.UpdateVersion(ctx, text.UserID, tx); err != nil {
 		t.log.Err(err).Msgf("%s error", textUpdate)
 		return err
 	}
@@ -141,7 +143,7 @@ func (t *TextPostgres) Delete(ctx context.Context, text *domain.Text) (err error
 		return err
 	}
 
-	if err = updateVersion(ctx, text.UserID, tx, t.log); err != nil {
+	if err = t.ver.UpdateVersion(ctx, text.UserID, tx); err != nil {
 		t.log.Err(err).Msgf("%s error", textDelete)
 		return err
 	}

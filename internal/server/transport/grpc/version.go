@@ -10,7 +10,7 @@ import (
 
 // GetVersion gets the current version of the data
 func (h *Handler) GetVersion(ctx context.Context, r *pb.GetVersionRequest) (*pb.GetVersionResponse, error) {
-	version, err := h.Service.Common.GetVersion(ctx, int(r.UserId))
+	version, err := h.Service.Version.GetVersion(ctx, int(r.UserId))
 	if err != nil {
 		h.Log.Err(err).Msg("handler getVersion error")
 		return nil, status.Error(codes.Internal, "internal error")

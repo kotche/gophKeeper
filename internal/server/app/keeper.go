@@ -31,19 +31,19 @@ func (k *Keeper) Run() {
 	if err != nil {
 		k.Log.Fatal().Err(err).Msg("db connection error")
 	}
-	commonRepo := postgres.NewCommonPostgres(pgx.DB, k.Log)
-	authRepo := postgres.NewAuthPostgres(pgx.DB, k.Log)
-	lpRepo := postgres.NewLoginPassPostgres(pgx.DB, k.Log)
-	textRepo := postgres.NewTextPostgres(pgx.DB, k.Log)
-	binaryRepo := postgres.NewBinaryPostgres(pgx.DB, k.Log)
-	bankCardRepo := postgres.NewBankCardPostgres(pgx.DB, k.Log)
-	repo := storage.NewRepository(commonRepo, authRepo, lpRepo, textRepo, binaryRepo, bankCardRepo)
+	versionRepo := postgres.NewVersionData(pgx.DB, k.Log)
+	authRepo := postgres.NewAuthPostgres(pgx.DB, versionRepo, k.Log)
+	lpRepo := postgres.NewLoginPassPostgres(pgx.DB, versionRepo, k.Log)
+	textRepo := postgres.NewTextPostgres(pgx.DB, versionRepo, k.Log)
+	binaryRepo := postgres.NewBinaryPostgres(pgx.DB, versionRepo, k.Log)
+	bankCardRepo := postgres.NewBankCardPostgres(pgx.DB, versionRepo, k.Log)
+	repo := storage.NewRepository(versionRepo, authRepo, lpRepo, textRepo, binaryRepo, bankCardRepo)
 
 	jwt := service.NewJWTManager(k.Cfg.SecretKeyToken, k.Cfg.TokenDuration, k.Log)
 	authService := service.NewAuthService(repo.Auth, k.Log, jwt, k.Cfg.SecretKeyPassword)
-	commonService := service.NewCommonService(commonRepo, k.Log)
+	versionService := service.NewVersionService(versionRepo, k.Log)
 	dataService := service.NewDataService(repo.LoginPass, repo.Text, repo.Binary, repo.BankCard, k.Log)
-	srvc := service.NewService(commonService, authService, dataService)
+	srvc := service.NewService(authService, dataService, versionService)
 
 	handler := grpcHandler.NewHandler(srvc, k.Log, k.Cfg)
 	grpcSrv := grpcServer.NewServer(k.Cfg, handler)

@@ -18,12 +18,14 @@ const (
 // AuthPostgres user authorization repository
 type AuthPostgres struct {
 	db  *sql.DB
+	ver *Version
 	log *zerolog.Logger
 }
 
-func NewAuthPostgres(db *sql.DB, log *zerolog.Logger) *AuthPostgres {
+func NewAuthPostgres(db *sql.DB, ver *Version, log *zerolog.Logger) *AuthPostgres {
 	return &AuthPostgres{
 		db:  db,
+		ver: ver,
 		log: log,
 	}
 }
@@ -66,7 +68,7 @@ func (a *AuthPostgres) CreateUser(ctx context.Context, user *domain.User) error 
 		return err
 	}
 
-	if err = insertVersion(ctx, userID, tx, a.log); err != nil {
+	if err = a.ver.InsertVersion(ctx, userID, tx); err != nil {
 		a.log.Err(err).Msgf("%s error", authCreateUser)
 		return err
 	}

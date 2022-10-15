@@ -19,12 +19,14 @@ const (
 // LoginPassPostgres login-password data
 type LoginPassPostgres struct {
 	db  *sql.DB
+	ver *Version
 	log *zerolog.Logger
 }
 
-func NewLoginPassPostgres(db *sql.DB, log *zerolog.Logger) *LoginPassPostgres {
+func NewLoginPassPostgres(db *sql.DB, ver *Version, log *zerolog.Logger) *LoginPassPostgres {
 	return &LoginPassPostgres{
 		db:  db,
+		ver: ver,
 		log: log,
 	}
 }
@@ -62,7 +64,7 @@ func (l *LoginPassPostgres) Create(ctx context.Context, lp *domain.LoginPass) (e
 		return err
 	}
 
-	if err = updateVersion(ctx, lp.UserID, tx, l.log); err != nil {
+	if err = l.ver.UpdateVersion(ctx, lp.UserID, tx); err != nil {
 		l.log.Err(err).Msgf("%s error", lptCreate)
 		return err
 	}
@@ -104,7 +106,7 @@ func (l *LoginPassPostgres) Update(ctx context.Context, lp *domain.LoginPass) (e
 		return err
 	}
 
-	if err = updateVersion(ctx, lp.UserID, tx, l.log); err != nil {
+	if err = l.ver.UpdateVersion(ctx, lp.UserID, tx); err != nil {
 		l.log.Err(err).Msgf("%s error", lpUpdate)
 		return err
 	}
@@ -141,7 +143,7 @@ func (l *LoginPassPostgres) Delete(ctx context.Context, lp *domain.LoginPass) (e
 		return err
 	}
 
-	if err = updateVersion(ctx, lp.UserID, tx, l.log); err != nil {
+	if err = l.ver.UpdateVersion(ctx, lp.UserID, tx); err != nil {
 		l.log.Err(err).Msgf("%s error", lpDelete)
 		return err
 	}

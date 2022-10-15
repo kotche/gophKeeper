@@ -7,8 +7,8 @@ import (
 	"github.com/kotche/gophKeeper/internal/server/domain/dataType"
 )
 
-// ICommon common service api
-type ICommon interface {
+// IVersion data version service api
+type IVersion interface {
 	GetVersion(ctx context.Context, userID int) (uint, error)
 }
 
@@ -30,15 +30,15 @@ type IData interface {
 
 // Service manager service
 type Service struct {
-	Common ICommon
-	Auth   IAuthService
-	Data   IData
+	Auth    IAuthService
+	Data    IData
+	Version IVersion
 }
 
-func NewService(com ICommon, auth IAuthService, data IData) *Service {
+func NewService(auth IAuthService, data IData, ver IVersion) *Service {
 	return &Service{
-		Common: com,
-		Auth:   auth,
-		Data:   data,
+		Auth:    auth,
+		Data:    data,
+		Version: ver,
 	}
 }

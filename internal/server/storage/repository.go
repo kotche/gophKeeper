@@ -2,11 +2,15 @@ package storage
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/kotche/gophKeeper/internal/server/domain"
 )
 
-type ICommonRepo interface {
+// IVersionRepo data version repository api
+type IVersionRepo interface {
+	InsertVersion(ctx context.Context, userID int, tx *sql.Tx) error
+	UpdateVersion(ctx context.Context, userID int, tx *sql.Tx) error
 	GetVersion(ctx context.Context, userID int) (uint, error)
 }
 
@@ -50,7 +54,7 @@ type IBankCardRepo interface {
 
 // Repository manager repositories
 type Repository struct {
-	Common    ICommonRepo
+	Version   IVersionRepo
 	Auth      IAuthRepo
 	LoginPass ILoginPassRepo
 	Text      ITextPassRepo
@@ -58,11 +62,11 @@ type Repository struct {
 	BankCard  IBankCardRepo
 }
 
-func NewRepository(com ICommonRepo, auth IAuthRepo, loginPass ILoginPassRepo, text ITextPassRepo,
+func NewRepository(ver IVersionRepo, auth IAuthRepo, loginPass ILoginPassRepo, text ITextPassRepo,
 	binary IBinaryRepo, bankCard IBankCardRepo) *Repository {
 
 	return &Repository{
-		Common:    com,
+		Version:   ver,
 		Auth:      auth,
 		LoginPass: loginPass,
 		Text:      text,

@@ -19,12 +19,14 @@ const (
 // BinaryPostgres binary data db
 type BinaryPostgres struct {
 	db  *sql.DB
+	ver *Version
 	log *zerolog.Logger
 }
 
-func NewBinaryPostgres(db *sql.DB, log *zerolog.Logger) *BinaryPostgres {
+func NewBinaryPostgres(db *sql.DB, ver *Version, log *zerolog.Logger) *BinaryPostgres {
 	return &BinaryPostgres{
 		db:  db,
+		ver: ver,
 		log: log,
 	}
 }
@@ -62,7 +64,7 @@ func (b *BinaryPostgres) Create(ctx context.Context, bin *domain.Binary) (err er
 		return err
 	}
 
-	if err = updateVersion(ctx, bin.UserID, tx, b.log); err != nil {
+	if err = b.ver.UpdateVersion(ctx, bin.UserID, tx); err != nil {
 		b.log.Err(err).Msgf("%s error", binaryCreate)
 		return err
 	}
@@ -104,7 +106,7 @@ func (b *BinaryPostgres) Update(ctx context.Context, bin *domain.Binary) (err er
 		return err
 	}
 
-	if err = updateVersion(ctx, bin.UserID, tx, b.log); err != nil {
+	if err = b.ver.UpdateVersion(ctx, bin.UserID, tx); err != nil {
 		b.log.Err(err).Msgf("%s error", binaryUpdate)
 		return err
 	}
@@ -141,7 +143,7 @@ func (b *BinaryPostgres) Delete(ctx context.Context, bin *domain.Binary) (err er
 		return err
 	}
 
-	if err = updateVersion(ctx, bin.UserID, tx, b.log); err != nil {
+	if err = b.ver.UpdateVersion(ctx, bin.UserID, tx); err != nil {
 		b.log.Err(err).Msgf("%s error", binaryDelete)
 		return err
 	}

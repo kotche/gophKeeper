@@ -20,11 +20,13 @@ const (
 type BankCardPostgres struct {
 	db  *sql.DB
 	log *zerolog.Logger
+	ver *Version
 }
 
-func NewBankCardPostgres(db *sql.DB, log *zerolog.Logger) *BankCardPostgres {
+func NewBankCardPostgres(db *sql.DB, ver *Version, log *zerolog.Logger) *BankCardPostgres {
 	return &BankCardPostgres{
 		db:  db,
+		ver: ver,
 		log: log,
 	}
 }
@@ -62,7 +64,7 @@ func (b *BankCardPostgres) Create(ctx context.Context, bank *domain.BankCard) (e
 		return err
 	}
 
-	if err = updateVersion(ctx, bank.UserID, tx, b.log); err != nil {
+	if err = b.ver.UpdateVersion(ctx, bank.UserID, tx); err != nil {
 		b.log.Err(err).Msgf("%s error", bankCardCreate)
 		return err
 	}
@@ -104,7 +106,7 @@ func (b *BankCardPostgres) Update(ctx context.Context, bank *domain.BankCard) (e
 		return err
 	}
 
-	if err = updateVersion(ctx, bank.UserID, tx, b.log); err != nil {
+	if err = b.ver.UpdateVersion(ctx, bank.UserID, tx); err != nil {
 		b.log.Err(err).Msgf("%s error", bankCardUpdate)
 		return err
 	}
@@ -141,7 +143,7 @@ func (b *BankCardPostgres) Delete(ctx context.Context, bank *domain.BankCard) (e
 		return err
 	}
 
-	if err = updateVersion(ctx, bank.UserID, tx, b.log); err != nil {
+	if err = b.ver.UpdateVersion(ctx, bank.UserID, tx); err != nil {
 		b.log.Err(err).Msgf("%s error", bankCardDelete)
 		return err
 	}
