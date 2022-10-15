@@ -8,6 +8,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+// GetVersion gets the current version of the data
 func (h *Handler) GetVersion(ctx context.Context, r *pb.GetVersionRequest) (*pb.GetVersionResponse, error) {
 	version, err := h.Service.Common.GetVersion(ctx, int(r.UserId))
 	if err != nil {

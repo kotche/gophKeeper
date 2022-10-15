@@ -66,7 +66,7 @@ func (h *Handler) DeleteLoginPass(ctx context.Context, r *pb.LoginPassDeleteRequ
 	return &response, nil
 }
 
-// GetAllLoginPass returns all login password pairs by user id
+// GetAllLoginPass gets all login password pairs by user id
 func (h *Handler) GetAllLoginPass(ctx context.Context, r *pb.LoginPassGetAllRequest) (*pb.LoginPassGetAllResponse, error) {
 	userID := int(r.UserId)
 	data, err := h.Service.Data.GetAll(ctx, userID, dataType.LP)

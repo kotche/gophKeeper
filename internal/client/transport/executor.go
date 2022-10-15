@@ -6,6 +6,7 @@ import (
 	"strings"
 )
 
+// Executor processes the entered commands cli
 func (c *Commander) Executor(in string) {
 	in = strings.TrimSpace(in)
 	blocks := strings.Split(in, " ")
@@ -28,6 +29,7 @@ func (c *Commander) Executor(in string) {
 	}
 }
 
+// UserLogin processes commands to create users
 func (c *Commander) UserLogin(blocks []string) {
 	if len(blocks) != 3 {
 		fmt.Println("bad registration format")
@@ -46,6 +48,7 @@ func (c *Commander) UserLogin(blocks []string) {
 	fmt.Println("registration is successful")
 }
 
+// UserAuthentication processes the user authentication commands
 func (c *Commander) UserAuthentication(blocks []string) {
 	if len(blocks) != 3 {
 		fmt.Println("bad authentication format")
@@ -64,6 +67,7 @@ func (c *Commander) UserAuthentication(blocks []string) {
 	fmt.Println("authentication is successful")
 }
 
+// CreateData processes data creation commands
 func (c *Commander) CreateData(in string) {
 	blocks := strings.Split(in, " ")
 	if len(blocks) < 3 {
@@ -123,6 +127,7 @@ func (c *Commander) CreateData(in string) {
 	}
 }
 
+// UpdateData processes data update commands
 func (c *Commander) UpdateData(in string) {
 	blocks := strings.Split(in, " ")
 	if len(blocks) < 4 {
@@ -218,6 +223,7 @@ func (c *Commander) UpdateData(in string) {
 	}
 }
 
+// DeleteData processes data delete command
 func (c *Commander) DeleteData(in string) {
 	blocks := strings.Split(in, " ")
 	if len(blocks) < 3 {
@@ -299,6 +305,7 @@ func (c *Commander) DeleteData(in string) {
 	}
 }
 
+// ReadData processes the data read command
 func (c *Commander) ReadData(in string) {
 	blocks := strings.Split(in, " ")
 	if len(blocks) != 2 {
@@ -368,6 +375,7 @@ func (c *Commander) ReadData(in string) {
 	}
 }
 
+// getMetaInfo gets meta information from the entered string
 func (c *Commander) getMetaInfo(in string, blocks []string) (int, string) {
 	var indMeta int
 	if !strings.Contains(in, metaInfo) {

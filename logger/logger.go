@@ -8,6 +8,7 @@ import (
 	"github.com/rs/zerolog"
 )
 
+// Init init logger
 func Init(level string) *zerolog.Logger {
 	var l zerolog.Level
 

@@ -11,6 +11,7 @@ import (
 	"github.com/rs/zerolog"
 )
 
+// Cache client local repository
 type Cache struct {
 	userID     int
 	token      string
@@ -35,6 +36,7 @@ func NewCache(log *zerolog.Logger) *Cache {
 	}
 }
 
+// SetUserParams records local repository data for an authorized user
 func (c *Cache) SetUserParams(userID int, token string) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -44,27 +46,32 @@ func (c *Cache) SetUserParams(userID int, token string) {
 	c.version.Swap(0)
 }
 
+// GetToken gets a token for authorization
 func (c *Cache) GetToken() string {
 	return c.token
 }
 
+// GetCurrentUserID gets the current user id
 func (c *Cache) GetCurrentUserID() int {
 	return c.userID
 }
 
+// GetVersion gets the current version data
 func (c *Cache) GetVersion() int {
 	return int(c.version.Load())
 }
 
+// IncVersion writes a new version of the data
 func (c *Cache) IncVersion() {
 	c.version.Add(1)
-
 }
 
+// SetVersion records the version of the server database data
 func (c *Cache) SetVersion(version int) {
 	c.version.Swap(uint64(version))
 }
 
+// Save writes data
 func (c *Cache) Save(data any) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -87,6 +94,7 @@ func (c *Cache) Save(data any) error {
 	return nil
 }
 
+// Update updates data
 func (c *Cache) Update(data any) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -108,6 +116,7 @@ func (c *Cache) Update(data any) error {
 	return nil
 }
 
+// Delete deletes data
 func (c *Cache) Delete(data any) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -129,6 +138,7 @@ func (c *Cache) Delete(data any) error {
 	return nil
 }
 
+// GetAll gets data by data type
 func (c *Cache) GetAll(dt dataType.DataType) (any, error) {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
@@ -166,6 +176,7 @@ func (c *Cache) GetAll(dt dataType.DataType) (any, error) {
 
 }
 
+// UpdateAll updates data
 func (c *Cache) UpdateAll(data any) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()

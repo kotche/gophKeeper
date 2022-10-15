@@ -7,6 +7,7 @@ import (
 	"github.com/c-bata/go-prompt"
 )
 
+// Completer shows hints for entering commands
 func (c *Commander) Completer(d prompt.Document) []prompt.Suggest {
 	var sug []prompt.Suggest
 
@@ -39,6 +40,7 @@ func (c *Commander) Completer(d prompt.Document) []prompt.Suggest {
 	return prompt.FilterHasPrefix(sug, d.GetWordBeforeCursor(), true)
 }
 
+// getDataTypeText defines the data type
 func getDataTypeText(command, text string) []prompt.Suggest {
 	var sug []prompt.Suggest
 

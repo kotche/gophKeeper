@@ -154,7 +154,7 @@ func (t *TextPostgres) Delete(ctx context.Context, text *domain.Text) (err error
 	return nil
 }
 
-// GetAll returns all text data by user id
+// GetAll gets all text data by user id
 func (t *TextPostgres) GetAll(ctx context.Context, userID int) ([]domain.Text, error) {
 	rows, err := t.db.QueryContext(ctx, "SELECT id, user_id, data, meta_info FROM text_data WHERE user_id=$1", userID)
 	if err != nil {

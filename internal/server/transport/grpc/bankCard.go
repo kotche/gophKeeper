@@ -64,7 +64,7 @@ func (h *Handler) DeleteBankCard(ctx context.Context, r *pb.BankCardDeleteReques
 	return &response, nil
 }
 
-// GetAllBankCard returns all bank card by user id
+// GetAllBankCard gets all bank card by user id
 func (h *Handler) GetAllBankCard(ctx context.Context, r *pb.BankCardGetAllRequest) (*pb.BankCardGetAllResponse, error) {
 	userID := int(r.UserId)
 	data, err := h.Service.Data.GetAll(ctx, userID, dataType.BANKCARD)

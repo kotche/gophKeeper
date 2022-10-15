@@ -6,6 +6,7 @@ import (
 	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
+// PGX postgresSQL driver
 type PGX struct {
 	DB *sql.DB
 }
@@ -30,6 +31,7 @@ func NewPGX(DSN string) (*PGX, error) {
 	return pgx, nil
 }
 
+// Ping checks the connection to the database
 func (p *PGX) Ping() error {
 	if err := p.DB.Ping(); err != nil {
 		return err
@@ -37,6 +39,7 @@ func (p *PGX) Ping() error {
 	return nil
 }
 
+// Init creates database tables
 func (p *PGX) Init() error {
 	_, err := p.DB.Exec(`
 			CREATE TABLE IF NOT EXISTS public.users(

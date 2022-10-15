@@ -17,6 +17,7 @@ import (
 	"github.com/rs/zerolog"
 )
 
+// App client application
 type App struct {
 	Conf *client.Config
 	Log  *zerolog.Logger
@@ -26,6 +27,7 @@ func NewApp(conf *client.Config, log *zerolog.Logger) *App {
 	return &App{Conf: conf, Log: log}
 }
 
+// Run start client application, initializing dependencies
 func (a *App) Run() {
 	ctx, cancel := context.WithCancel(context.Background())
 

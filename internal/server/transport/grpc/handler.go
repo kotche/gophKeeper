@@ -7,6 +7,7 @@ import (
 	"github.com/rs/zerolog"
 )
 
+// Handler request handler gRPC
 type Handler struct {
 	Service *service.Service
 	pb.UnimplementedVersionServiceServer

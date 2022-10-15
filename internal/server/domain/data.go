@@ -1,5 +1,6 @@
 package domain
 
+// LoginPass login-password data
 type LoginPass struct {
 	ID       int
 	UserID   int
@@ -8,6 +9,7 @@ type LoginPass struct {
 	MetaInfo string
 }
 
+// Text text data
 type Text struct {
 	ID       int
 	UserID   int
@@ -15,6 +17,7 @@ type Text struct {
 	MetaInfo string
 }
 
+// Binary binary data
 type Binary struct {
 	ID       int
 	UserID   int
@@ -22,6 +25,7 @@ type Binary struct {
 	MetaInfo string
 }
 
+// BankCard bank card data
 type BankCard struct {
 	ID       int
 	UserID   int

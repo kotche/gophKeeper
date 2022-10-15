@@ -1,10 +1,10 @@
-logger:
-  log_level: 'debug'
-
-updater:
-  update_timeout: 3s
-
 grpc_client:
   grpc_address: ':3200'
   grpc_time: 1s
   grpc_timeout: 3s
+
+updater:
+  update_timeout: 3s
+
+logger:
+  log_level: 'debug'

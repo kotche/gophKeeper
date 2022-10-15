@@ -8,6 +8,7 @@ import (
 	"github.com/kotche/gophKeeper/internal/pb"
 )
 
+// CreateBinary creates binary data
 func (s *Sender) CreateBinary(binary, meta string) (int, error) {
 	userID := s.Service.GetCurrentUserID()
 	r := &pb.BinaryRequest{UserId: int64(userID), Binary: binary, MetaInfo: meta}
@@ -35,6 +36,7 @@ func (s *Sender) CreateBinary(binary, meta string) (int, error) {
 	return data.ID, nil
 }
 
+// UpdateBinary updates binary data
 func (s *Sender) UpdateBinary(id int, binary, meta string) error {
 	userID := s.Service.GetCurrentUserID()
 	r := &pb.BinaryUpdateRequest{Id: int64(id), UserId: int64(userID), Binary: binary, MetaInfo: meta}
@@ -62,6 +64,7 @@ func (s *Sender) UpdateBinary(id int, binary, meta string) error {
 	return nil
 }
 
+// DeleteBinary deletes binary data
 func (s *Sender) DeleteBinary(id int) error {
 	userID := s.Service.GetCurrentUserID()
 	r := &pb.BinaryDeleteRequest{Id: int64(id), UserId: int64(userID)}
@@ -87,6 +90,7 @@ func (s *Sender) DeleteBinary(id int) error {
 	return nil
 }
 
+// ReadBinaryCache deletes binary data from local repository
 func (s *Sender) ReadBinaryCache() ([]*domain.Binary, error) {
 	data, err := s.Service.GetAll(dataType.BINARY)
 	if err != nil {
@@ -95,6 +99,7 @@ func (s *Sender) ReadBinaryCache() ([]*domain.Binary, error) {
 	return data.([]*domain.Binary), nil
 }
 
+// GetAllBinary gets binary data from server db
 func (s *Sender) GetAllBinary(ctx context.Context) ([]*domain.Binary, error) {
 	userID := s.Service.GetCurrentUserID()
 

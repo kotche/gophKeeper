@@ -8,6 +8,7 @@ import (
 	"github.com/kotche/gophKeeper/internal/pb"
 )
 
+// CreateBankCard creates bank card data
 func (s *Sender) CreateBankCard(number, meta string) (int, error) {
 	userID := s.Service.GetCurrentUserID()
 	r := &pb.BankCardRequest{UserId: int64(userID), Number: number, MetaInfo: meta}
@@ -35,6 +36,7 @@ func (s *Sender) CreateBankCard(number, meta string) (int, error) {
 	return data.ID, nil
 }
 
+// UpdateBankCard updates bank card data
 func (s *Sender) UpdateBankCard(id int, number, meta string) error {
 	userID := s.Service.GetCurrentUserID()
 	r := &pb.BankCardUpdateRequest{Id: int64(id), UserId: int64(userID), Number: number, MetaInfo: meta}
@@ -62,6 +64,7 @@ func (s *Sender) UpdateBankCard(id int, number, meta string) error {
 	return nil
 }
 
+// DeleteBankCard deletes bank card data
 func (s *Sender) DeleteBankCard(id int) error {
 	userID := s.Service.GetCurrentUserID()
 	r := &pb.BankCardDeleteRequest{Id: int64(id), UserId: int64(userID)}
@@ -87,6 +90,7 @@ func (s *Sender) DeleteBankCard(id int) error {
 	return nil
 }
 
+// ReadBankCardCache reads bank card data from local repository
 func (s *Sender) ReadBankCardCache() ([]*domain.BankCard, error) {
 	data, err := s.Service.GetAll(dataType.BANKCARD)
 	if err != nil {
@@ -95,6 +99,7 @@ func (s *Sender) ReadBankCardCache() ([]*domain.BankCard, error) {
 	return data.([]*domain.BankCard), nil
 }
 
+// GetAllBankCard gets bank card data from server db
 func (s *Sender) GetAllBankCard(ctx context.Context) ([]*domain.BankCard, error) {
 	userID := s.Service.GetCurrentUserID()
 	r := &pb.BankCardGetAllRequest{UserId: int64(userID)}

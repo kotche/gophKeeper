@@ -10,6 +10,7 @@ import (
 	"github.com/rs/zerolog"
 )
 
+// ILoginPassRepo login-password data repository api
 type ILoginPassRepo interface {
 	Create(ctx context.Context, lp *domain.LoginPass) error
 	Update(ctx context.Context, lp *domain.LoginPass) error
@@ -17,13 +18,15 @@ type ILoginPassRepo interface {
 	GetAll(ctx context.Context, userID int) ([]domain.LoginPass, error)
 }
 
-type ITextPassRepo interface {
+// ITextRepo text data repository api
+type ITextRepo interface {
 	Create(ctx context.Context, text *domain.Text) error
 	Update(ctx context.Context, text *domain.Text) error
 	Delete(ctx context.Context, text *domain.Text) error
 	GetAll(ctx context.Context, userID int) ([]domain.Text, error)
 }
 
+// IBinaryRepo binary data repository api
 type IBinaryRepo interface {
 	Create(ctx context.Context, text *domain.Binary) error
 	Update(ctx context.Context, text *domain.Binary) error
@@ -31,6 +34,7 @@ type IBinaryRepo interface {
 	GetAll(ctx context.Context, userID int) ([]domain.Binary, error)
 }
 
+// IBankCardRepo bank card data repository api
 type IBankCardRepo interface {
 	Create(ctx context.Context, text *domain.BankCard) error
 	Update(ctx context.Context, text *domain.BankCard) error
@@ -38,15 +42,16 @@ type IBankCardRepo interface {
 	GetAll(ctx context.Context, userID int) ([]domain.BankCard, error)
 }
 
+// DataService data management service
 type DataService struct {
 	LpRepo     ILoginPassRepo
-	TextRepo   ITextPassRepo
+	TextRepo   ITextRepo
 	BinaryRepo IBinaryRepo
 	BankRepo   IBankCardRepo
 	Log        *zerolog.Logger
 }
 
-func NewDataService(lpRepo ILoginPassRepo, textRepo ITextPassRepo,
+func NewDataService(lpRepo ILoginPassRepo, textRepo ITextRepo,
 	binaryRepo IBinaryRepo, bankRepo IBankCardRepo, log *zerolog.Logger) *DataService {
 	return &DataService{
 		LpRepo:     lpRepo,
@@ -57,6 +62,7 @@ func NewDataService(lpRepo ILoginPassRepo, textRepo ITextPassRepo,
 	}
 }
 
+// Create passes the data to be created, depending on the data type
 func (d *DataService) Create(ctx context.Context, dt any) error {
 	switch data := dt.(type) {
 	case *domain.LoginPass:
@@ -73,6 +79,8 @@ func (d *DataService) Create(ctx context.Context, dt any) error {
 		return err
 	}
 }
+
+// Update passes the data to be updated, depending on the data type
 func (d *DataService) Update(ctx context.Context, dt any) error {
 	switch data := dt.(type) {
 	case *domain.LoginPass:
@@ -89,6 +97,8 @@ func (d *DataService) Update(ctx context.Context, dt any) error {
 		return err
 	}
 }
+
+// Delete passes the data to be deleted, depending on the data type
 func (d *DataService) Delete(ctx context.Context, dt any) error {
 	switch data := dt.(type) {
 	case *domain.LoginPass:
@@ -106,6 +116,7 @@ func (d *DataService) Delete(ctx context.Context, dt any) error {
 	}
 }
 
+// GetAll gets data depending on the data type
 func (d *DataService) GetAll(ctx context.Context, userID int, dt dataType.DataType) (any, error) {
 	switch dt {
 	case dataType.LP:

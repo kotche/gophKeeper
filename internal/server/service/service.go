@@ -7,10 +7,12 @@ import (
 	"github.com/kotche/gophKeeper/internal/server/domain/dataType"
 )
 
+// ICommon common service api
 type ICommon interface {
 	GetVersion(ctx context.Context, userID int) (uint, error)
 }
 
+// IAuthService authorization service api
 type IAuthService interface {
 	CreateUser(ctx context.Context, user *domain.User) error
 	AuthenticationUser(ctx context.Context, user *domain.User) error
@@ -18,6 +20,7 @@ type IAuthService interface {
 	Verify(accessToken string) (*domain.UserClaims, error)
 }
 
+// IData data service api
 type IData interface {
 	Create(ctx context.Context, dt any) error
 	Update(ctx context.Context, dt any) error
@@ -25,6 +28,7 @@ type IData interface {
 	GetAll(ctx context.Context, userID int, dt dataType.DataType) (any, error)
 }
 
+// Service manager service
 type Service struct {
 	Common ICommon
 	Auth   IAuthService

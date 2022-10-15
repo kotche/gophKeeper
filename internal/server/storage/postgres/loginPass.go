@@ -16,7 +16,7 @@ const (
 	lpGetAll  = "loginPassPostgres GetAll repo"
 )
 
-// LoginPassPostgres login-password pair data
+// LoginPassPostgres login-password data
 type LoginPassPostgres struct {
 	db  *sql.DB
 	log *zerolog.Logger
@@ -29,7 +29,7 @@ func NewLoginPassPostgres(db *sql.DB, log *zerolog.Logger) *LoginPassPostgres {
 	}
 }
 
-// Create creates a login-password pair and updates data version
+// Create creates a login-password data and updates data version
 func (l *LoginPassPostgres) Create(ctx context.Context, lp *domain.LoginPass) (err error) {
 	tx, err := l.db.BeginTx(ctx, nil)
 	if err != nil {
@@ -77,7 +77,7 @@ func (l *LoginPassPostgres) Create(ctx context.Context, lp *domain.LoginPass) (e
 	return nil
 }
 
-// Update updates a login-password pair and data version
+// Update updates a login-password data and data version
 func (l *LoginPassPostgres) Update(ctx context.Context, lp *domain.LoginPass) (err error) {
 	tx, err := l.db.BeginTx(ctx, nil)
 	if err != nil {
@@ -117,7 +117,7 @@ func (l *LoginPassPostgres) Update(ctx context.Context, lp *domain.LoginPass) (e
 	return nil
 }
 
-// Delete deletes a login-password pair and updates data version
+// Delete deletes a login-password data and updates data version
 func (l *LoginPassPostgres) Delete(ctx context.Context, lp *domain.LoginPass) (err error) {
 	tx, err := l.db.BeginTx(ctx, nil)
 	if err != nil {
@@ -154,7 +154,7 @@ func (l *LoginPassPostgres) Delete(ctx context.Context, lp *domain.LoginPass) (e
 	return nil
 }
 
-// GetAll returns all login-password pairs by user id
+// GetAll gets all login-password data by user id
 func (l *LoginPassPostgres) GetAll(ctx context.Context, userID int) ([]domain.LoginPass, error) {
 	rows, err := l.db.QueryContext(ctx, "SELECT id, user_id, login, password, meta_info FROM login_pass WHERE user_id=$1", userID)
 	if err != nil {

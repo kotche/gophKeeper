@@ -64,7 +64,7 @@ func (h *Handler) DeleteBinary(ctx context.Context, r *pb.BinaryDeleteRequest) (
 	return &response, nil
 }
 
-// GetAllBinary returns all binary data by user id
+// GetAllBinary gets all binary data by user id
 func (h *Handler) GetAllBinary(ctx context.Context, r *pb.BinaryGetAllRequest) (*pb.BinaryGetAllResponse, error) {
 	userID := int(r.UserId)
 	data, err := h.Service.Data.GetAll(ctx, userID, dataType.BINARY)

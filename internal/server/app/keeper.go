@@ -15,6 +15,7 @@ import (
 	"github.com/rs/zerolog"
 )
 
+// Keeper application
 type Keeper struct {
 	Log *zerolog.Logger
 	Cfg *server.Config
@@ -24,6 +25,7 @@ func NewKeeper(cfg *server.Config, log *zerolog.Logger) *Keeper {
 	return &Keeper{Log: log, Cfg: cfg}
 }
 
+// Run start application, initializing dependencies
 func (k *Keeper) Run() {
 	pgx, err := postgres.NewPGX(k.Cfg.DSN)
 	if err != nil {

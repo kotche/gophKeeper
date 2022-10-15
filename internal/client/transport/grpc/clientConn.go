@@ -11,6 +11,7 @@ import (
 	"google.golang.org/grpc/keepalive"
 )
 
+// ClientConnection client connections gRPC
 type ClientConnection struct {
 	Conn     *grpc.ClientConn
 	Auth     pb.AuthServiceClient

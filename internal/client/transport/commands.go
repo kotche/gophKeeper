@@ -1,5 +1,6 @@
 package transport
 
+// description of commands cli
 const (
 	//data access
 	registration       = "-reg"

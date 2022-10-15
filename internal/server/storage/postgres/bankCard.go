@@ -154,7 +154,7 @@ func (b *BankCardPostgres) Delete(ctx context.Context, bank *domain.BankCard) (e
 	return nil
 }
 
-// GetAll returns all bank card data by user id
+// GetAll gets all bank card data by user id
 func (b *BankCardPostgres) GetAll(ctx context.Context, userID int) ([]domain.BankCard, error) {
 	rows, err := b.db.QueryContext(ctx, "SELECT id, user_id, number, meta_info FROM bank_card WHERE user_id=$1", userID)
 	if err != nil {

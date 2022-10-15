@@ -6,6 +6,7 @@ import (
 	"github.com/rs/zerolog"
 )
 
+// Sender transport gRPC client
 type Sender struct {
 	Service    *service.Service
 	ClientConn *ClientConnection

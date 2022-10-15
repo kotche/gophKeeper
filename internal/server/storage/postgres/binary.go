@@ -154,7 +154,7 @@ func (b *BinaryPostgres) Delete(ctx context.Context, bin *domain.Binary) (err er
 	return nil
 }
 
-// GetAll returns all binary data by user id
+// GetAll gets all binary data by user id
 func (b *BinaryPostgres) GetAll(ctx context.Context, userID int) ([]domain.Binary, error) {
 	rows, err := b.db.QueryContext(ctx, "SELECT id, user_id, data, meta_info FROM binary_data WHERE user_id=$1", userID)
 	if err != nil {

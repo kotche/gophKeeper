@@ -8,6 +8,7 @@ import (
 	"github.com/kotche/gophKeeper/internal/pb"
 )
 
+// CreateLoginPass creates login-password data
 func (s *Sender) CreateLoginPass(login, password, meta string) (int, error) {
 	userID := s.Service.GetCurrentUserID()
 	r := &pb.LoginPassRequest{UserId: int64(userID), Username: login, Password: password, MetaInfo: meta}
@@ -36,6 +37,7 @@ func (s *Sender) CreateLoginPass(login, password, meta string) (int, error) {
 	return data.ID, nil
 }
 
+// UpdateLoginPass updates login-password data
 func (s *Sender) UpdateLoginPass(id int, login, password, meta string) error {
 	userID := s.Service.GetCurrentUserID()
 	r := &pb.LoginPassUpdateRequest{Id: int64(id), UserId: int64(userID), Username: login, Password: password, MetaInfo: meta}
@@ -64,6 +66,7 @@ func (s *Sender) UpdateLoginPass(id int, login, password, meta string) error {
 	return nil
 }
 
+// DeleteLoginPass deletes login-password data
 func (s *Sender) DeleteLoginPass(id int) error {
 	userID := s.Service.GetCurrentUserID()
 	r := &pb.LoginPassDeleteRequest{Id: int64(id), UserId: int64(userID)}
@@ -89,6 +92,7 @@ func (s *Sender) DeleteLoginPass(id int) error {
 	return nil
 }
 
+// ReadLoginPassCache reads login-password data from local repository
 func (s *Sender) ReadLoginPassCache() ([]*domain.LoginPass, error) {
 	data, err := s.Service.GetAll(dataType.LP)
 	if err != nil {
@@ -97,6 +101,7 @@ func (s *Sender) ReadLoginPassCache() ([]*domain.LoginPass, error) {
 	return data.([]*domain.LoginPass), nil
 }
 
+// GetAllLoginPass gets login-password data from server db
 func (s *Sender) GetAllLoginPass(ctx context.Context) ([]*domain.LoginPass, error) {
 	userID := s.Service.GetCurrentUserID()
 	r := &pb.LoginPassGetAllRequest{UserId: int64(userID)}

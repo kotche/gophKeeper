@@ -10,11 +10,13 @@ type ICommonRepo interface {
 	GetVersion(ctx context.Context, userID int) (uint, error)
 }
 
+// IAuthRepo authentication repository api
 type IAuthRepo interface {
 	CreateUser(ctx context.Context, user *domain.User) error
 	GetUserID(ctx context.Context, user *domain.User) (int, error)
 }
 
+// ILoginPassRepo repository login password data api
 type ILoginPassRepo interface {
 	Create(ctx context.Context, lp *domain.LoginPass) error
 	Update(ctx context.Context, lp *domain.LoginPass) error
@@ -22,6 +24,7 @@ type ILoginPassRepo interface {
 	GetAll(ctx context.Context, userID int) ([]domain.LoginPass, error)
 }
 
+// ITextPassRepo text data repository api
 type ITextPassRepo interface {
 	Create(ctx context.Context, text *domain.Text) error
 	Update(ctx context.Context, text *domain.Text) error
@@ -29,6 +32,7 @@ type ITextPassRepo interface {
 	GetAll(ctx context.Context, userID int) ([]domain.Text, error)
 }
 
+// IBinaryRepo binary data repository api
 type IBinaryRepo interface {
 	Create(ctx context.Context, text *domain.Binary) error
 	Update(ctx context.Context, text *domain.Binary) error
@@ -36,6 +40,7 @@ type IBinaryRepo interface {
 	GetAll(ctx context.Context, userID int) ([]domain.Binary, error)
 }
 
+// IBankCardRepo bank card data repository api
 type IBankCardRepo interface {
 	Create(ctx context.Context, text *domain.BankCard) error
 	Update(ctx context.Context, text *domain.BankCard) error
@@ -43,6 +48,7 @@ type IBankCardRepo interface {
 	GetAll(ctx context.Context, userID int) ([]domain.BankCard, error)
 }
 
+// Repository manager repositories
 type Repository struct {
 	Common    ICommonRepo
 	Auth      IAuthRepo

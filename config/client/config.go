@@ -10,6 +10,7 @@ import (
 )
 
 type (
+	// Config configures client settings
 	Config struct {
 		GRPCClient `yaml:"grpc_client"`
 		Logger     `yaml:"logger"`
@@ -17,16 +18,21 @@ type (
 	}
 
 	GRPCClient struct {
-		Address string        `env-required:"true" yaml:"grpc_address" env:"GRPC_ADDRESS"`
-		Time    time.Duration `env-required:"true" yaml:"grpc_time" env:"GRPC_TIME"`
+		// Address TCP port client connection gRPC
+		Address string `env-required:"true" yaml:"grpc_address" env:"GRPC_ADDRESS"`
+		// Time keep live param client connection gRPC
+		Time time.Duration `env-required:"true" yaml:"grpc_time" env:"GRPC_TIME"`
+		// Timeout keep live param client connection gRPC
 		Timeout time.Duration `env-required:"true" yaml:"grpc_timeout" env:"GRPC_TIMEOUT"`
 	}
 
 	Logger struct {
+		// LogLevel sets the logging level
 		LogLevel string `env-required:"true" yaml:"log_level" env:"LOG_LEVEL"`
 	}
 
 	Updater struct {
+		// Timeout the period of updating data from the server database in the local repository
 		Timeout time.Duration `env-required:"true" yaml:"update_timeout" env:"UPDATE_TIMEOUT"`
 	}
 )

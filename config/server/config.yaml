@@ -1,5 +1,5 @@
-tcp:
-  port: '3200'
+grpc_server:
+  grpc_address: ':3200'
 
 postgres:
   dsn: 'postgresql://postgres:postgres@localhost:5432/postgres'

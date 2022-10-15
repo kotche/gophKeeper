@@ -8,6 +8,7 @@ import (
 	"github.com/kotche/gophKeeper/internal/pb"
 )
 
+// CreateText creates text data
 func (s *Sender) CreateText(text, meta string) (int, error) {
 	userID := s.Service.GetCurrentUserID()
 	r := &pb.TextRequest{UserId: int64(userID), Text: text, MetaInfo: meta}
@@ -35,6 +36,7 @@ func (s *Sender) CreateText(text, meta string) (int, error) {
 	return data.ID, nil
 }
 
+// UpdateText updates text data
 func (s *Sender) UpdateText(id int, text, meta string) error {
 	userID := s.Service.GetCurrentUserID()
 	r := &pb.TextUpdateRequest{Id: int64(id), UserId: int64(userID), Text: text, MetaInfo: meta}
@@ -62,6 +64,7 @@ func (s *Sender) UpdateText(id int, text, meta string) error {
 	return nil
 }
 
+// DeleteText deletes text data
 func (s *Sender) DeleteText(id int) error {
 	userID := s.Service.GetCurrentUserID()
 	r := &pb.TextDeleteRequest{Id: int64(id), UserId: int64(userID)}
@@ -87,6 +90,7 @@ func (s *Sender) DeleteText(id int) error {
 	return nil
 }
 
+// ReadTextCache reads text data from local repository
 func (s *Sender) ReadTextCache() ([]*domain.Text, error) {
 	data, err := s.Service.GetAll(dataType.TEXT)
 	if err != nil {
@@ -95,6 +99,7 @@ func (s *Sender) ReadTextCache() ([]*domain.Text, error) {
 	return data.([]*domain.Text), nil
 }
 
+// GetAllText gets text data from server db
 func (s *Sender) GetAllText(ctx context.Context) ([]*domain.Text, error) {
 	userID := s.Service.GetCurrentUserID()
 	r := &pb.TextGetAllRequest{UserId: int64(userID)}

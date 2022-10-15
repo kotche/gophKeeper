@@ -13,7 +13,7 @@ import (
 
 const handlerAuthorize = "handler server authorize"
 
-// UnaryAuthorize returns a server interceptor function authorize unary RPC
+// UnaryAuthorize gets a server interceptor function authorize unary RPC
 func (h *Handler) UnaryAuthorize(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 	//h.Log.Debug().Msgf("UnaryAuthorize interceptor: %s", info.FullMethod)
 
@@ -32,6 +32,7 @@ func (h *Handler) UnaryAuthorize(ctx context.Context, req interface{}, info *grp
 	return handler(ctx, req)
 }
 
+// authorize checks the token for validity by user_id
 func (h *Handler) authorize(ctx context.Context, userID int) error {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {

@@ -9,11 +9,13 @@ import (
 	"github.com/rs/zerolog"
 )
 
+// IAuthRepo authorization repository api
 type IAuthRepo interface {
 	CreateUser(ctx context.Context, user *domain.User) error
 	GetUserID(ctx context.Context, user *domain.User) (int, error)
 }
 
+// AuthService authorization user service
 type AuthService struct {
 	repo        IAuthRepo
 	log         *zerolog.Logger
@@ -30,6 +32,7 @@ func NewAuthService(repo IAuthRepo, log *zerolog.Logger, jwt *JWTManager, keyPas
 	}
 }
 
+// CreateUser creates a new user
 func (auth *AuthService) CreateUser(ctx context.Context, user *domain.User) error {
 	user.Password = auth.generatePasswordHash(user.Password)
 	err := auth.repo.CreateUser(ctx, user)
@@ -39,6 +42,7 @@ func (auth *AuthService) CreateUser(ctx context.Context, user *domain.User) erro
 	return nil
 }
 
+// AuthenticationUser user authentication
 func (auth *AuthService) AuthenticationUser(ctx context.Context, user *domain.User) error {
 	user.Password = auth.generatePasswordHash(user.Password)
 	userID, err := auth.repo.GetUserID(ctx, user)
@@ -49,14 +53,17 @@ func (auth *AuthService) AuthenticationUser(ctx context.Context, user *domain.Us
 	return nil
 }
 
+// GenerateToken generates a token
 func (auth *AuthService) GenerateToken(user *domain.User) (string, error) {
 	return auth.jwt.Generate(user)
 }
 
+// Verify verifies the user by token
 func (auth *AuthService) Verify(accessToken string) (*domain.UserClaims, error) {
 	return auth.jwt.Verify(accessToken)
 }
 
+// generatePasswordHash generates an encrypted password
 func (auth *AuthService) generatePasswordHash(password string) string {
 	hash := sha1.New()
 	hash.Write([]byte(password))

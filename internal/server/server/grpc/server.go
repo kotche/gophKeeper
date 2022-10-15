@@ -1,7 +1,6 @@
 package grpc
 
 import (
-	"fmt"
 	"net"
 
 	"github.com/kotche/gophKeeper/config/server"
@@ -10,12 +9,14 @@ import (
 	"google.golang.org/grpc"
 )
 
+// Server server gRPC
 type Server struct {
 	cfg        *server.Config
 	handler    *grpcHandler.Handler
 	grpcServer *grpc.Server
 }
 
+// NewServer get gRPC server
 func NewServer(cfg *server.Config, handler *grpcHandler.Handler) *Server {
 	authInterceptor := grpc.UnaryInterceptor(handler.UnaryAuthorize)
 
@@ -26,6 +27,7 @@ func NewServer(cfg *server.Config, handler *grpcHandler.Handler) *Server {
 	}
 }
 
+// Run gRPC server with registration api
 func (s *Server) Run() error {
 	pb.RegisterVersionServiceServer(s.grpcServer, s.handler)
 	pb.RegisterAuthServiceServer(s.grpcServer, s.handler)
@@ -34,13 +36,14 @@ func (s *Server) Run() error {
 	pb.RegisterBinaryServiceServer(s.grpcServer, s.handler)
 	pb.RegisterBankCardServiceServer(s.grpcServer, s.handler)
 
-	listen, err := net.Listen("tcp", fmt.Sprintf(":%s", s.cfg.TCP.Port))
+	listen, err := net.Listen("tcp", s.cfg.GRPCServer.Address)
 	if err != nil {
 		return err
 	}
 	return s.grpcServer.Serve(listen)
 }
 
+// Stop gRPC server
 func (s *Server) Stop() {
 	s.grpcServer.Stop()
 }

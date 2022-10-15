@@ -15,6 +15,7 @@ const (
 	authCreateUser = "authPostgres createUser repo"
 )
 
+// AuthPostgres user authorization repository
 type AuthPostgres struct {
 	db  *sql.DB
 	log *zerolog.Logger
@@ -27,6 +28,7 @@ func NewAuthPostgres(db *sql.DB, log *zerolog.Logger) *AuthPostgres {
 	}
 }
 
+// CreateUser creating a user in the database. Checking for an existing user
 func (a *AuthPostgres) CreateUser(ctx context.Context, user *domain.User) error {
 	var userIdExist int
 	row := a.db.QueryRowContext(ctx, "SELECT id FROM public.users WHERE login=$1", user.Username)
@@ -78,6 +80,7 @@ func (a *AuthPostgres) CreateUser(ctx context.Context, user *domain.User) error 
 	return nil
 }
 
+// GetUserID gets user id by login and password
 func (a *AuthPostgres) GetUserID(ctx context.Context, user *domain.User) (int, error) {
 	row := a.db.QueryRowContext(ctx, "SELECT id FROM public.users WHERE login=$1 AND password=$2", user.Username, user.Password)
 	var output sql.NullInt64

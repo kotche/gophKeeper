@@ -12,6 +12,7 @@ import (
 	"github.com/rs/zerolog"
 )
 
+// ICache api client local repository
 type ICache interface {
 	SetUserParams(userID int, token string)
 	GetCurrentUserID() int
@@ -27,6 +28,7 @@ type ICache interface {
 	UpdateAll(data any) error
 }
 
+// Service client manager service
 type Service struct {
 	Storage ICache
 	Conf    *client.Config
@@ -41,6 +43,7 @@ func NewService(storage ICache, conf *client.Config, log *zerolog.Logger) *Servi
 	}
 }
 
+// SetUserParams records local repository data for an authorized user
 func (s *Service) SetUserParams(userID int, token string) error {
 	if userID < 0 {
 		s.Log.Debug().Msgf("service setUserParams: userID %d less zero", userID)
@@ -56,34 +59,42 @@ func (s *Service) SetUserParams(userID int, token string) error {
 	return nil
 }
 
+// GetCurrentUserID gets the current user id
 func (s *Service) GetCurrentUserID() int {
 	return s.Storage.GetCurrentUserID()
 }
 
+// GetToken gets a token for authorization
 func (s *Service) GetToken() string {
 	return s.Storage.GetToken()
 }
 
+// GetVersionCache gets the current version data local repository
 func (s *Service) GetVersionCache() int {
 	return s.Storage.GetVersion()
 }
 
+// SetVersionCache records the version data
 func (s *Service) SetVersionCache(version int) {
 	s.Storage.SetVersion(version)
 }
 
+// Save writes data
 func (s *Service) Save(data any) error {
 	return s.Storage.Save(data)
 }
 
+// Update updates data
 func (s *Service) Update(data any) error {
 	return s.Storage.Update(data)
 }
 
+// Delete deletes data
 func (s *Service) Delete(data any) error {
 	return s.Storage.Delete(data)
 }
 
+// GetAll gets data by data type
 func (s *Service) GetAll(dt dataType.DataType) (any, error) {
 	data, err := s.Storage.GetAll(dt)
 	if err != nil {
@@ -118,6 +129,7 @@ func (s *Service) GetAll(dt dataType.DataType) (any, error) {
 	}
 }
 
+// UpdateAll updates data
 func (s *Service) UpdateAll(data any) error {
 	return s.Storage.UpdateAll(data)
 }

@@ -64,7 +64,7 @@ func (h *Handler) DeleteText(ctx context.Context, r *pb.TextDeleteRequest) (*pb.
 	return &response, nil
 }
 
-// GetAllText returns all text data by user id
+// GetAllText gets all text data by user id
 func (h *Handler) GetAllText(ctx context.Context, r *pb.TextGetAllRequest) (*pb.TextGetAllResponse, error) {
 	userID := int(r.UserId)
 	data, err := h.Service.Data.GetAll(ctx, userID, dataType.TEXT)

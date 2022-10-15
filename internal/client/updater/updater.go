@@ -13,6 +13,7 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
+// ISender api for getting rpc data from the server
 type ISender interface {
 	GetVersionServer(ctx context.Context) (int, error)
 	GetAllLoginPass(ctx context.Context) ([]*domain.LoginPass, error)
@@ -21,12 +22,14 @@ type ISender interface {
 	GetAllBankCard(ctx context.Context) ([]*domain.BankCard, error)
 }
 
+// IService api for processing data on the cache
 type IService interface {
 	GetVersionCache() int
 	SetVersionCache(version int)
 	UpdateAll(data any) error
 }
 
+// Updater periodically updates the data on the local storage from the server
 type Updater struct {
 	Sender  ISender
 	Service IService
@@ -43,6 +46,7 @@ func NewUpdater(sender ISender, service IService, conf *client.Config, log *zero
 	}
 }
 
+// Run starts data update. The data is updated on a timer, provided that the version of the data on the server is higher than the local storage
 func (w *Updater) Run(ctx context.Context) {
 	ticker := time.NewTicker(w.Conf.Updater.Timeout)
 
@@ -71,6 +75,7 @@ func (w *Updater) Run(ctx context.Context) {
 	}
 }
 
+// updateData asynchronously updates all data types
 func (w *Updater) updateData(ctx context.Context) error {
 	dataTypes := []dataType.DataType{
 		dataType.LP,
@@ -98,6 +103,7 @@ func (w *Updater) updateData(ctx context.Context) error {
 	return nil
 }
 
+// update gets the transmitted data type from the server and updates it in the local storage
 func (w *Updater) update(ctx context.Context, dt dataType.DataType) error {
 	var (
 		data any

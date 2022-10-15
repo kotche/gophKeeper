@@ -1,5 +1,6 @@
 package dataType
 
+// DataType data types
 type DataType struct {
 	string
 }

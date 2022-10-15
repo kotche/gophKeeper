@@ -8,6 +8,7 @@ import (
 	"github.com/rs/zerolog"
 )
 
+// CommonsPostgres common repository
 type CommonsPostgres struct {
 	db  *sql.DB
 	log *zerolog.Logger
@@ -20,6 +21,7 @@ func NewCommonPostgres(db *sql.DB, log *zerolog.Logger) *CommonsPostgres {
 	}
 }
 
+// GetVersion get the current version of the data
 func (c *CommonsPostgres) GetVersion(ctx context.Context, userID int) (uint, error) {
 	row := c.db.QueryRowContext(ctx, "SELECT version FROM public.versions WHERE user_id=$1", userID)
 	var version uint

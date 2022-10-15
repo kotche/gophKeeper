@@ -6,6 +6,7 @@ import (
 	"github.com/rs/zerolog"
 )
 
+// ISender api transport client
 type ISender interface {
 	Login(username, password string) error
 	Authentication(login, password string) error
@@ -31,6 +32,7 @@ type ISender interface {
 	ReadBankCardCache() ([]*domain.BankCard, error)
 }
 
+// Commander manages commands
 type Commander struct {
 	Sender ISender
 	Conf   *client.Config
