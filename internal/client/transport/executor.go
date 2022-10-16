@@ -149,7 +149,7 @@ func (c *Commander) UpdateData(in string) {
 		idStr := blocks[2]
 		id, err := strconv.Atoi(idStr)
 		if err != nil {
-			c.Log.Err(err).Msgf("commander updateData convert id '%d' to int error", idStr)
+			c.Log.Err(err).Msgf("commander updateData convert id '%s' to int error", idStr)
 			fmt.Printf("id %s is not a number", idStr)
 			return
 		}
@@ -168,7 +168,7 @@ func (c *Commander) UpdateData(in string) {
 		idStr := blocks[2]
 		id, err := strconv.Atoi(idStr)
 		if err != nil {
-			c.Log.Err(err).Msgf("commander updateData convert id '%d' to int error", idStr)
+			c.Log.Err(err).Msgf("commander updateData convert id '%s' to int error", idStr)
 			fmt.Printf("id %s is not a number", idStr)
 			return
 		}
@@ -186,7 +186,7 @@ func (c *Commander) UpdateData(in string) {
 		idStr := blocks[2]
 		id, err := strconv.Atoi(idStr)
 		if err != nil {
-			c.Log.Err(err).Msgf("commander updateData convert id '%d' to int error", idStr)
+			c.Log.Err(err).Msgf("commander updateData convert id '%s' to int error", idStr)
 			fmt.Printf("id %s is not a number", idStr)
 			return
 		}
@@ -204,7 +204,7 @@ func (c *Commander) UpdateData(in string) {
 		idStr := blocks[2]
 		id, err := strconv.Atoi(idStr)
 		if err != nil {
-			c.Log.Err(err).Msgf("commander updateData convert id '%d' to int error", idStr)
+			c.Log.Err(err).Msgf("commander updateData convert id '%s' to int error", idStr)
 			fmt.Printf("id %s is not a number", idStr)
 			return
 		}
@@ -236,7 +236,7 @@ func (c *Commander) DeleteData(in string) {
 		idStr := blocks[2]
 		id, err := strconv.Atoi(idStr)
 		if err != nil {
-			c.Log.Err(err).Msgf("commander deleteData convert id '%d' to int error", idStr)
+			c.Log.Err(err).Msgf("commander deleteData convert id '%s' to int error", idStr)
 			fmt.Printf("id %s is not a number", idStr)
 			return
 		}
@@ -253,7 +253,7 @@ func (c *Commander) DeleteData(in string) {
 		idStr := blocks[2]
 		id, err := strconv.Atoi(idStr)
 		if err != nil {
-			c.Log.Err(err).Msgf("commander deleteData convert id '%d' to int error", idStr)
+			c.Log.Err(err).Msgf("commander deleteData convert id '%s' to int error", idStr)
 			fmt.Printf("id %s is not a number", idStr)
 			return
 		}
@@ -270,7 +270,7 @@ func (c *Commander) DeleteData(in string) {
 		idStr := blocks[2]
 		id, err := strconv.Atoi(idStr)
 		if err != nil {
-			c.Log.Err(err).Msgf("commander deleteData convert id '%d' to int error", idStr)
+			c.Log.Err(err).Msgf("commander deleteData convert id '%s' to int error", idStr)
 			fmt.Printf("id %s is not a number", idStr)
 			return
 		}
@@ -287,7 +287,7 @@ func (c *Commander) DeleteData(in string) {
 		idStr := blocks[2]
 		id, err := strconv.Atoi(idStr)
 		if err != nil {
-			c.Log.Err(err).Msgf("commander deleteData convert id '%d' to int error", idStr)
+			c.Log.Err(err).Msgf("commander deleteData convert id '%s' to int error", idStr)
 			fmt.Printf("id %s is not a number", idStr)
 			return
 		}

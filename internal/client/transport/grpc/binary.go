@@ -28,7 +28,7 @@ func (s *Sender) CreateBinary(binary, meta string) (int, error) {
 	}
 
 	if err = s.Service.Save(data); err != nil {
-		s.Log.Err(err).Msgf("createBinary add to cache '%+v' error: %w", data, err)
+		s.Log.Err(err).Msgf("createBinary add to cache '%+v'", data)
 	}
 
 	s.Service.Storage.IncVersion()
@@ -56,7 +56,7 @@ func (s *Sender) UpdateBinary(id int, binary, meta string) error {
 	}
 
 	if err = s.Service.Update(data); err != nil {
-		s.Log.Err(err).Msgf("updateBinary update binary to cache '%+v' error: %w", data, err)
+		s.Log.Err(err).Msgf("updateBinary update binary to cache '%+v'", data)
 	}
 
 	s.Service.Storage.IncVersion()
@@ -82,7 +82,7 @@ func (s *Sender) DeleteBinary(id int) error {
 	}
 
 	if err = s.Service.Delete(data); err != nil {
-		s.Log.Err(err).Msgf("deleteBinary delete binary to cache '%d' error: %w", id, err)
+		s.Log.Err(err).Msgf("deleteBinary delete binary to cache '%d'", id)
 	}
 
 	s.Service.Storage.IncVersion()

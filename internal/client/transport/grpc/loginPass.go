@@ -29,7 +29,7 @@ func (s *Sender) CreateLoginPass(login, password, meta string) (int, error) {
 	}
 
 	if err = s.Service.Save(data); err != nil {
-		s.Log.Err(err).Msgf("createLoginPass add to cache '%+v' error: %w", data, err)
+		s.Log.Err(err).Msgf("createLoginPass add to cache '%+v'", data)
 	}
 
 	s.Service.Storage.IncVersion()
@@ -58,7 +58,7 @@ func (s *Sender) UpdateLoginPass(id int, login, password, meta string) error {
 	}
 
 	if err = s.Service.Update(data); err != nil {
-		s.Log.Err(err).Msgf("updateLoginPass update lp to cache '%+v' error: %w", data, err)
+		s.Log.Err(err).Msgf("updateLoginPass update lp to cache '%+v'", data)
 	}
 
 	s.Service.Storage.IncVersion()
@@ -84,7 +84,7 @@ func (s *Sender) DeleteLoginPass(id int) error {
 	}
 
 	if err = s.Service.Delete(data); err != nil {
-		s.Log.Err(err).Msgf("deleteLoginPass delete lp to cache '%d' error: %w", id, err)
+		s.Log.Err(err).Msgf("deleteLoginPass delete lp to cache '%d'", id)
 	}
 
 	s.Service.Storage.IncVersion()

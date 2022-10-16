@@ -28,7 +28,7 @@ func NewServer(cfg *server.Config, handler *grpcHandler.Handler) *Server {
 }
 
 // Run gRPC server with registration api
-func (s *Server) Run() error {
+func (s *Server) Run(lis net.Listener) error {
 	pb.RegisterVersionServiceServer(s.grpcServer, s.handler)
 	pb.RegisterAuthServiceServer(s.grpcServer, s.handler)
 	pb.RegisterLoginPassServiceServer(s.grpcServer, s.handler)
@@ -36,11 +36,16 @@ func (s *Server) Run() error {
 	pb.RegisterBinaryServiceServer(s.grpcServer, s.handler)
 	pb.RegisterBankCardServiceServer(s.grpcServer, s.handler)
 
-	listen, err := net.Listen("tcp", s.cfg.GRPCServer.Address)
+	return s.grpcServer.Serve(lis)
+}
+
+// GetListener gets listener for gRPC server
+func (s *Server) GetListener() (net.Listener, error) {
+	lis, err := net.Listen("tcp", s.cfg.GRPCServer.Address)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return s.grpcServer.Serve(listen)
+	return lis, err
 }
 
 // Stop gRPC server

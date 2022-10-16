@@ -28,8 +28,8 @@ type ILoginPassRepo interface {
 	GetAll(ctx context.Context, userID int) ([]domain.LoginPass, error)
 }
 
-// ITextPassRepo text data repository api
-type ITextPassRepo interface {
+// ITextRepo text data repository api
+type ITextRepo interface {
 	Create(ctx context.Context, text *domain.Text) error
 	Update(ctx context.Context, text *domain.Text) error
 	Delete(ctx context.Context, text *domain.Text) error
@@ -57,12 +57,12 @@ type Repository struct {
 	Version   IVersionRepo
 	Auth      IAuthRepo
 	LoginPass ILoginPassRepo
-	Text      ITextPassRepo
+	Text      ITextRepo
 	Binary    IBinaryRepo
 	BankCard  IBankCardRepo
 }
 
-func NewRepository(ver IVersionRepo, auth IAuthRepo, loginPass ILoginPassRepo, text ITextPassRepo,
+func NewRepository(ver IVersionRepo, auth IAuthRepo, loginPass ILoginPassRepo, text ITextRepo,
 	binary IBinaryRepo, bankCard IBankCardRepo) *Repository {
 
 	return &Repository{

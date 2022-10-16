@@ -39,21 +39,26 @@ func (k *Keeper) Run() {
 	bankCardRepo := postgres.NewBankCardPostgres(pgx.DB, versionRepo, k.Log)
 	repo := storage.NewRepository(versionRepo, authRepo, lpRepo, textRepo, binaryRepo, bankCardRepo)
 
+	pe := service.NewPasswordEncryptor(k.Cfg.SecretKeyPassword)
 	jwt := service.NewJWTManager(k.Cfg.SecretKeyToken, k.Cfg.TokenDuration, k.Log)
-	authService := service.NewAuthService(repo.Auth, k.Log, jwt, k.Cfg.SecretKeyPassword)
+	authService := service.NewAuthService(repo.Auth, jwt, pe, k.Log)
 	versionService := service.NewVersionService(versionRepo, k.Log)
 	dataService := service.NewDataService(repo.LoginPass, repo.Text, repo.Binary, repo.BankCard, k.Log)
 	srvc := service.NewService(authService, dataService, versionService)
 
 	handler := grpcHandler.NewHandler(srvc, k.Log, k.Cfg)
 	grpcSrv := grpcServer.NewServer(k.Cfg, handler)
+	lis, err := grpcSrv.GetListener()
+	if err != nil {
+		k.Log.Fatal().Err(err).Msg("get listener gRPC server error")
+	}
 
 	termChan := make(chan os.Signal, 1)
 	signal.Notify(termChan, syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT)
 
 	go func() {
 		k.Log.Info().Msg("Starting gRPC server")
-		if err = grpcSrv.Run(); err != nil && err != http.ErrServerClosed {
+		if err = grpcSrv.Run(lis); err != nil && err != http.ErrServerClosed {
 			k.Log.Fatal().Err(err).Msg("gRCP server run error")
 		}
 	}()

@@ -28,7 +28,7 @@ func (s *Sender) CreateText(text, meta string) (int, error) {
 	}
 
 	if err = s.Service.Save(data); err != nil {
-		s.Log.Err(err).Msgf("createText add to cache '%+v' error: %w", data, err)
+		s.Log.Err(err).Msgf("createText add to cache '%+v'", data)
 	}
 
 	s.Service.Storage.IncVersion()
@@ -56,7 +56,7 @@ func (s *Sender) UpdateText(id int, text, meta string) error {
 	}
 
 	if err = s.Service.Update(data); err != nil {
-		s.Log.Err(err).Msgf("updateText update text to cache '%+v' error: %w", data, err)
+		s.Log.Err(err).Msgf("updateText update text to cache '%+v'", data)
 	}
 
 	s.Service.Storage.IncVersion()
@@ -82,7 +82,7 @@ func (s *Sender) DeleteText(id int) error {
 	}
 
 	if err = s.Service.Delete(data); err != nil {
-		s.Log.Err(err).Msgf("delete text to cache '%d' error: %w", id, err)
+		s.Log.Err(err).Msgf("delete text to cache '%d'", id)
 	}
 
 	s.Service.Storage.IncVersion()

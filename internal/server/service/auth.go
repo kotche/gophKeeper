@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"crypto/sha1"
 	"fmt"
 
 	"github.com/kotche/gophKeeper/internal/server/domain"
@@ -17,24 +16,24 @@ type IAuthRepo interface {
 
 // AuthService authorization user service
 type AuthService struct {
-	repo        IAuthRepo
-	log         *zerolog.Logger
-	jwt         *JWTManager
-	keyPassword string
+	repo IAuthRepo
+	jwt  *JWTManager
+	pe   *PasswordEncryptor
+	log  *zerolog.Logger
 }
 
-func NewAuthService(repo IAuthRepo, log *zerolog.Logger, jwt *JWTManager, keyPassword string) *AuthService {
+func NewAuthService(repo IAuthRepo, jwt *JWTManager, pe *PasswordEncryptor, log *zerolog.Logger) *AuthService {
 	return &AuthService{
-		repo:        repo,
-		log:         log,
-		jwt:         jwt,
-		keyPassword: keyPassword,
+		repo: repo,
+		jwt:  jwt,
+		pe:   pe,
+		log:  log,
 	}
 }
 
 // CreateUser creates a new user
 func (auth *AuthService) CreateUser(ctx context.Context, user *domain.User) error {
-	user.Password = auth.generatePasswordHash(user.Password)
+	user.Password = auth.pe.GeneratePasswordHash(user.Password)
 	err := auth.repo.CreateUser(ctx, user)
 	if err != nil {
 		return fmt.Errorf("user is not create: %w", err)
@@ -44,7 +43,7 @@ func (auth *AuthService) CreateUser(ctx context.Context, user *domain.User) erro
 
 // AuthenticationUser user authentication
 func (auth *AuthService) AuthenticationUser(ctx context.Context, user *domain.User) error {
-	user.Password = auth.generatePasswordHash(user.Password)
+	user.Password = auth.pe.GeneratePasswordHash(user.Password)
 	userID, err := auth.repo.GetUserID(ctx, user)
 	if err != nil {
 		return err
@@ -61,11 +60,4 @@ func (auth *AuthService) GenerateToken(user *domain.User) (string, error) {
 // Verify verifies the user by token
 func (auth *AuthService) Verify(accessToken string) (*domain.UserClaims, error) {
 	return auth.jwt.Verify(accessToken)
-}
-
-// generatePasswordHash generates an encrypted password
-func (auth *AuthService) generatePasswordHash(password string) string {
-	hash := sha1.New()
-	hash.Write([]byte(password))
-	return fmt.Sprintf("%x", hash.Sum([]byte(auth.keyPassword)))
 }
