@@ -109,8 +109,8 @@ func (s *Sender) GetAllBankCard(ctx context.Context) ([]*domain.BankCard, error)
 		return nil, err
 	}
 
-	data := make([]*domain.BankCard, 0, len(resp.BankCard))
-	for _, v := range resp.BankCard {
+	data := make([]*domain.BankCard, 0, len(resp.BankCards))
+	for _, v := range resp.BankCards {
 		data = append(data, &domain.BankCard{
 			ID:       int(v.Id),
 			Number:   v.Number,

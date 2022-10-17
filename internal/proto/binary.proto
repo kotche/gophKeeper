@@ -43,7 +43,7 @@ message GetAllBinaryResponse{
 }
 
 message BinaryGetAllResponse{
-  repeated GetAllBinaryResponse binary = 1;
+  repeated GetAllBinaryResponse binaries = 1;
 }
 
 service BinaryService {

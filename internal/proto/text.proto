@@ -43,7 +43,7 @@ message GetAllTextResponse{
 }
 
 message TextGetAllResponse{
-  repeated GetAllTextResponse text = 1;
+  repeated GetAllTextResponse texts = 1;
 }
 
 service TextService {

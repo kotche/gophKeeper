@@ -43,7 +43,7 @@ message GetAllBankCardResponse{
 }
 
 message BankCardGetAllResponse{
-  repeated GetAllBankCardResponse bankCard = 1;
+  repeated GetAllBankCardResponse bank_cards = 1;
 }
 
 service BankCardService {

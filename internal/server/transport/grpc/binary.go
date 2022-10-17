@@ -75,7 +75,7 @@ func (h *Handler) GetAllBinary(ctx context.Context, r *pb.BinaryGetAllRequest) (
 
 	response := pb.BinaryGetAllResponse{}
 	for _, v := range data.([]domain.Binary) {
-		response.Binary = append(response.Binary, &pb.GetAllBinaryResponse{
+		response.Binaries = append(response.Binaries, &pb.GetAllBinaryResponse{
 			Id:       int64(v.ID),
 			Binary:   v.Binary,
 			MetaInfo: v.MetaInfo,

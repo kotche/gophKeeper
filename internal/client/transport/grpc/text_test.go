@@ -260,8 +260,8 @@ func TestSender_GetAllText(t *testing.T) {
 	resp, actualError := testParams.client.GetAllText(ctx, req)
 	assert.Equal(t, nil, actualError)
 
-	dataResp := make([]domain.Text, 0, len(resp.Text))
-	for _, v := range resp.Text {
+	dataResp := make([]domain.Text, 0, len(resp.Texts))
+	for _, v := range resp.Texts {
 		dataResp = append(dataResp, domain.Text{
 			ID:       int(v.Id),
 			UserID:   userID,

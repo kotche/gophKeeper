@@ -260,8 +260,8 @@ func TestSender_GetAllBankCard(t *testing.T) {
 	resp, actualError := testParams.client.GetAllBankCard(ctx, req)
 	assert.Equal(t, nil, actualError)
 
-	dataResp := make([]domain.BankCard, 0, len(resp.BankCard))
-	for _, v := range resp.BankCard {
+	dataResp := make([]domain.BankCard, 0, len(resp.BankCards))
+	for _, v := range resp.BankCards {
 		dataResp = append(dataResp, domain.BankCard{
 			ID:       int(v.Id),
 			UserID:   userID,

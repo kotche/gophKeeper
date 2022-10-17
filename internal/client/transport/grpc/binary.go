@@ -110,8 +110,8 @@ func (s *Sender) GetAllBinary(ctx context.Context) ([]*domain.Binary, error) {
 		return nil, err
 	}
 
-	data := make([]*domain.Binary, 0, len(resp.Binary))
-	for _, v := range resp.Binary {
+	data := make([]*domain.Binary, 0, len(resp.Binaries))
+	for _, v := range resp.Binaries {
 		data = append(data, &domain.Binary{
 			ID:       int(v.Id),
 			Binary:   v.Binary,

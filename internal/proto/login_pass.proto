@@ -46,12 +46,12 @@ message GetAllLoginPassResponse{
 }
 
 message LoginPassGetAllResponse{
-  repeated GetAllLoginPassResponse loginPassPairs = 1;
+  repeated GetAllLoginPassResponse login_pass_pairs = 1;
 }
 
 service LoginPassService {
   rpc CreateLoginPass(LoginPassRequest) returns (LoginPassResponse);
   rpc UpdateLoginPass(LoginPassUpdateRequest) returns (LoginPassUpdateResponse);
-  rpc DeleteLoginPass(LoginPassDeleteRequest)  returns (LoginPassDeleteResponse);
+  rpc DeleteLoginPass(LoginPassDeleteRequest) returns (LoginPassDeleteResponse);
   rpc GetAllLoginPass(LoginPassGetAllRequest) returns (LoginPassGetAllResponse);
 }

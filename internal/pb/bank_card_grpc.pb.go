@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v3.12.4
-// source: internal/proto/bankCard.proto
+// source: internal/proto/bank_card.proto
 
 package pb
 
@@ -209,5 +209,5 @@ var BankCardService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "internal/proto/bankCard.proto",
+	Metadata: "internal/proto/bank_card.proto",
 }

@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v3.12.4
-// source: internal/proto/loginPass.proto
+// source: internal/proto/login_pass.proto
 
 package pb
 
@@ -209,5 +209,5 @@ var LoginPassService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "internal/proto/loginPass.proto",
+	Metadata: "internal/proto/login_pass.proto",
 }

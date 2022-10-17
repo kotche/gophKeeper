@@ -260,8 +260,8 @@ func TestSender_GetAllBinary(t *testing.T) {
 	resp, actualError := testParams.client.GetAllBinary(ctx, req)
 	assert.Equal(t, nil, actualError)
 
-	dataResp := make([]domain.Binary, 0, len(resp.Binary))
-	for _, v := range resp.Binary {
+	dataResp := make([]domain.Binary, 0, len(resp.Binaries))
+	for _, v := range resp.Binaries {
 		dataResp = append(dataResp, domain.Binary{
 			ID:       int(v.Id),
 			UserID:   userID,

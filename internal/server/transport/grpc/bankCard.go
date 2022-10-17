@@ -75,7 +75,7 @@ func (h *Handler) GetAllBankCard(ctx context.Context, r *pb.BankCardGetAllReques
 
 	response := pb.BankCardGetAllResponse{}
 	for _, v := range data.([]domain.BankCard) {
-		response.BankCard = append(response.BankCard, &pb.GetAllBankCardResponse{
+		response.BankCards = append(response.BankCards, &pb.GetAllBankCardResponse{
 			Id:       int64(v.ID),
 			Number:   v.Number,
 			MetaInfo: v.MetaInfo,

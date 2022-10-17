@@ -75,7 +75,7 @@ func (h *Handler) GetAllText(ctx context.Context, r *pb.TextGetAllRequest) (*pb.
 
 	response := pb.TextGetAllResponse{}
 	for _, v := range data.([]domain.Text) {
-		response.Text = append(response.Text, &pb.GetAllTextResponse{
+		response.Texts = append(response.Texts, &pb.GetAllTextResponse{
 			Id:       int64(v.ID),
 			Text:     v.Text,
 			MetaInfo: v.MetaInfo,

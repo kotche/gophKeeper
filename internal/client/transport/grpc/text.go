@@ -109,8 +109,8 @@ func (s *Sender) GetAllText(ctx context.Context) ([]*domain.Text, error) {
 		return nil, err
 	}
 
-	data := make([]*domain.Text, 0, len(resp.Text))
-	for _, v := range resp.Text {
+	data := make([]*domain.Text, 0, len(resp.Texts))
+	for _, v := range resp.Texts {
 		data = append(data, &domain.Text{
 			ID:       int(v.Id),
 			Text:     v.Text,
