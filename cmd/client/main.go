@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/kotche/gophKeeper/config/client"
 	"github.com/kotche/gophKeeper/internal/client/app"
@@ -9,8 +10,8 @@ import (
 )
 
 var (
-	buildVersion = "N/A"
-	buildDate    = "N/A"
+	buildVersion string
+	buildDate    time.Time
 )
 
 func main() {
