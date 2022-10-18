@@ -1,29 +1,28 @@
-package service
+package storage
 
 import (
+	"sync/atomic"
 	"testing"
 
 	"github.com/kotche/gophKeeper/internal/client/domain"
 	"github.com/kotche/gophKeeper/internal/client/domain/dataType"
-	"github.com/kotche/gophKeeper/internal/client/storage"
 	"github.com/kotche/gophKeeper/logger"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestService_Save(t *testing.T) {
+func TestCache_Save(t *testing.T) {
 	log := logger.Init("")
-	cache := storage.NewCache(log)
-	srvc := NewService(cache, nil, log)
+	cache := NewCache(log)
 
 	dataLp := &domain.LoginPass{ID: 1, Login: "login", Password: "password", MetaInfo: "777"}
 	dataText := &domain.Text{ID: 1, Text: "555dfgdf", MetaInfo: "777"}
 	dataBinary := &domain.Binary{ID: 1, Binary: "555dfgdf", MetaInfo: "777"}
 	dataBankCard := &domain.BankCard{ID: 1, Number: "5555", MetaInfo: "777"}
 
-	errLp := srvc.Save(dataLp)
-	errText := srvc.Save(dataText)
-	errBinary := srvc.Save(dataBinary)
-	errBankCard := srvc.Save(dataBankCard)
+	errLp := cache.Save(dataLp)
+	errText := cache.Save(dataText)
+	errBinary := cache.Save(dataBinary)
+	errBankCard := cache.Save(dataBankCard)
 
 	assert.Equal(t, nil, errLp)
 	assert.Equal(t, nil, errText)
@@ -31,31 +30,27 @@ func TestService_Save(t *testing.T) {
 	assert.Equal(t, nil, errBankCard)
 }
 
-func TestService_SaveFail(t *testing.T) {
+func TestCache_SaveFail(t *testing.T) {
 	log := logger.Init("")
-	cache := storage.NewCache(log)
-	srvc := NewService(cache, nil, log)
-
+	cache := NewCache(log)
 	data := "some data"
-	err := srvc.Save(data)
-
+	err := cache.Save(data)
 	assert.Error(t, err)
 }
 
-func TestService_Update(t *testing.T) {
+func TestCache_Update(t *testing.T) {
 	log := logger.Init("")
-	cache := storage.NewCache(log)
-	srvc := NewService(cache, nil, log)
+	cache := NewCache(log)
 
 	dataLp := &domain.LoginPass{ID: 1, Login: "login", Password: "password", MetaInfo: "777"}
 	dataText := &domain.Text{ID: 1, Text: "555dfgdf", MetaInfo: "777"}
 	dataBinary := &domain.Binary{ID: 1, Binary: "555dfgdf", MetaInfo: "777"}
 	dataBankCard := &domain.BankCard{ID: 1, Number: "5555", MetaInfo: "777"}
 
-	errLp := srvc.Update(dataLp)
-	errText := srvc.Update(dataText)
-	errBinary := srvc.Update(dataBinary)
-	errBankCard := srvc.Update(dataBankCard)
+	errLp := cache.Update(dataLp)
+	errText := cache.Update(dataText)
+	errBinary := cache.Update(dataBinary)
+	errBankCard := cache.Update(dataBankCard)
 
 	assert.Equal(t, nil, errLp)
 	assert.Equal(t, nil, errText)
@@ -63,21 +58,17 @@ func TestService_Update(t *testing.T) {
 	assert.Equal(t, nil, errBankCard)
 }
 
-func TestService_UpdateFail(t *testing.T) {
+func TestCache_UpdateFail(t *testing.T) {
 	log := logger.Init("")
-	cache := storage.NewCache(log)
-	srvc := NewService(cache, nil, log)
-
+	cache := NewCache(log)
 	data := "some data"
-	err := srvc.Update(data)
-
+	err := cache.Update(data)
 	assert.Error(t, err)
 }
 
-func TestService_UpdateAll(t *testing.T) {
+func TestCache_UpdateAll(t *testing.T) {
 	log := logger.Init("")
-	cache := storage.NewCache(log)
-	srvc := NewService(cache, nil, log)
+	cache := NewCache(log)
 
 	dataLp := []*domain.LoginPass{
 		{ID: 1, Login: "login1", Password: "password1", MetaInfo: "meta"},
@@ -96,20 +87,20 @@ func TestService_UpdateAll(t *testing.T) {
 		{ID: 2, Number: "6666", MetaInfo: "meta"},
 	}
 
-	errLp := srvc.UpdateAll(dataLp)
-	errText := srvc.UpdateAll(dataText)
-	errBinary := srvc.UpdateAll(dataBinary)
-	errBankCard := srvc.UpdateAll(dataBankCard)
+	errLp := cache.UpdateAll(dataLp)
+	errText := cache.UpdateAll(dataText)
+	errBinary := cache.UpdateAll(dataBinary)
+	errBankCard := cache.UpdateAll(dataBankCard)
 
 	assert.Equal(t, nil, errLp)
 	assert.Equal(t, nil, errText)
 	assert.Equal(t, nil, errBinary)
 	assert.Equal(t, nil, errBankCard)
 
-	dataLpResp, _ := srvc.GetAll(dataType.LP)
-	dataTextResp, _ := srvc.GetAll(dataType.TEXT)
-	dataBinaryResp, _ := srvc.GetAll(dataType.BINARY)
-	dataBankCardResp, _ := srvc.GetAll(dataType.BANKCARD)
+	dataLpResp, _ := cache.GetAll(dataType.LP)
+	dataTextResp, _ := cache.GetAll(dataType.TEXT)
+	dataBinaryResp, _ := cache.GetAll(dataType.BINARY)
+	dataBankCardResp, _ := cache.GetAll(dataType.BANKCARD)
 
 	assert.EqualValues(t, dataLp, dataLpResp)
 	assert.EqualValues(t, dataText, dataTextResp)
@@ -117,31 +108,27 @@ func TestService_UpdateAll(t *testing.T) {
 	assert.EqualValues(t, dataBankCard, dataBankCardResp)
 }
 
-func TestService_UpdateAllFail(t *testing.T) {
+func TestCache_UpdateAllFail(t *testing.T) {
 	log := logger.Init("")
-	cache := storage.NewCache(log)
-	srvc := NewService(cache, nil, log)
-
+	cache := NewCache(log)
 	data := "some data"
-	err := srvc.UpdateAll(data)
-
+	err := cache.UpdateAll(data)
 	assert.Error(t, err)
 }
 
-func TestService_Delete(t *testing.T) {
+func TestCache_Delete(t *testing.T) {
 	log := logger.Init("")
-	cache := storage.NewCache(log)
-	srvc := NewService(cache, nil, log)
+	cache := NewCache(log)
 
 	dataLp := &domain.LoginPass{ID: 1, Login: "login", Password: "password", MetaInfo: "777"}
 	dataText := &domain.Text{ID: 1, Text: "555dfgdf", MetaInfo: "777"}
 	dataBinary := &domain.Binary{ID: 1, Binary: "555dfgdf", MetaInfo: "777"}
 	dataBankCard := &domain.BankCard{ID: 1, Number: "5555", MetaInfo: "777"}
 
-	errLp := srvc.Delete(dataLp)
-	errText := srvc.Delete(dataText)
-	errBinary := srvc.Delete(dataBinary)
-	errBankCard := srvc.Delete(dataBankCard)
+	errLp := cache.Delete(dataLp)
+	errText := cache.Delete(dataText)
+	errBinary := cache.Delete(dataBinary)
+	errBankCard := cache.Delete(dataBankCard)
 
 	assert.Equal(t, nil, errLp)
 	assert.Equal(t, nil, errText)
@@ -149,21 +136,17 @@ func TestService_Delete(t *testing.T) {
 	assert.Equal(t, nil, errBankCard)
 }
 
-func TestService_DeleteFail(t *testing.T) {
+func TestCache_DeleteFail(t *testing.T) {
 	log := logger.Init("")
-	cache := storage.NewCache(log)
-	srvc := NewService(cache, nil, log)
-
+	cache := NewCache(log)
 	data := "some data"
-	err := srvc.Delete(data)
-
+	err := cache.Delete(data)
 	assert.Error(t, err)
 }
 
-func TestService_GetAll(t *testing.T) {
+func TestCache_GetAll(t *testing.T) {
 	log := logger.Init("")
-	cache := storage.NewCache(log)
-	srvc := NewService(cache, nil, log)
+	cache := NewCache(log)
 
 	tests := []struct {
 		name string
@@ -206,87 +189,84 @@ func TestService_GetAll(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 
-			_ = srvc.UpdateAll(tt.data)
-			_, err := srvc.GetAll(tt.dt)
+			_ = cache.UpdateAll(tt.data)
+			_, err := cache.GetAll(tt.dt)
 			assert.Equal(t, nil, err)
 		})
 	}
 }
 
-func TestService_GetCurrentUserID(t *testing.T) {
+func TestCache_GetCurrentUserID(t *testing.T) {
 	userID := 10
 	log := logger.Init("")
-	cache := storage.NewCache(log)
-	srvc := NewService(cache, nil, log)
+	cache := NewCache(log)
 	cache.SetUserParams(userID, "")
-	userIDResp := srvc.GetCurrentUserID()
-
+	userIDResp := cache.GetCurrentUserID()
 	assert.Equal(t, userID, userIDResp)
 }
 
-func TestService_GetToken(t *testing.T) {
+func TestCache_GetToken(t *testing.T) {
 	token := "sdsdsdsd3242342"
 	log := logger.Init("")
-	cache := storage.NewCache(log)
-	srvc := NewService(cache, nil, log)
+	cache := NewCache(log)
 	cache.SetUserParams(1, token)
-	tokenResp := srvc.GetToken()
-
+	tokenResp := cache.GetToken()
 	assert.Equal(t, token, tokenResp)
 }
 
-func TestService_GetVersionCache(t *testing.T) {
+func TestCache_GetVersion(t *testing.T) {
 	version := 10
 	log := logger.Init("")
-	cache := storage.NewCache(log)
-	srvc := NewService(cache, nil, log)
+	cache := NewCache(log)
 	cache.SetVersion(version)
-	versionResp := srvc.GetVersionCache()
-
+	versionResp := cache.GetVersion()
 	assert.Equal(t, version, versionResp)
 }
 
-func TestService_SetUserParams(t *testing.T) {
+func TestCache_IncVersion(t *testing.T) {
+	ver := 10
+	var verCheck atomic.Uint64
+	verCheck.Swap(uint64(ver))
+	verCheck.Add(1)
+
+	cache := NewCache(nil)
+	cache.SetVersion(ver)
+	cache.IncVersion()
+
+	assert.Equal(t, verCheck, cache.version)
+}
+
+func TestCache_SetUserParams(t *testing.T) {
 	userID := 10
 	token := "sdsdsdsd3242342"
 	log := logger.Init("")
-	cache := storage.NewCache(log)
-	srvc := NewService(cache, nil, log)
-	err := srvc.SetUserParams(userID, token)
-	assert.Equal(t, nil, err)
+	cache := NewCache(log)
+	cache.SetUserParams(userID, token)
 
 	tokenResp := cache.GetToken()
 	userIDResp := cache.GetCurrentUserID()
-
 	assert.Equal(t, token, tokenResp)
 	assert.Equal(t, userID, userIDResp)
 }
 
-func TestService_SetUserParamsFail(t *testing.T) {
+func TestCache_SetUserParamsFail(t *testing.T) {
 	userID := -10
 	token := "345345"
 	log := logger.Init("")
-	cache := storage.NewCache(log)
-	srvc := NewService(cache, nil, log)
+	cache := NewCache(log)
 
-	err := srvc.SetUserParams(userID, token)
-	assert.Error(t, err)
-
-	userID = 10
-	token = ""
-
-	err = srvc.SetUserParams(userID, token)
-	assert.Error(t, err)
+	cache.SetUserParams(userID, token)
+	assert.Equal(t, userID, cache.userID)
+	assert.Equal(t, token, cache.token)
 }
 
-func TestService_SetVersionCache(t *testing.T) {
+func TestCache_SetVersion(t *testing.T) {
 	ver := 10
+	var verCheck atomic.Uint64
+	verCheck.Swap(uint64(ver))
 
 	log := logger.Init("")
-	cache := storage.NewCache(log)
-	srvc := NewService(cache, nil, log)
-	srvc.SetVersionCache(ver)
-
-	verResp := cache.GetVersion()
-	assert.Equal(t, ver, verResp)
+	cache := NewCache(log)
+	cache.SetVersion(ver)
+	assert.Equal(t, verCheck, cache.version)
 }
