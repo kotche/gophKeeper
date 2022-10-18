@@ -6,7 +6,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/kotche/gophKeeper/internal/client/domain"
-	"github.com/kotche/gophKeeper/internal/mocks/client"
+	"github.com/kotche/gophKeeper/internal/mocks/client/updater"
 	"github.com/kotche/gophKeeper/logger"
 	"github.com/stretchr/testify/assert"
 )
