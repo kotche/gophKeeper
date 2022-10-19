@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package keeper;
+
+option go_package = ".;pb";
+
+message GetVersionRequest{
+  int64 user_id = 1;
+}
+
+message GetVersionResponse{
+  uint64 version = 1;
+}
+
+service VersionService {
+  rpc GetVersion(GetVersionRequest) returns (GetVersionResponse);
+}

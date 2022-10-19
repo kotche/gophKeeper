@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package keeper;
+
+option go_package = ".;pb";
+
+message BankCardRequest{
+  int64 user_id = 1;
+  string number = 2;
+  string meta_info = 4;
+}
+
+message BankCardResponse{
+  int64 id = 1;
+}
+
+message BankCardUpdateRequest{
+  int64 id = 1;
+  int64 user_id = 2;
+  string number = 3;
+  string meta_info = 4;
+}
+
+message BankCardUpdateResponse{
+}
+
+message BankCardDeleteRequest{
+  int64 id = 1;
+  int64 user_id = 2;
+}
+
+message BankCardDeleteResponse{
+}
+
+message BankCardGetAllRequest{
+  int64 user_id = 1;
+}
+
+message GetAllBankCardResponse{
+  int64 id = 1;
+  string number = 2;
+  string meta_info = 3;
+}
+
+message BankCardGetAllResponse{
+  repeated GetAllBankCardResponse bank_cards = 1;
+}
+
+service BankCardService {
+  rpc CreateBankCard(BankCardRequest) returns (BankCardResponse);
+  rpc UpdateBankCard(BankCardUpdateRequest) returns (BankCardUpdateResponse);
+  rpc DeleteBankCard(BankCardDeleteRequest)  returns (BankCardDeleteResponse);
+  rpc GetAllBankCard(BankCardGetAllRequest) returns (BankCardGetAllResponse);
+}

@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package keeper;
+
+option go_package = ".;pb";
+
+message BinaryRequest{
+  int64 user_id = 1;
+  string binary = 2;
+  string meta_info = 3;
+}
+
+message BinaryResponse{
+  int64 id = 1;
+}
+
+message BinaryUpdateRequest{
+  int64 id = 1;
+  int64 user_id = 2;
+  string binary = 3;
+  string meta_info = 4;
+}
+
+message BinaryUpdateResponse{
+}
+
+message BinaryDeleteRequest{
+  int64 id = 1;
+  int64 user_id = 2;
+}
+
+message BinaryDeleteResponse{
+}
+
+message BinaryGetAllRequest{
+  int64 user_id = 1;
+}
+
+message GetAllBinaryResponse{
+  int64 id = 1;
+  string binary = 2;
+  string meta_info = 3;
+}
+
+message BinaryGetAllResponse{
+  repeated GetAllBinaryResponse binaries = 1;
+}
+
+service BinaryService {
+  rpc CreateBinary(BinaryRequest) returns (BinaryResponse);
+  rpc UpdateBinary(BinaryUpdateRequest) returns (BinaryUpdateResponse);
+  rpc DeleteBinary(BinaryDeleteRequest)  returns (BinaryDeleteResponse);
+  rpc GetAllBinary(BinaryGetAllRequest) returns (BinaryGetAllResponse);
+}

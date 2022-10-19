@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package keeper;
+
+option go_package = ".;pb";
+
+message TextRequest{
+  int64 user_id = 1;
+  string text = 2;
+  string meta_info = 3;
+}
+
+message TextResponse{
+  int64 id = 1;
+}
+
+message TextUpdateRequest{
+  int64 id = 1;
+  int64 user_id = 2;
+  string text = 3;
+  string meta_info = 4;
+}
+
+message TextUpdateResponse{
+}
+
+message TextDeleteRequest{
+  int64 id = 1;
+  int64 user_id = 2;
+}
+
+message TextDeleteResponse{
+}
+
+message TextGetAllRequest{
+  int64 user_id = 1;
+}
+
+message GetAllTextResponse{
+  int64 id = 1;
+  string text = 2;
+  string meta_info = 3;
+}
+
+message TextGetAllResponse{
+  repeated GetAllTextResponse texts = 1;
+}
+
+service TextService {
+  rpc CreateText(TextRequest) returns (TextResponse);
+  rpc UpdateText(TextUpdateRequest) returns (TextUpdateResponse);
+  rpc DeleteText(TextDeleteRequest)  returns (TextDeleteResponse);
+  rpc GetAllText(TextGetAllRequest) returns (TextGetAllResponse);
+}

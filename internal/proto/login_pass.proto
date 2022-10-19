@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package keeper;
+
+option go_package = ".;pb";
+
+message LoginPassRequest{
+  int64 user_id = 1;
+  string username = 2;
+  string password = 3;
+  string meta_info = 4;
+}
+
+message LoginPassResponse{
+  int64 id = 1;
+}
+
+message LoginPassUpdateRequest{
+  int64 id = 1;
+  int64 user_id = 2;
+  string username = 3;
+  string password = 4;
+  string meta_info = 5;
+}
+
+message LoginPassUpdateResponse{
+}
+
+message LoginPassDeleteRequest{
+  int64 id = 1;
+  int64 user_id = 2;
+}
+
+message LoginPassDeleteResponse{
+}
+
+message LoginPassGetAllRequest{
+  int64 user_id = 1;
+}
+
+message GetAllLoginPassResponse{
+  int64 id = 1;
+  string login = 2;
+  string password = 3;
+  string meta_info = 4;
+}
+
+message LoginPassGetAllResponse{
+  repeated GetAllLoginPassResponse login_pass_pairs = 1;
+}
+
+service LoginPassService {
+  rpc CreateLoginPass(LoginPassRequest) returns (LoginPassResponse);
+  rpc UpdateLoginPass(LoginPassUpdateRequest) returns (LoginPassUpdateResponse);
+  rpc DeleteLoginPass(LoginPassDeleteRequest) returns (LoginPassDeleteResponse);
+  rpc GetAllLoginPass(LoginPassGetAllRequest) returns (LoginPassGetAllResponse);
+}
